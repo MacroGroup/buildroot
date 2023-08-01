@@ -1,0 +1,21 @@
+#! /bin/bash
+
+case "$1" in
+start)
+	printf "Initializing sound: "
+	for snddev in /dev/snd/controlC*; do
+		sndname=`basename $snddev`
+		sndidx=${sndname#controlC}
+
+		/usr/sbin/alsactl -I -D -U restore $sndidx || exit 1
+	done
+	echo "OK"
+	;;
+stop|restart|reload)
+	;;
+*)
+	echo "Usage: $0 {start|stop|restart|reload}"
+	;;
+esac
+
+exit 0
