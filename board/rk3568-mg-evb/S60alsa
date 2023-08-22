@@ -4,6 +4,8 @@ case "$1" in
 start)
 	printf "Initializing sound: "
 	for snddev in /dev/snd/controlC*; do
+		[ -e "$snddev" ] || continue
+
 		sndname=`basename $snddev`
 		sndidx=${sndname#controlC}
 
