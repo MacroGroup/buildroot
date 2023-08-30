@@ -1,0 +1,26 @@
+#! /bin/bash
+
+case "$1" in
+start)
+	printf "Initializing network: "
+
+	if [ -d /sys/class/net/lo ]; then
+		/sbin/ifconfig lo 127.0.0.1 netmask 255.0.0.0 up
+		/sbin/route add -net 127.0.0.0/8 gw 127.0.0.1 dev lo
+	fi
+
+	echo "OK"
+	;;
+stop|restart|reload)
+	if [ -d /sys/class/net/lo ]; then
+		/sbin/route del -net 127.0.0.0/8 dev lo
+		/sbin/ifconfig lo down
+	fi
+
+	;;
+*)
+	echo "Usage: $0 {start|stop|restart|reload}"
+	;;
+esac
+
+exit 0
