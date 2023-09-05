@@ -3,6 +3,7 @@
 case "$1" in
 start)
 	printf "Initializing sound: "
+
 	for snddev in /dev/snd/controlC*; do
 		[ -e "$snddev" ] || continue
 
@@ -11,12 +12,16 @@ start)
 
 		/usr/sbin/alsactl -I -D -U restore $sndidx || exit 1
 	done
+
 	echo "OK"
+
 	;;
 stop|restart|reload)
+
 	;;
 *)
 	echo "Usage: $0 {start|stop|restart|reload}"
+
 	;;
 esac
 
