@@ -73,8 +73,8 @@ else ifeq ($$(NORMALIZED_ARCH),x86_64)
 $(1)_ARCH = x86
 else ifeq ($$(NORMALIZED_ARCH),powerpc)
 $(1)_ARCH = ppc
-else ifeq ($$(NORMALIZED_ARCH),arm64)
-$(1)_ARCH = arm
+#else ifeq ($$(NORMALIZED_ARCH),arm64)
+#$(1)_ARCH = arm
 else
 $(1)_ARCH = $$(NORMALIZED_ARCH)
 endif
