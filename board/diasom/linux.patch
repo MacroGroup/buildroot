@@ -1,9 +1,9 @@
 diff --git a/arch/arm64/configs/rk3568_mg_evb_defconfig b/arch/arm64/configs/rk3568_mg_evb_defconfig
 new file mode 100644
-index 000000000000..934067c7634a
+index 000000000000..6c5704ddd2e4
 --- /dev/null
 +++ b/arch/arm64/configs/rk3568_mg_evb_defconfig
-@@ -0,0 +1,573 @@
+@@ -0,0 +1,576 @@
 +# CONFIG_LOCALVERSION_AUTO is not set
 +CONFIG_SYSVIPC=y
 +CONFIG_POSIX_MQUEUE=y
@@ -18,6 +18,7 @@ index 000000000000..934067c7634a
 +# CONFIG_FHANDLE is not set
 +CONFIG_EMBEDDED=y
 +CONFIG_ARCH_ROCKCHIP=y
++# CONFIG_AMPERE_ERRATUM_AC03_CPU_38 is not set
 +# CONFIG_ARM64_ERRATUM_826319 is not set
 +# CONFIG_ARM64_ERRATUM_827319 is not set
 +# CONFIG_ARM64_ERRATUM_824069 is not set
@@ -259,7 +260,7 @@ index 000000000000..934067c7634a
 +CONFIG_ROCKCHIP_THERMAL=y
 +CONFIG_WATCHDOG=y
 +CONFIG_DW_WATCHDOG=y
-+CONFIG_MFD_RK808=y
++CONFIG_MFD_RK8XX_I2C=y
 +CONFIG_REGULATOR=y
 +CONFIG_REGULATOR_FIXED_VOLTAGE=y
 +CONFIG_REGULATOR_RK808=y
@@ -446,7 +447,8 @@ index 000000000000..934067c7634a
 +# CONFIG_SND_DRIVERS is not set
 +# CONFIG_SND_PCI is not set
 +# CONFIG_SND_SPI is not set
-+CONFIG_SND_USB_AUDIO=y
++CONFIG_SND_USB_AUDIO=m
++CONFIG_SND_USB_AUDIO_MIDI_V2=y
 +CONFIG_SND_SOC=y
 +CONFIG_SND_SOC_ROCKCHIP=y
 +CONFIG_SND_SOC_ROCKCHIP_I2S_TDM=y
@@ -467,16 +469,17 @@ index 000000000000..934067c7634a
 +CONFIG_USB_OTG=y
 +CONFIG_USB_OTG_FSM=y
 +CONFIG_USB_XHCI_HCD=y
-+CONFIG_USB_ACM=y
-+CONFIG_USB_WDM=y
++CONFIG_USB_ACM=m
++CONFIG_USB_PRINTER=m
++CONFIG_USB_WDM=m
 +CONFIG_USB_STORAGE=y
 +CONFIG_USB_DWC3=y
 +# CONFIG_USB_DWC3_OF_SIMPLE is not set
-+CONFIG_USB_SERIAL=y
++CONFIG_USB_SERIAL=m
 +CONFIG_USB_SERIAL_GENERIC=y
-+CONFIG_USB_SERIAL_CP210X=y
-+CONFIG_USB_SERIAL_FTDI_SIO=y
-+CONFIG_USB_SERIAL_OPTION=y
++CONFIG_USB_SERIAL_CP210X=m
++CONFIG_USB_SERIAL_FTDI_SIO=m
++CONFIG_USB_SERIAL_OPTION=m
 +CONFIG_USB_ONBOARD_HUB=y
 +CONFIG_TYPEC=y
 +CONFIG_TYPEC_TCPM=y
@@ -578,10 +581,10 @@ index 000000000000..934067c7634a
 +# CONFIG_STRICT_DEVMEM is not set
 +# CONFIG_RUNTIME_TESTING_MENU is not set
 diff --git a/drivers/net/can/Kconfig b/drivers/net/can/Kconfig
-index b190007c01be..207bccd332bf 100644
+index a5c5036dfb94..4396f3c3c114 100644
 --- a/drivers/net/can/Kconfig
 +++ b/drivers/net/can/Kconfig
-@@ -218,6 +218,7 @@ source "drivers/net/can/m_can/Kconfig"
+@@ -217,6 +217,7 @@ source "drivers/net/can/m_can/Kconfig"
  source "drivers/net/can/mscan/Kconfig"
  source "drivers/net/can/peak_canfd/Kconfig"
  source "drivers/net/can/rcar/Kconfig"
@@ -1710,64 +1713,8 @@ index 000000000000..287b73893b39
 +
 +MODULE_AUTHOR("Elaine Zhang <zhangqing@rock-chips.com>");
 +MODULE_DESCRIPTION("Rockchip CANFD Drivers");
-diff --git a/drivers/regulator/core.c b/drivers/regulator/core.c
-index 698ab7f5004b..d8e1caaf207e 100644
---- a/drivers/regulator/core.c
-+++ b/drivers/regulator/core.c
-@@ -1911,19 +1911,17 @@ static struct regulator *create_regulator(struct regulator_dev *rdev,
- 
- 	if (err != -EEXIST)
- 		regulator->debugfs = debugfs_create_dir(supply_name, rdev->debugfs);
--	if (!regulator->debugfs) {
-+	if (IS_ERR(regulator->debugfs))
- 		rdev_dbg(rdev, "Failed to create debugfs directory\n");
--	} else {
--		debugfs_create_u32("uA_load", 0444, regulator->debugfs,
--				   &regulator->uA_load);
--		debugfs_create_u32("min_uV", 0444, regulator->debugfs,
--				   &regulator->voltage[PM_SUSPEND_ON].min_uV);
--		debugfs_create_u32("max_uV", 0444, regulator->debugfs,
--				   &regulator->voltage[PM_SUSPEND_ON].max_uV);
--		debugfs_create_file("constraint_flags", 0444,
--				    regulator->debugfs, regulator,
--				    &constraint_flags_fops);
--	}
-+
-+	debugfs_create_u32("uA_load", 0444, regulator->debugfs,
-+			   &regulator->uA_load);
-+	debugfs_create_u32("min_uV", 0444, regulator->debugfs,
-+			   &regulator->voltage[PM_SUSPEND_ON].min_uV);
-+	debugfs_create_u32("max_uV", 0444, regulator->debugfs,
-+			   &regulator->voltage[PM_SUSPEND_ON].max_uV);
-+	debugfs_create_file("constraint_flags", 0444, regulator->debugfs,
-+			    regulator, &constraint_flags_fops);
- 
- 	/*
- 	 * Check now if the regulator is an always on regulator - if
-@@ -5256,10 +5254,8 @@ static void rdev_init_debugfs(struct regulator_dev *rdev)
- 	}
- 
- 	rdev->debugfs = debugfs_create_dir(rname, debugfs_root);
--	if (IS_ERR(rdev->debugfs)) {
--		rdev_warn(rdev, "Failed to create debugfs directory\n");
--		return;
--	}
-+	if (IS_ERR(rdev->debugfs))
-+		rdev_dbg(rdev, "Failed to create debugfs directory\n");
- 
- 	debugfs_create_u32("use_count", 0444, rdev->debugfs,
- 			   &rdev->use_count);
-@@ -6179,7 +6175,7 @@ static int __init regulator_init(void)
- 
- 	debugfs_root = debugfs_create_dir("regulator", NULL);
- 	if (IS_ERR(debugfs_root))
--		pr_warn("regulator: Failed to create debugfs directory\n");
-+		pr_debug("regulator: Failed to create debugfs directory\n");
- 
- #ifdef CONFIG_DEBUG_FS
- 	debugfs_create_file("supply_map", 0444, debugfs_root, NULL,
 diff --git a/drivers/usb/typec/tcpm/fusb302.c b/drivers/usb/typec/tcpm/fusb302.c
-index 62ba53357612..36e1f6c0096e 100644
+index 7fc1ffa14f76..ec95221ac4a8 100644
 --- a/drivers/usb/typec/tcpm/fusb302.c
 +++ b/drivers/usb/typec/tcpm/fusb302.c
 @@ -1748,7 +1748,7 @@ static int fusb302_probe(struct i2c_client *client)
@@ -1780,20 +1727,10 @@ index 62ba53357612..36e1f6c0096e 100644
  	if (ret < 0) {
  		dev_err(dev, "cannot request IRQ for GPIO Int_N, ret=%d", ret);
 diff --git a/drivers/usb/typec/tcpm/tcpm.c b/drivers/usb/typec/tcpm/tcpm.c
-index 3c6b0c8e2d3a..2bdee1bc3035 100644
+index cc1d83926497..4bb545822f99 100644
 --- a/drivers/usb/typec/tcpm/tcpm.c
 +++ b/drivers/usb/typec/tcpm/tcpm.c
-@@ -4885,7 +4885,8 @@ static void run_state_machine(struct tcpm_port *port)
- 		break;
- 	case PORT_RESET:
- 		tcpm_reset_port(port);
--		tcpm_set_cc(port, TYPEC_CC_OPEN);
-+		tcpm_set_cc(port, tcpm_default_state(port) == SNK_UNATTACHED ?
-+			    TYPEC_CC_RD : tcpm_rp_cc(port));
- 		tcpm_set_state(port, PORT_RESET_WAIT_OFF,
- 			       PD_T_ERROR_RECOVERY);
- 		break;
-@@ -5457,8 +5458,17 @@ static void tcpm_pd_event_handler(struct kthread_work *work)
+@@ -5465,8 +5465,17 @@ static void tcpm_pd_event_handler(struct kthread_work *work)
  		if (events & TCPM_CC_EVENT) {
  			enum typec_cc_status cc1, cc2;
  
