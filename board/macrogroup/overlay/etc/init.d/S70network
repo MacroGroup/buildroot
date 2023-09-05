@@ -10,6 +10,7 @@ start)
 	fi
 
 	echo "OK"
+
 	;;
 stop|restart|reload)
 	if [ -d /sys/class/net/lo ]; then
@@ -20,6 +21,7 @@ stop|restart|reload)
 	;;
 *)
 	echo "Usage: $0 {start|stop|restart|reload}"
+
 	;;
 esac
 
