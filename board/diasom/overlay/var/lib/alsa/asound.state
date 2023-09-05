@@ -73,3 +73,16 @@ state.HDMI {
 		}
 	}
 }
+
+state.SPDIF {
+	control.8 {
+		iface PCM
+		name 'IEC958 USyncMode CDText'
+		value false
+		comment {
+			access 'read write'
+			type BOOLEAN
+			count 1
+		}
+	}
+}
