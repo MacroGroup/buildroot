@@ -1,4 +1,4 @@
-state.I2S1ESS8388 {
+state.ES8388 {
 	control.9 {
 		iface MIXER
 		name 'PCM Volume'
