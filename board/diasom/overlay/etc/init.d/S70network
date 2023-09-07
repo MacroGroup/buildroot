@@ -12,11 +12,16 @@ start)
 	echo "OK"
 
 	;;
-stop|restart|reload)
+stop)
 	if [ -d /sys/class/net/lo ]; then
 		/sbin/route del -net 127.0.0.0/8 dev lo
 		/sbin/ifconfig lo down
 	fi
+
+	;;
+restart|reload)
+	$0 stop
+	$0 start
 
 	;;
 *)

@@ -1,0 +1,23 @@
+#! /bin/bash
+
+case "$1" in
+start|restart|reload)
+	printf "Initializing framebuffer: "
+
+	if [ -d /sys/class/graphics/fb0 ]; then
+		cat /sys/class/graphics/fb0/modes > /sys/class/graphics/fb0/mode
+	fi
+
+	echo "OK"
+
+	;;
+stop)
+
+	;;
+*)
+	echo "Usage: $0 {start|stop|restart|reload}"
+
+	;;
+esac
+
+exit 0
