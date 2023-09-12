@@ -21,17 +21,19 @@ init_framebuffer()
 
 init_camera()
 {
-echo -n
-#32e30000.mipi-csi
-#	#
-#	CAMERA=
-#	printf "Camera status: "
-#	#
-#	#
-#	#
-#	[ ! -z $CAMERA ] || { echo "Not found"; return; }
-#
-#	echo "$CAMERA found"
+	[ -d /sys/bus/platform/devices/32e30000.mipi-csi ] || return
+
+	CAMERA=
+	printf "Camera status: "
+
+	if [ -d /sys/bus/i2c/drivers/tevi-ap1302/2-003d ]; then
+		CAMERA=AR0234
+		#TODO: cfg
+	fi
+
+	[ ! -z $CAMERA ] || { echo "Not found"; return; }
+
+	echo "$CAMERA found"
 }
 
 case "$1" in
