@@ -21,6 +21,7 @@ init_framebuffer()
 
 init_camera()
 {
+echo -n
 #32e30000.mipi-csi
 #	#
 #	CAMERA=
