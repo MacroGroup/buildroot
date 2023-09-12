@@ -1,7 +1,6 @@
 #! /bin/bash
 
-case "$1" in
-start|restart|reload)
+init_fb() {
 	printf "Initializing framebuffer: "
 
 	if [ -d /sys/class/graphics/fb0 ]; then
@@ -9,6 +8,11 @@ start|restart|reload)
 	fi
 
 	echo "OK"
+}
+
+case "$1" in
+start|restart|reload)
+	init_fb
 
 	;;
 stop)
