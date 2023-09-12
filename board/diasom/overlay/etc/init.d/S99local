@@ -1,18 +1,42 @@
 #! /bin/bash
 
-init_fb() {
-	printf "Initializing framebuffer: "
+init_framebuffer()
+{
+	printf "Framebuffer status: "
 
-	if [ -d /sys/class/graphics/fb0 ]; then
-		cat /sys/class/graphics/fb0/modes > /sys/class/graphics/fb0/mode
-	fi
+	FB0=/sys/class/graphics/fb0
+	[ -d $FB0 ] || { echo "Not found"; return; }
 
-	echo "OK"
+	FBMODE=$FB0/mode
+	MODE=$(cat $FBMODE 2&>/dev/null)
+	[ -z $MODE ] || { echo "OK"; return; }
+
+	FBMODES=$FB0/modes
+	[ -f $FBMODES ] || { echo "Error"; return; }
+
+	head -q -n 1 $FBMODES > $FBMODE
+
+	echo "Initialized"
+}
+
+init_camera()
+{
+#32e30000.mipi-csi
+#	#
+#	CAMERA=
+#	printf "Camera status: "
+#	#
+#	#
+#	#
+#	[ ! -z $CAMERA ] || { echo "Not found"; return; }
+#
+#	echo "$CAMERA found"
 }
 
 case "$1" in
 start|restart|reload)
-	init_fb
+	init_framebuffer
+	init_camera
 
 	;;
 stop)
