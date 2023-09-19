@@ -8,8 +8,6 @@ export TERM='vt102'
 export TMPDIR='/var/tmp'
 export TZ='UTC'
 
-[ -z $XDG_RUNTIME_DIR ] && export XDG_RUNTIME_DIR=/run/user/$(id -u)
-
 ulimit -c 0
 
 # Unhide console cursor
