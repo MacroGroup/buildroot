@@ -49,7 +49,7 @@ init_camera()
 }
 
 case "$1" in
-start|restart|reload)
+start)
 	init_framebuffer
 	init_camera
 
@@ -58,7 +58,7 @@ stop)
 
 	;;
 *)
-	echo "Usage: $0 {start|stop|restart|reload}"
+	echo "Usage: $0 {start|stop}"
 
 	;;
 esac
