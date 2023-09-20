@@ -1,0 +1,12 @@
+[Unit]
+Description=Local
+After=dbus.service
+
+[Service]
+Type=simple
+ExecStart=/bin/run-parts -a start /etc/init.d/
+ExecStop=/bin/run-parts -a stop /etc/init.d/
+StandardOutput=syslog+console
+
+[Install]
+WantedBy=multi-user.target
