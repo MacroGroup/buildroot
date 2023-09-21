@@ -6,7 +6,7 @@ After=dbus.service
 Type=simple
 ExecStart=/bin/run-parts -a start /etc/init.d/
 ExecStop=/bin/run-parts -a stop /etc/init.d/
-StandardOutput=syslog+console
+StandardOutput=journal+console
 
 [Install]
 WantedBy=multi-user.target
