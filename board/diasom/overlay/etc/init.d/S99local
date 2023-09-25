@@ -28,7 +28,7 @@ init_camera()
 
 	if [ -d /sys/bus/i2c/drivers/ov5640/2-003c ]; then
 		CAMERA=OV5640
-		FMT="UYVY8_1X16/640x480"
+		FMT="UYVY8_1X16/1920x1080"
 		CAMDEV="'ov5640 2-003c':0"
 	elif [ -d /sys/bus/i2c/drivers/ap1302/2-003d ]; then
 		CAMERA=AR0234
