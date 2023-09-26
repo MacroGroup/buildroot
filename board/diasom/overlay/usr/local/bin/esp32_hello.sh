@@ -60,4 +60,7 @@ done
 # Remove UART listener
 kill $PID 2&> /dev/null
 
+# Turn Power OFF
+gpioset gpiochip3 31=0
+
 exit 0
