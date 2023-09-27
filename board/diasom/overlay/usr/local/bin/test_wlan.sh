@@ -24,6 +24,8 @@ fi
 # Get MAC address
 HW=$(iw dev $IF info | grep 'addr' | awk '{print $2}')
 
+[ -z $HW ] && { echo "Something going wrong. Quit now!"; exit 1; }
+
 echo "Using Wireless interface: $IF, MAC address: $HW"
 
 if [[ -z $(ifconfig | grep '$IF:') ]]; then
