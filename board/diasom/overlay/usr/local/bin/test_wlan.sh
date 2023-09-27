@@ -1,5 +1,12 @@
 #!/bin/sh
 
+for i in awk grep iw ip ifconfig; do
+	if ! which $i >/dev/null 2>&1; then
+		echo "Script cannot be executed due missing \"$i\" tool!"
+		exit 1
+	fi
+done
+
 # Get interface name
 IF=$(iw dev | grep 'Interface' | awk '{print $2}')
 
@@ -19,8 +26,13 @@ HW=$(iw dev $IF info | grep 'addr' | awk '{print $2}')
 
 echo "Using Wireless interface: $IF, MAC address: $HW"
 
-# Set link status
-ip link set $IF up
+if [[ -z $(ifconfig | grep '$IF:') ]]; then
+	echo "Estabilish link $IF"
+	# Set link status
+	ip link set $IF up || exit 1
+else
+	echo "Link $IF already present"
+fi
 
 # Get connection status
 STATE=$(iw dev $IF link)
