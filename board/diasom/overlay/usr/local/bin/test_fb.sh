@@ -1,6 +1,6 @@
 #!/bin/sh
 
-[ -f /sys/class/graphics/fb0 ] || { echo "Script cannot be executed without framebuffer!"; exit 1; }
+[ -f /sys/class/graphics/fb0 ] || { echo "Script cannot be used without framebuffer!"; exit 1; }
 
 gst-launch-1.0 \
 videotestsrc ! \
