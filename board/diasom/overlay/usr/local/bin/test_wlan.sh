@@ -14,12 +14,12 @@ IF=$(iw dev | grep 'Interface' | awk '{print $2}')
 
 # Check arguments
 if [ $# -ne 2 ]; then
-	# TODO
-	# exit 1
+	echo "Usage: $0 <SSID> <password>"
+	exit 1
 fi
 
-#SSID=$1
-#PASS=$2
+SSID=$1
+PASS=$2
 
 # Get MAC address
 HW=$(iw dev $IF info | grep 'addr' | awk '{print $2}')
