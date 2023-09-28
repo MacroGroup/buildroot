@@ -1,6 +1,6 @@
 #!/bin/sh
 
-for i in awk grep iw ip ifconfig; do
+for i in awk dhclient grep ifconfig ip iw ping wpa_passphrase wpa_supplicant; do
 	if ! which $i >/dev/null 2>&1; then
 		echo "Script cannot be executed due missing \"$i\" tool!"
 		exit 1
@@ -28,22 +28,45 @@ HW=$(iw dev $IF info | grep 'addr' | awk '{print $2}')
 
 echo "Using Wireless interface: $IF, MAC address: $HW"
 
-if [[ -z $(ifconfig | grep '$IF:') ]]; then
-	echo "Estabilish link $IF"
-	# Set link status
-	ip link set $IF up || exit 1
+# Set link status
+ip link set $IF up || exit 1
+
+# Get list of SSIDs
+echo "Avaiable SSIDs:"
+iw dev $IF scan 2&>/dev/null | grep 'SSID'
+
+connected=false
+for try in 1 2 3
+do
+	# Get connection status
+	STATE=$(iw dev $IF link)
+	if [ "$STATE" = "Not connected." ]; then
+		echo "Try to connect: $try"
+		wpa_supplicant -W -B -i $IF -c <(wpa_passphrase "$SSID" "$PASS")
+		sleep 2
+	else
+		echo $STATE
+		connected=true
+		break
+	fi
+done
+
+if [ "$connected" = true ]; then
+	# Start DHCP client
+	dhclient $IF
+	sleep 2
 else
-	echo "Link $IF already present"
+	echo "Cannot connect to \"$SSID\"!"
+	exit 1
 fi
 
-# Get connection status
-STATE=$(iw dev $IF link)
-if [ "$STATE" = "Not connected." ]; then
-	echo "Connect!"
-else
-	echo "State: $STATE"
+ADDR=$(ifconfig $IF | grep 'inet addr')
+if [ -z "$ADDR" ]; then
+	echo "Cannot get IP address!"
+	exit 1
 fi
 
-# TODO
+# All done, now Ping!
+ping -c 5 -I $IF 8.8.8.8
 
 exit 0
