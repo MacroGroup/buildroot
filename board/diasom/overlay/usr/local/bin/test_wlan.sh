@@ -33,7 +33,7 @@ ip link set $IF up || exit 1
 
 # Get list of SSIDs
 echo "Avaiable SSIDs:"
-iw dev $IF scan 2&>/dev/null | grep 'SSID'
+iw dev $IF scan 2&>/dev/null | grep 'SSID:'
 
 connected=false
 for try in 1 2 3
