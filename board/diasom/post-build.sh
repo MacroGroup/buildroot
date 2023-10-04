@@ -1,6 +1,9 @@
 #!/bin/sh
 
 # Install compiled device tree overlays
-install -m 0644 -D $BINARIES_DIR/*.dtbo $TARGET_DIR/boot
+for overlay in $BINARIES_DIR/*.dtbo; do
+	[ -e "$overlay" ] || continue
+	install -m 0644 -D $overlay $TARGET_DIR/boot
+done
 
 exit 0
