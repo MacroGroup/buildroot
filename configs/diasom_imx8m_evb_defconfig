@@ -22,6 +22,7 @@ BR2_SYSTEM_DEFAULT_PATH="/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local
 BR2_ENABLE_LOCALE_WHITELIST="C.UTF-8"
 BR2_GENERATE_LOCALE="C.UTF-8"
 BR2_ROOTFS_OVERLAY="board/diasom/overlay"
+BR2_ROOTFS_POST_BUILD_SCRIPT="board/diasom/post-build.sh"
 BR2_ROOTFS_POST_IMAGE_SCRIPT="support/scripts/genimage.sh"
 BR2_ROOTFS_POST_SCRIPT_ARGS="-c board/diasom/genimage-ds-imx8m-evb.cfg"
 BR2_LINUX_KERNEL=y
