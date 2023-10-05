@@ -12,7 +12,7 @@ if [ ! -f $ROOT/ds-rk3568-evb-sdcard.img ]; then
 	exit 1
 fi
 
-echo "This script downloads the full SD card image to the EMMC card"
+echo "This script downloads the full SD card image to the EMMC chip"
 echo "of the development board."
 echo "Make sure the USB cable from the development board to the computer"
 echo "is connected and the development board is in the bootloader state."
