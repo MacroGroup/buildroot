@@ -1,7 +1,7 @@
 #!/bin/sh
 
-ROOT=$(dirname -- $(readlink -f -- "$0"))
+BOARD_DIR="$(dirname $0)"
 
-$ROOT/post-build-common.sh
+$BOARD_DIR/post-build-common.sh
 
 exit 0
