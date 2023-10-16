@@ -29,6 +29,8 @@ timetest()
 	$1 ! fakesink sync=false
 }
 
+plugincheck videotestsrc
+plugincheck fakesink
 plugincheck v4l2jpegenc
 plugincheck jpegenc
 
