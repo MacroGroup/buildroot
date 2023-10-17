@@ -18,7 +18,7 @@ init_framebuffer()
 
 	# Temporary fix for fix differrent resolution between HDMI and DSI
 	if [ -d /sys/bus/platform/devices/fe060000.dsi ]; then
-		fbset -g 1920 1080 1920 1080 32 2&>/dev/null
+		fbset -g 1920 1080 1920 1080 32
 	fi
 
 	echo "Initialized"
