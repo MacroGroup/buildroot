@@ -1,0 +1,65 @@
+#! /bin/bash
+
+CONFIGFS=/sys/kernel/config
+
+init_gadget()
+{
+	UDC=ci_hdrc.0
+
+	[ -d /sys/class/udc/$UDC ] || return 1
+
+	# Create Gadget
+	cd $CONFIGFS/usb_gadget
+	mkdir -p g1
+	cd g1
+
+	[ -f $GADGETS/g1/UDC ] && echo "" > UDC
+
+	# USB ids
+	echo 0x1d6b > idVendor	# Linux Foundation
+	echo 0x104 > idProduct	# Multifunction Composite Gadget
+
+	# USB strings
+	mkdir -p strings/0x409
+	echo "Diasom" > strings/0x409/manufacturer
+	cat /etc/machine-id > strings/0x409/serialnumber
+	cat /proc/device-tree/model > strings/0x409/product
+
+	# Create the configuration
+	mkdir -p configs/c.1
+
+	mkdir -p functions/mass_storage.1
+	echo "/dev/disk/by-label/rootfs" > functions/mass_storage.1/lun.0/file
+	ln -sf functions/mass_storage.1 configs/c.1
+
+	echo $UDC > UDC
+
+	return 0
+}
+
+stop_gadget()
+{
+	for UDC in $CONFIGFS/usb_gadget/* ; do
+		[ -f $UDC ] || continue
+		echo "" > $UDC
+	done
+}
+
+[ -d $CONFIGFS ] || exit 0
+
+case "$1" in
+start)
+	init_gadget && echo "Gadget status: OK"
+
+	;;
+stop)
+	stop_gadget
+
+	;;
+*)
+	echo "Usage: $0 {start|stop}"
+
+	;;
+esac
+
+exit 0
