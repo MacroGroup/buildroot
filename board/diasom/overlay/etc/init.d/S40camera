@@ -1,29 +1,5 @@
 #! /bin/bash
 
-init_framebuffer()
-{
-	printf "Framebuffer status: "
-
-	FB0=/sys/class/graphics/fb0
-	[ -d $FB0 ] || { echo "Not found"; return; }
-
-	FBMODE=$FB0/mode
-	MODE=$(cat $FBMODE 2&>/dev/null)
-	[ -z $MODE ] || { echo "OK"; return; }
-
-	FBMODES=$FB0/modes
-	[ -f $FBMODES ] || { echo "Error"; return; }
-
-	head -q -n 1 $FBMODES > $FBMODE
-
-	# Temporary fix for fix differrent resolution between HDMI and DSI
-	if [ -d /sys/bus/platform/devices/fe060000.dsi ]; then
-		fbset -g 1920 1080 1920 1080 32
-	fi
-
-	echo "Initialized"
-}
-
 init_camera()
 {
 	[ -d /sys/bus/platform/devices/32e30000.mipi-csi ] || return
@@ -55,7 +31,6 @@ init_camera()
 
 case "$1" in
 start)
-	init_framebuffer
 	init_camera
 
 	;;
