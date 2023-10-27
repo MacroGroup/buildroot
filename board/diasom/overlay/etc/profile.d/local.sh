@@ -8,3 +8,6 @@ ulimit -c 0
 
 # Unhide console cursor
 echo -e -n "\e[?25h"
+
+# Prepare XDG_RUNTIME_DIR
+mkdir -p /run/user/0
