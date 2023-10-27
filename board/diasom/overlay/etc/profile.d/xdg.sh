@@ -7,3 +7,4 @@ if test -z "$XDG_RUNTIME_DIR"; then
 fi
 
 mkdir -p $XDG_RUNTIME_DIR
+chmod 0700 $XDG_RUNTIME_DIR
