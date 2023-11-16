@@ -1,0 +1,31 @@
+#! /bin/bash
+
+# Configure options for board tests
+
+test_init()
+{
+	if ! grep -Eq '\bboot-test\b' /proc/cmdline; then
+		return 1
+	fi
+
+	ifconfig end0 down
+	ifconfig end0 192.168.0.128 up
+
+	return 0
+}
+
+case "$1" in
+start)
+	test_init && echo "Configure test boot: OK"
+
+	;;
+stop)
+
+	;;
+*)
+	echo "Usage: $0 {start|stop}"
+
+	;;
+esac
+
+exit 0
