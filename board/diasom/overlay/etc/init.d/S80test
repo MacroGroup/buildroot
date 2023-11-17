@@ -8,8 +8,11 @@ test_init()
 		return 1
 	fi
 
-	ifconfig end0 down
-	ifconfig end0 192.168.0.128 up
+	IF=end0
+	[ -d /sys/class/net/$IF ] || return 1
+
+	ifconfig $IF down
+	ifconfig $IF 192.168.0.128 up
 
 	return 0
 }
