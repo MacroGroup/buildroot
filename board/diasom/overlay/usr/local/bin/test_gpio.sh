@@ -41,15 +41,17 @@ test_setval()
 	VAL=$(cat /sys/class/gpio/gpio$1/value)
 	if [ $VAL -ne "$2" ]; then
 		echo "Cannot set value $2"
+		setup_direction $1 "in"
 		exit 1
 	fi
 }
 
 test_getval()
 {
-	VAL=$(cat /sys/class/gpio/gpio$1/value)
-	if [ $VAL -ne "$2" ]; then
-		echo "Read/Write mismatch $VAL != $2 !"
+	VAL=$(cat /sys/class/gpio/gpio$2/value)
+	if [ $VAL -ne "$3" ]; then
+		echo "Read/Write mismatch $VAL != $3 !"
+		setup_direction $1 "in"
 		exit 1
 	fi
 }
@@ -73,9 +75,10 @@ test_gpio_pair_one()
 
 	setup_direction $1 "out"
 	test_setval $1 0
-	test_getval $2 0
+	test_getval $1 $2 0
 	test_setval $1 1
-	test_getval $2 1
+	test_getval $1 $2 1
+	setup_direction $1 "in"
 }
 
 test_gpio_pair()
