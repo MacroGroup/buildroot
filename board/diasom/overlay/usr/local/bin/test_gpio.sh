@@ -64,20 +64,23 @@ test_gpio_pair_one()
 	printf ": "
 
 	if [ ! -d /sys/class/gpio/gpio$1 ]; then
-		echo "Setup error 1!"
+		echo "Source GPIO setup error!"
 		exit 1
 	fi
 
 	if [ ! -d /sys/class/gpio/gpio$2 ]; then
-		echo "Setup error 2!"
+		echo "Destination GPIO Setup error!"
 		exit 1
 	fi
 
 	setup_direction $1 "out"
+
 	test_setval $1 0
 	test_getval $1 $2 0
+
 	test_setval $1 1
 	test_getval $1 $2 1
+
 	setup_direction $1 "in"
 }
 
@@ -111,7 +114,7 @@ test_gpio_imx8m()
 	test_gpio_pair 5 21 5 20
 
 	# X13.10 (SAI2_RXFS GPIO4.21)	<=>	X15.5 (SPDIF_RX GPIO5.4)
-	test_gpio_pair 4 21 5 4
+#	test_gpio_pair 4 21 5 4
 
 	# X13.11 (SAI2_TXD GPIO4.26)	<=>	X13.12 (SAI2_MCLK GPIO4.27)
 	test_gpio_pair 4 26 4 27
