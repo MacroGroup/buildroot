@@ -1,0 +1,43 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+"http://www.w3.org/TR/html4/strict.dtd">
+
+<html>
+<head>
+<!-- Copyright Microsoft Corporation. All Rights Reserved, 2002 -->
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>13_3_1-BF-01</title>
+</head>
+<body>
+
+<div class="TestPurpose">Verify that if an OBJECT cannot be rendered, the element's contents are displayed.</div>
+<div class="AssertionsTested">Test for assertion 13.3.1-1</div>
+<div>
+<p>The word &quot;ONE&quot; must be rendered after this sentence. Since the object does not exist, the text in the OBJECT element must be displayed.</p>
+
+<object data="image.png" type="image2/png">ONE</object>
+
+
+
+<p>The word &quot;TWO&quot; must be rendered after this sentence. Since the object does not exist, the text in the OBJECT element must be displayed.</p>
+<object data="image.png" type="image2/png">
+	<object data="image.png" type="image2/png">	
+		TWO
+	</object>
+</object>
+
+
+
+<p>There shall be a PNG image rendered after this sentence. If not, then this test fails.</p>
+<object data="image.png" type="image2/png">
+	<object data="image.png" type="image2/png">	
+		<object data="image.png" type="image/png">	
+			This test fails!
+		</object>
+	</object>
+</object>
+
+</div>
+
+
+</body>
+</html>

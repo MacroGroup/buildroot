@@ -1,0 +1,22 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+"http://www.w3.org/TR/html4/strict.dtd">
+
+<html>
+<head>
+<!-- Copyright Microsoft Corporation. All Rights Reserved, 2002 -->
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>18_2_3-BF-02</title>
+</head>
+<body>
+<div class="TestPurpose">Verify the functionality of the ondblclick event.</div>
+<div class="AssertionsTested">Test for assertion 18.2.3-8</div>
+<script type="text/javascript">
+function onclick_handler() {
+	alert("This test has passed.")
+	return true
+}
+</script>
+<p><input type="button" ondblclick="onclick_handler()" value="Double clicking on this button shall display an alert.">
+</p>
+</body>
+</html>

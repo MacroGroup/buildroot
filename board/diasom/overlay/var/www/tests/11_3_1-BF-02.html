@@ -1,0 +1,45 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+"http://www.w3.org/TR/html4/strict.dtd">
+
+<html>
+<head>
+<!-- Copyright Microsoft Corporation. All Rights Reserved, 2002 -->
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>11_3_1-BF-02</title>
+</head>
+<body>
+<div class="TestPurpose">Verify the functionality of the border attribute for TABLE.</div>
+<div class="AssertionsTested">Test for assertion 11.3.1-3</div>
+<p>In the following table, the border attribute for TABLE is not set. Therefore, the table shall have no border because the default value is 0.</p>
+<table>
+<tr><th>Table Head 1</th><th>Table Head 2</th></tr>
+<tr><td>Table Data 1</td><td>Table Data 2</td></tr>
+</table>
+
+<p>In the following table, the border attribute for TABLE is set to 0. Therefore, the table shall have no border.</p>
+<table border="0">
+<tr><th>Table Head 1</th><th>Table Head 2</th></tr>
+<tr><td>Table Data 1</td><td>Table Data 2</td></tr>
+</table>
+
+<p>In the following table, the border attribute for TABLE is set to 1. Therefore, the table shall have a border with a width of 1 pixel.</p>
+<table border="1">
+<tr><th>Table Head 1</th><th>Table Head 2</th></tr>
+<tr><td>Table Data 1</td><td>Table Data 2</td></tr>
+</table>
+
+<p>In the following table, the border attribute for TABLE is set to 2. Therefore, the table shall have a border with width of 2 pixels.</p>
+<table border="2">
+<tr><th>Table Head 1</th><th>Table Head 2</th></tr>
+<tr><td>Table Data 1</td><td>Table Data 2</td></tr>
+</table>
+
+
+<p>In the following table, the border attribute for TABLE is set to 10. Therefore, the table shall have a border with width of 10 pixels.</p>
+<table border="10">
+<tr><th>Table Head 1</th><th>Table Head 2</th></tr>
+<tr><td>Table Data 1</td><td>Table Data 2</td></tr>
+</table>
+
+</body>
+</html>

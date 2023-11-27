@@ -1,0 +1,24 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+"http://www.w3.org/TR/html4/strict.dtd">
+
+<html>
+<head>
+<!-- Copyright Microsoft Corporation. All Rights Reserved, 2002 -->
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link href="underline.css" title="withUnderline" rel="stylesheet" type="text/css">
+<link href="red.css" title="inRed" rel="alternate stylesheet" type="text/css">
+
+
+<title>14_3_2-BF-03</title>
+</head>
+<body>
+<div class="TestPurpose">Verify a style sheet is preferred when the rel attribute of the LINK element is set to "stylesheet" and the title attribute of the LINK element is set.
+A style sheet is alternate when the rel attribute of the LINK element is set to "alternate stylesheet" and the title attribute of the LINK element is set.
+</div>
+<div class="AssertionsTested">Test for assertion 14.3.2-6, 14.3.2-7 </div>
+
+<p>This paragraph shall be underlined but NOT red because underline.css is a preferred style sheet but red.css is alternate.
+</p>
+
+</body>
+</html>
