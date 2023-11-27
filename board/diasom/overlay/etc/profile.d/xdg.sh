@@ -3,7 +3,11 @@
 # if this is an error or by design, but setting it manually does help and
 # doesn't seem to hurt...
 if test -z "$XDG_RUNTIME_DIR"; then
-	export XDG_RUNTIME_DIR=/run/user/`id -u`
+	export XDG_RUNTIME_DIR=/run/weston
+fi
+
+if test -z "$WAYLAND_DISPLAY"; then
+	export WAYLAND_DISPLAY=wayland-1
 fi
 
 mkdir -p $XDG_RUNTIME_DIR
