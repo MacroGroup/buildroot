@@ -1,0 +1,73 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+"http://www.w3.org/TR/html4/strict.dtd">
+
+<html>
+<head>
+<!-- Copyright Microsoft Corporation. All Rights Reserved, 2002 -->
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta http-equiv="Content-Style-Type" content="text/css">
+
+<style type="text/css" media="screen">
+/*styles for test 14.2.4*/
+#screen {color: green;}
+</style>
+
+<style type="text/css" media="tty">
+/*styles for test 14.2.4*/
+#tty {color: green;}
+</style>
+
+<style type="text/css" media="tv">
+/*styles for test 14.2.4*/
+#tv {color: green;}
+</style>
+
+<style type="text/css" media="projection">
+/*styles for test 14.2.4*/
+#projection {color: green;}
+</style>
+
+<style type="text/css" media="handheld">
+/*styles for test 14.2.4*/
+#handheld {color: green;}
+</style>
+
+<style type="text/css" media="print">
+/*styles for test 14.2.4*/
+#print {color: green;}
+</style>
+
+<style type="text/css" media="braille">
+/*styles for test 14.2.4*/
+#braille {color: green;}
+</style>
+
+<style type="text/css" media="aural">
+/*styles for test 14.2.4*/
+#aural {color: green;}
+</style>
+
+<style type="text/css" media="all">
+/*styles for test 14.2.4*/
+#all {color: green;}
+</style>
+
+<title>14_2_4-BF-01</title>
+</head>
+<body>
+<div class="TestPurpose">Verify user agents must apply style sheets selectively based on the media attribute specified.
+</div>
+<div class="AssertionsTested">Test for assertion 14.2.4-1</div>
+
+<p>The following paragraphs should be green if the media type is appropriate, the default color (usually black) otherwise.</p>
+<p id="screen">media = screen - intended for non-paged computer screens</p>
+<p id="tty">media = tty - intended for media using a fixed-pitch character grid, such as teletypes, terminals, or portable devices with limited display capabilities</p>
+<p id="tv">media = tv - intended for television-type devices (low resolution, color, limited scrollability)</p>
+<p id="projection">media = projection - intended for projectors</p>
+<p id="handheld">media = handheld - intended for handheld devices (small screen, monochrome, bitmapped graphics, limited bandwidth)</p>
+<p id="print">media = print - intended for paged, opaque material and for documents viewed on screen in print preview mode</p>
+<p id="braille">media = braille - intended for braille tactile feedback devices</p>
+<p id="aural">media = aural - intended for speech synthesizers</p>
+<p id="all">media = all - suitable for all devices</p>
+</body>
+</html>

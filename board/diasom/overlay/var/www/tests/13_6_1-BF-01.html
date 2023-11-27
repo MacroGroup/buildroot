@@ -1,0 +1,38 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+"http://www.w3.org/TR/html4/strict.dtd">
+
+<html>
+<head>
+<!-- Copyright Microsoft Corporation. All Rights Reserved, 2002 -->
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>13_6-BF-01</title>
+</head>
+<body>
+
+<div class="TestPurpose">Verify MAP element attribute: name, AREA element attributes: shape, coords, nohref attributes, and usemap attribute</div>
+<div class="AssertionsTested">Test for assertions 13.6.1-1, 13.6.1-2, 13.6.1-3, 13.6.1-4, 13.6.1-5, and 13.6.1-6</div>
+
+<p>
+
+When you click on the larger circle, circle.html shall load.</p>
+<p>When you click on the upper rectangle. rect.html shall load.</p>
+<p>When you click on the lower rectangle, rect2.html shall load.</p>
+<p>When you click on the nine-sided polygon, poly.html shall load.</p>
+<p>When you click on the smaller circle, nothing shall happen.</p>
+
+
+<div>
+
+<img src="map1.gif" usemap="#map1" alt="map1">
+
+<map name="map1">
+	<area alt="rect1"  shape="rect" coords="50,7,88,26" href="rect.html">
+	<area alt="circle"  shape="circle" coords="20,20,12" href="circle.html">
+	<area alt="rect2"  shape="rect" coords="75,37,87,68" href="rect2.html">
+	<area alt="circle2"  shape="circle" coords="12,64,7" nohref>
+	<area alt="poly"  shape="poly" coords="13,44,32,37,49,48,48,37,63,49,43,67,30,55,23,62,25,49" href="poly.html">
+</map>
+</div>
+
+</body>
+</html>

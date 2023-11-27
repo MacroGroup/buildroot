@@ -1,0 +1,31 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+"http://www.w3.org/TR/html4/strict.dtd">
+
+<html>
+<head>
+<!-- Copyright Microsoft Corporation. All Rights Reserved, 2002 -->
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>13_6-BF-02</title>
+</head>
+<body>
+
+<div class="TestPurpose">Verify when a MAP element contains mixed content, AREA elements are ignored</div>
+<div class="AssertionsTested">Test for assertions 13.6.1-13</div>
+
+<p>
+
+AREA elements should be ignored since the MAP element contains block-level content.   No part of the GIF image should be selectable or clickable.
+
+<p>
+
+<img src="map1.gif" usemap="#map1" alt="map1">
+
+<map name="map1">
+	<area alt="circle"  shape="circle" coords="20,20,12" href="circle.html">
+	<area alt="circle2"  shape="circle" coords="12,64,7" nohref>
+	<area alt="poly"  shape="poly" coords="13,44,32,37,49,48,48,37,63,49,43,67,30,55,23,62,25,49" href="poly.html">
+	<a id="area1" shape="rect" coords="0, 0, 30, 30" href="rect.html">rect.html</a>
+</map>
+
+</body>
+</html>

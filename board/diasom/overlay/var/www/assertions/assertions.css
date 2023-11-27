@@ -1,0 +1,27 @@
+h2.sectionhead { background-color:#aaf }
+
+div.assertion { border: double #555; padding: 0.5em;margin-bottom: 0.2em; }
+div.must {border: solid black}
+div.author { border: double silver }
+
+.may {}
+.should {}
+.informative {}
+.deprecated {}
+.must .tests.none {background-color: yellow} /* so must assertions without tests are obvious */
+.should .tests.none {background-color: #ff9 }
+.must.author .tests.none {background-color: white}
+.assertion h3 { background-color: #9f9; }
+
+div.author {font-size: 70%}
+
+ul {list-style-type: none;}
+
+div.tests a {background-color: #6f6;} /*adding this style so that the links to the tests will have a lime (green) background, so that they will be easier to see*/
+
+
+/*  extra style rule for numbering and counting assertions in a section.
+
+div.assertion { margin-left:4em; display:list-item; list-style-type:decimal }
+
+/* */

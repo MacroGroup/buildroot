@@ -1,0 +1,29 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+"http://www.w3.org/TR/html4/strict.dtd">
+
+<html>
+<head>
+<!-- Copyright Microsoft Corporation. All Rights Reserved, 2002 -->
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>13_6-BF-03</title>
+</head>
+<body>
+
+<div class="TestPurpose">Verify if two more more defined regions overlap, the earliest defined region takes precedence</div>
+<div class="AssertionsTested">Test for assertions 13.6.1-15</div>
+
+<p>
+
+There are two defined regions for the upper rectangle.  When you click on the upper rectangle, rect.html should load. (not the second defined region rect1_1.html).
+
+<p>
+
+<img src="map1.gif" usemap="#map1" alt="map1">
+
+<map name="map1">
+	<area alt="rect1"  shape="rect" coords="50,7,88,26" href="rect.html">
+	<area alt="rect1_1"  shape="rect" coords="50,7,88,26" href="rect1_1.html">
+</map>
+
+</body>
+</html>

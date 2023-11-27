@@ -1,0 +1,45 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+"http://www.w3.org/TR/html4/strict.dtd">
+
+<html>
+<head>
+<!-- Copyright Microsoft Corporation. All Rights Reserved, 2002 -->
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>11_2_6-BF-02</title>
+</head>
+<body>
+<div class="TestPurpose">Verify the functionality of the colspan attribute for TD and TH</div>
+<div class="AssertionsTested">Test for assertion 11.2.6-7</div>
+<p>In the following table, TD is used to specify table cells.</p>
+<div>The cell labeled &quot;default&quot; must span one column because no value is specified for the colspan attribute, but 1 is the default value.</div>
+<div>The cell labeled &quot;zero&quot; must span THREE COLUMNS because the colspan attribute is set to 0. The 0 value means that the cell spans all columns from the current column to the last column of the column group in which the cell is defined.</div>
+<div>The cell labeled &quot;one&quot; must span one column because the colspan attribute is set to 1.</div>
+<div>The cell labeled &quot;two&quot; must span two columns because the colspan attribute is set to 2.</div>
+<div>The cell labeled &quot;three&quot; must span three columns because the colspan attribute is set to 3.</div>
+
+<table border="1">
+<tr><td>column 1</td><td>column 2</td><td>column 3</td></tr>
+<tr><td>default</td></tr>
+<tr><td colspan="0">zero</td></tr>
+<tr><td colspan="1">one</td></tr>
+<tr><td colspan="2">two</td></tr>
+<tr><td colspan="3">three</td></tr>
+</table>
+
+<p>In the following table, TH is used to specify table cells.</p>
+<div>The cell labeled &quot;default&quot; must span one column because no value is specified for the colspan attribute, but 1 is the default value.</div>
+<div>The cell labeled &quot;zero&quot; must span THREE COLUMNS because the colspan attribute is set to 0. The 0 value means that the cell spans all columns from the current column to the last column of the column group in which the cell is defined.</div>
+<div>The cell labeled &quot;one&quot; must span one column because the colspan attribute is set to 1.</div>
+<div>The cell labeled &quot;two&quot; must span two columns because the colspan attribute is set to 2.</div>
+<div>The cell labeled &quot;three&quot; must span three columns because the colspan attribute is set to 3.</div>
+
+<table border="1">
+<tr><th>column 1</th><th>column 2</th><th>column 3</th></tr>
+<tr><th>default</th></tr>
+<tr><th colspan="0">zero</th></tr>
+<tr><th colspan="1">one</th></tr>
+<tr><th colspan="2">two</th></tr>
+<tr><th colspan="3">three</th></tr>
+</table>
+</body>
+</html>
