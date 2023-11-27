@@ -1,0 +1,83 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+"http://www.w3.org/TR/html401/strict.dtd">
+
+<html>
+<head>
+<!-- Copyright Microsoft Corporation. All Rights Reserved, 2002 -->
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="assertions.css">
+<title>HTML4 Testable Assertions: Prologue</title>
+<style type="text/css">
+ul {list-style-type: disc;}
+ul ul {list-style-type: circle;}
+span.one {background-color: #9f9; font-weight: bold;}
+span.two, span.fakeanchor {color: blue; text-decoration: underline;}
+span.three {background-color: lime; color: blue; text-decoration: underline;}
+</style>
+</head>
+<body>
+
+<h1>HTML 4.01 Test Suite - Assertions</h1>
+
+<h2>Testable Assertions Prologue</h2>
+<div class="navigation">
+<hr>
+[<a href="assertions_toc.html">Previous</a>] [<a href="assertions_section05.html">Next</a>] [<a href="assertions_toc.html">Contents</a>] [<a href="http://www.w3.org/TR/html401/">Specification</a>]
+<hr>
+</div>
+
+<p>The testable assertions from the HTML specification are grouped by section, with one page per section. Each testable assertion consists of the following:</p>
+<ul>
+	<li>A heading with the assertion number, e.g. &quot;Assertion 5.1-1&quot;</li>
+	<li>A hyperlinked reference to the specific section.</li>
+	<li>The text of the assertion itself, prepended with one or more of the following
+	<ul>
+		<li>(author) - indicates that this assertion is a requirement for content authors</li>
+		<li>(must) - indicates that this assertion is a required feature of the specification</li>
+		<li>(should) - indicates that this assertion is an optional but strongly encouraged feature of the specification</li>
+		<li>(may) - indicates that this assertion is an optional feature of the specification</li>
+		<li>(informative) - indicates that this assertion refers to only an informative aspect of the specification</li>
+		<li>(deprecated) - indicates that this feature is deprecated</li>
+	</ul></li>
+	<li>A series of hyperlinks to test cases which test that assertion</li>
+</ul>
+
+<p>In some places the specification does not use must/should/may wording explicitly, but does use comparable wording which we treated according to the following transform:</p>
+<ol>
+	<li>are | requires | causes | does --&gt; must</li>
+	<li>can --&gt; should</li>
+	<li>hint --&gt; may</li>
+</ol>
+
+<p>
+There are navigation links at the top of each assertion page that look like the following: 
+</p>
+
+<p>
+[<span class="fakeanchor">Previous</span>] [<span class="fakeanchor">Next</span>] [<span class="fakeanchor">Contents</span>] [<span class="fakeanchor">Specification</span>]
+</p>
+
+<p>
+The four links are, respectively:
+</p>
+<ul>
+<li>[<span class="fakeanchor">Previous</span>] and [<span class="fakeanchor">Next</span>] will take you to the previous or next assertion page, respectively.  These allow you to move through the entire assertion list a section at a time, going directly from section to section.</li>
+<li>[<span class="fakeanchor">Contents</span>] will take you to the table of contents.</li>
+<li>[<span class="fakeanchor">Specification</span>] will take you to the relevant section of the HTML4 specification.</li>
+</ul>
+
+<p>A typical assertion looks like this:</p>
+
+<div class="assertion must"><h3>Assertion 15.3-11</h3><div class="section">Reference: <span class="two">Section 15.3</span></div>
+<div class="description">(must) The HR element causes a horizontal rule to be rendered by visual user agents.</div>
+<div class="tests">Tests: <span class="three">15_3-BF-01.html</span></div></div>
+
+<p>The name of this assertion is <span class="one">Assertion 15.3-11</span>. It references <span class="two">Section 15.3</span> of the HTML specification. Because of the presence of &quot;(must)&quot; this assertion is a required feature of the specification. It has one test, <span class="three">15_3-BF-01.html</span>. The links to tests have a <span class="three">light green background</span> for easier identification. Note that some assertions currently do not have any tests written for them.</p> 
+
+
+
+
+
+
+</body>
+</html>

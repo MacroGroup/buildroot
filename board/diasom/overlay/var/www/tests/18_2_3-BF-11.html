@@ -1,0 +1,28 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+"http://www.w3.org/TR/html4/strict.dtd">
+
+<html>
+<head>
+<!-- Copyright Microsoft Corporation. All Rights Reserved, 2002 -->
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>18_2_3-BF-11</title>
+</head>
+<body>
+<div class="TestPurpose">Verify the functionality of onsubmit script event</div>
+<div class="AssertionsTested">Test for assertion 18.2.3-30</div>
+<script type="text/javascript">
+function event_handler() {
+	alert("onsubmit fired")
+	return true
+}
+</script>
+
+<form onsubmit="event_handler()" action="">
+<div>
+<input type="submit" value="Clicking on this button shall display an alert.">
+</div>
+</form>
+
+
+</body>
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+"http://www.w3.org/TR/html4/strict.dtd">
+
+<html>
+<head>
+<!-- Copyright Microsoft Corporation. All Rights Reserved, 2002 -->
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>11_2_6-BF-01</title>
+</head>
+<body>
+<div class="TestPurpose">Verify the functionality of the rowspan attribute for TD and TH.</div>
+<div class="AssertionsTested">Test for assertion 11.2.6-6</div>
+<p>In the following table, TD is used to specify table cells.</p>
+<div>The cell labeled &quot;default&quot; must span one row because no value is specified for the rowspan attribute, but 1 is the default value.</div>
+<div>The cell labeled &quot;zero&quot; must span THREE ROWS because the rowspan attribute is set to 0. The 0 value means that the cell spans all rows from the current row to the last row of the table section in which the cell is defined.</div>
+<div>The cell labeled &quot;one&quot; must span one row because the rowspan attribute is set to 1.</div>
+<div>The cell labeled &quot;two&quot; must span two rows because the rowspan attribute is set to 2.</div>
+<div>The cell labeled &quot;three&quot; must span three rows because the rowspan attribute is set to 3.</div>
+
+
+<table border="1">
+<tr><td>row 1</td><td>default</td><td rowspan="0">zero</td>
+	<td rowspan="1">one</td><td rowspan="2">two</td>
+	<td rowspan="3">three</td></tr>
+<tr><td>row 2</td></tr>
+<tr><td>row 3</td></tr>
+</table>
+
+<p>In the following table, TH is used to specify table cells.</p>
+<div>The cell labeled &quot;default&quot; must span one row because no value is specified for the rowspan attribute, but 1 is the default value.</div>
+<div>The cell labeled &quot;zero&quot; must span THREE ROWS because the rowspan attribute is set to 0. The 0 value means that the cell spans all rows from the current row to the last row of the table section in which the cell is defined.</div>
+<div>The cell labeled &quot;one&quot; must span one row because the rowspan attribute is set to 1.</div>
+<div>The cell labeled &quot;two&quot; must span two rows because the rowspan attribute is set to 2.</div>
+<div>The cell labeled &quot;three&quot; must span three rows because the rowspan attribute is set to 3.</div>
+
+<table border="1">
+<tr><th>row 1</th><th>default</th><th rowspan="0">zero</th>
+	<th rowspan="1">one</th><th rowspan="2">two</th>
+	<th rowspan="3">three</th></tr>
+<tr><th>row 2</th></tr>
+<tr><th>row 3</th></tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,22 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+"http://www.w3.org/TR/html4/strict.dtd">
+
+<html>
+<head>
+<!-- Copyright Microsoft Corporation. All Rights Reserved, 2002 -->
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>18_2_1-BF-03</title>
+</head>
+<body>
+<div class="TestPurpose">Verify that the contents of the SCRIPT element are ignored if the src attribute of the SCRIPT element is set to a URI value.</div>
+<div class="AssertionsTested">Test for assertion 18.2.1-10</div>
+<script type="text/javascript" src="18_2_1A.js" >
+function onclick_handler() {
+	alert("This test has failed.")
+	return true
+}
+</script>
+<p><input type="button" onclick="onclick_handler()" value="Clicking on this button shall display an alert. The alert will tell you whether this test passes or fails.">
+</p>
+</body>
+</html>
