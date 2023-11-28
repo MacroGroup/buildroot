@@ -7,11 +7,6 @@ for i in gst-inspect-1.0 gst-launch-1.0; do
 	fi
 done
 
-if [ ! -d /sys/bus/platform/devices/fdeb0000.rga ]; then
-	echo "This test is not supported on this platform!"
-	exit 1
-fi
-
 plugincheck()
 {
 	gst-inspect-1.0 --exists $1
