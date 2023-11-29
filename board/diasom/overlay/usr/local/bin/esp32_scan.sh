@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 DEV=/dev/ttymxc0
 MOD=/tmp/esp32
@@ -15,6 +15,16 @@ sleep 1
 # Install UART listener
 tail -f $DEV &
 PID=$!
+
+function ctrl_c() {
+	# Remove UART listener
+	kill $PID 2&> /dev/null
+
+	# Turn Power OFF
+	gpioset gpiochip3 31=0
+
+	exit 0
+}
 
 MODE=$(cat $MOD 2&> /dev/null)
 # Check if already downloaded
@@ -49,6 +59,8 @@ sleep 0.1
 gpioset gpiochip3 31=1
 sleep 0.1
 
+trap ctrl_c INT
+
 # Wait for any key
 while [ true ]; do
 	read -t 1 -n 1
@@ -57,10 +69,4 @@ while [ true ]; do
 	fi
 done
 
-# Remove UART listener
-kill $PID 2&> /dev/null
-
-# Turn Power OFF
-gpioset gpiochip3 31=0
-
-exit 0
+ctrl_c
