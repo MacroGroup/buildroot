@@ -1,6 +1,6 @@
 #! /bin/bash
 
-init_camera()
+init_camera_imx()
 {
 	[ -d /sys/bus/platform/devices/32e30000.mipi-csi ] || return
 
@@ -29,9 +29,28 @@ init_camera()
 	echo "$CAMERA found"
 }
 
+init_camera_rockchip()
+{
+	[ -d /sys/bus/platform/devices/fe870000.csi2-dphy-hw ] || return
+
+	CAMERA=
+	printf "Camera status: "
+
+	if [ -d /sys/bus/i2c/drivers/xc7160/4-001b ]; then
+		CAMERA=XC7160
+	fi
+
+	[ ! -z $CAMERA ] || { echo "Not found"; return; }
+
+	# Not need any special
+
+	echo "$CAMERA found"
+}
+
 case "$1" in
 start)
-	init_camera
+	init_camera_imx
+	init_camera_rockchip
 
 	;;
 stop)
