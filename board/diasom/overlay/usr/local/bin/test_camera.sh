@@ -33,7 +33,8 @@ video/x-raw,format=UYVY,width=1920,height=1080 ! \
 queue ! \
 glupload ! \
 glcolorconvert ! \
-gldownload video/x-raw,format=RGB16 ! \
+gldownload ! \
+video/x-raw,format=RGB16 ! \
 waylandsink
 
 exit 0
