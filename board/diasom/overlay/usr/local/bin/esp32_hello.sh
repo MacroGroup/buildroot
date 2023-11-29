@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 DEV=/dev/ttymxc0
 MOD=/tmp/esp32
@@ -16,7 +16,8 @@ sleep 1
 tail -f $DEV &
 PID=$!
 
-function ctrl_c() {
+ctrl_c()
+{
 	# Remove UART listener
 	kill $PID 2&> /dev/null
 
