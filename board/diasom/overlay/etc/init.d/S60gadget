@@ -4,9 +4,7 @@ CONFIGFS=/sys/kernel/config
 
 init_gadget()
 {
-	UDC=ci_hdrc.0
-
-	[ -d /sys/class/udc/$UDC ] || return 1
+	[ -d /sys/class/udc/$1 ] || return 1
 
 	# Create Gadget
 	cd $CONFIGFS/usb_gadget
@@ -32,7 +30,7 @@ init_gadget()
 	echo "/dev/disk/by-label/rootfs" > functions/mass_storage.1/lun.0/file
 	ln -sf functions/mass_storage.1 configs/c.1
 
-	echo $UDC > UDC
+	echo $1 > UDC
 
 	return 0
 }
@@ -49,7 +47,11 @@ stop_gadget()
 
 case "$1" in
 start)
-	init_gadget && echo "Gadget status: OK"
+	# i.NX8M
+	init_gadget ci_hdrc.0 && echo "Gadget status: OK"
+
+	# RK3568
+	init_gadget fcc00000.usb && echo "Gadget status: OK"
 
 	;;
 stop)
