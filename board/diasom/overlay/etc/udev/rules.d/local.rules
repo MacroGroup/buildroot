@@ -1,0 +1,5 @@
+# Assign DSI touchpad to the proper weston head
+ACTION=="add|change", KERNEL=="event[0-9]*", \
+	ENV{ID_VENDOR_ID}=="222a", ENV{ID_MODEL_ID}=="0001", \
+	ENV{ID_INPUT_WIDTH_MM}=="309", ENV{ID_INPUT_HEIGHT_MM}="174", \
+	ENV{WL_OUTPUT}="DSI-1"
