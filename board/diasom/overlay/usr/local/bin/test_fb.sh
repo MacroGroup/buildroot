@@ -31,9 +31,16 @@ plugincheck videotestsrc
 plugincheck videoconvert
 plugincheck $OUTSINK
 
+# Switch between LVDS and HDMI output
+if [ -d /sys/class/drm/card0-LVDS-1 ]; then
+	FMT="video/x-raw,width=1024,height=768"
+else
+	FMT="video/x-raw,width=1920,height=1080"
+fi
+
 gst-launch-1.0 \
 videotestsrc ! \
-video/x-raw,width=1920,height=1080 ! \
+$FMT ! \
 videoconvert ! \
 $OUTSINK
 
