@@ -19,7 +19,7 @@ plugincheck()
 timetest()
 {
 	echo "Measure image scaling using \"$1\" plugin (10 frames):"
-	time gst-launch-1.0 -q --no-position \
+	time -f %U gst-launch-1.0 -q --no-position \
 	videotestsrc num-buffers=10 ! \
 	video/x-raw,width=1920,height=1080 ! \
 	$1 ! \
