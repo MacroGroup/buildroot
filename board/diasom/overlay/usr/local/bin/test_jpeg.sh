@@ -19,7 +19,7 @@ plugincheck()
 timetest()
 {
 	echo "Measure JPEG encoding using \"$1\" plugin (1000 frames):"
-	time -f %U gst-launch-1.0 -q --no-position \
+	time -f "Time used: %U" gst-launch-1.0 -q --no-position \
 	videotestsrc num-buffers=1000 ! \
 	$1 ! fakesink sync=false
 }
