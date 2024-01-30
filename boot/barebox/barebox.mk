@@ -86,7 +86,8 @@ $(1)_MAKE_ENV += \
 	PKG_CONFIG_SYSROOT_DIR="/" \
 	PKG_CONFIG_ALLOW_SYSTEM_CFLAGS=1 \
 	PKG_CONFIG_ALLOW_SYSTEM_LIBS=1 \
-	PKG_CONFIG_LIBDIR="$(HOST_DIR)/lib/pkgconfig:$(HOST_DIR)/share/pkgconfig"
+	PKG_CONFIG_LIBDIR="$(HOST_DIR)/lib/pkgconfig:$(HOST_DIR)/share/pkgconfig" \
+	LD_LIBRARY_PATH="$(HOST_DIR)/lib64"
 
 ifeq ($$(BR2_REPRODUCIBLE),y)
 $(1)_MAKE_ENV += \
