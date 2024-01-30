@@ -28,15 +28,15 @@ plugincheck()
 
 plugincheck v4l2src true
 if [ ! $(plugincheck v4l2convert false) ]; then
-	PIPE="v4l2convert"
 	FMT="video/x-raw,width=1920,height=1080"
+	PIPE="v4l2convert"
 	echo "Using hardware format conversion"
 else
 	plugincheck glupload true
 	plugincheck glcolorconvert true
 	plugincheck gldownload true
-	PIPE="queue ! glupload ! glcolorconvert ! gldownload ! video/x-raw,format=RGB16"
 	FMT="video/x-raw,format=UYVY,width=1920,height=1080"
+	PIPE="queue ! glupload ! glcolorconvert ! gldownload"
 	echo "Using OpenGL format conversion"
 fi
 
@@ -46,6 +46,6 @@ gst-launch-1.0 \
 v4l2src device=/dev/video0 ! \
 $FMT ! \
 $PIPE ! \
-waylandsink
+video/x-raw,format=RGB16 ! waylandsink
 
 exit 0
