@@ -27,7 +27,7 @@ plugincheck()
 }
 
 plugincheck v4l2src true
-if [ ! $(plugincheck v4l2convert false) ]; then
+if [ $(plugincheck v4l2convert false) -eq 0 ]; then
 	FMT="video/x-raw,width=1920,height=1080"
 	PIPE="v4l2convert"
 	echo "Using hardware format conversion"
