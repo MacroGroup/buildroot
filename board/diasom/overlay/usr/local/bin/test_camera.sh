@@ -16,31 +16,28 @@ plugincheck()
 {
 	gst-inspect-1.0 --exists $1
 
-	RET=$?
-
-	if [ $RET -ne 0 ] && $2; then
+	if [ $? -ne 0 ]; then
 		echo "Script cannot be executed due missing \"$1\" plugin!"
 		exit 1
 	fi
-
-	return $RET
 }
 
-plugincheck v4l2src true
-if [ $(plugincheck v4l2convert false) -eq 0 ]; then
+plugincheck v4l2src
+gst-inspect-1.0 --exists v4l2convert
+if [ $? -eq 0 ]; then
 	FMT="video/x-raw,width=1920,height=1080"
 	PIPE="v4l2convert"
 	echo "Using hardware format conversion"
 else
-	plugincheck glupload true
-	plugincheck glcolorconvert true
-	plugincheck gldownload true
+	plugincheck glupload
+	plugincheck glcolorconvert
+	plugincheck gldownload
 	FMT="video/x-raw,format=UYVY,width=1920,height=1080"
 	PIPE="queue ! glupload ! glcolorconvert ! gldownload"
 	echo "Using OpenGL format conversion"
 fi
 
-plugincheck waylandsink true
+plugincheck waylandsink
 
 gst-launch-1.0 \
 v4l2src device=/dev/video0 ! \
