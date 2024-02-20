@@ -40,6 +40,10 @@ init_camera_rockchip()
 		CAMERA=XC7160
 	elif [ -d /sys/bus/i2c/drivers/imx335/4-001a ]; then
 		CAMERA=IMX335
+		# Set up exposure to maximum
+		v4l2-ctl -d /dev/video0 -c exposure=4491
+		# Adjust analog gain
+		v4l2-ctl -d /dev/video0 -c analogue_gain=50
 	fi
 
 	[ ! -z $CAMERA ] || { echo "Not found"; return; }
