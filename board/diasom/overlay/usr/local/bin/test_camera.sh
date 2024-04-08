@@ -26,6 +26,8 @@ plugincheck v4l2src
 gst-inspect-1.0 --exists v4l2convert
 if [ $? -eq 0 ]; then
 	FMT="video/x-raw,width=1920,height=1080"
+	# if rotate is needed, replace next line with:
+	# PIPE="v4l2convert extra-controls=cid,rotate=90"
 	PIPE="v4l2convert"
 	echo "Using hardware format conversion"
 else
