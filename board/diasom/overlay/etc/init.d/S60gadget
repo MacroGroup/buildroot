@@ -32,7 +32,7 @@ init_gadget()
 
 	mkdir -p functions/mass_storage.1
 	echo "/dev/disk/by-label/rootfs" > functions/mass_storage.1/lun.0/file
-	[ -f functions/mass_storage.1/stall ] || echo 1 > functions/mass_storage.1/stall
+	[ -f functions/mass_storage.1/stall ] || echo 0 > functions/mass_storage.1/stall
 	echo 0 > functions/mass_storage.1/lun.0/cdrom
 	echo 0 > functions/mass_storage.1/lun.0/nofua
 	echo 1 > functions/mass_storage.1/lun.0/removable
@@ -48,6 +48,8 @@ stop_gadget()
 {
 	for GADGET in $CONFIGFS/usb_gadget/* ; do
 		[ -f $GADGET/UDC ] || continue
+		UDC=$(cat $GADGET/UDC)
+		[ -z $UDC ] && continue
 		echo "" > $GADGET/UDC
 	done
 }
@@ -56,8 +58,6 @@ stop_gadget()
 
 case "$1" in
 start)
-	stop_gadget
-
 	# i.NX8M
 	init_gadget ci_hdrc.0 && echo "Gadget status: OK"
 
