@@ -23,7 +23,6 @@ SDL2_CONF_OPTS += \
 	--disable-video-vivante \
 	--disable-video-cocoa \
 	--disable-video-metal \
-	--disable-video-wayland \
 	--disable-video-dummy \
 	--disable-video-offscreen \
 	--disable-video-vulkan \
@@ -179,6 +178,27 @@ SDL2_DEPENDENCIES += libdrm libgbm libegl
 SDL2_CONF_OPTS += --enable-video-kmsdrm
 else
 SDL2_CONF_OPTS += --disable-video-kmsdrm
+endif
+
+ifeq ($(BR2_PACKAGE_SDL2_WAYLAND),y)
+SDL2_DEPENDENCIES += wayland
+SDL2_CONF_OPTS += --enable-video-wayland
+else
+SDL2_CONF_OPTS += --disable-video-wayland
+endif
+
+ifeq ($(BR2_PACKAGE_SDL2_PULSEAUDIO),y)
+SDL2_DEPENDENCIES += pulseaudio
+SDL2_CONF_OPTS += --enable-pulseaudio
+else
+SDL2_CONF_OPTS += --disable-pulseaudio
+endif
+ 
+ifeq ($(BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_ETNAVIV),y)
+SDL2_DEPENDENCIES += libdrm_etnaviv
+SDL2_CONF_OPTS += --enable-video-vivante
+else
+SDL2_CONF_OPTS += --disable-video-vivante
 endif
 
 $(eval $(autotools-package))

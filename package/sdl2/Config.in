@@ -18,6 +18,23 @@ config BR2_PACKAGE_SDL2_DIRECTFB
 comment "DirectFB video driver needs directfb"
 	depends on !BR2_PACKAGE_DIRECTFB
 
+config BR2_PACKAGE_SDL2_WAYLAND
+	bool "wayland video driver"
+	depends on BR2_PACKAGE_WAYLAND
+
+comment "wayland video driver needs wayland"
+	depends on !BR2_PACKAGE_WAYLAND
+
+config BR2_PACKAGE_SDL2_PULSEAUDIO
+	bool "pulseaudio support"
+	depends on BR2_PACKAGE_PULSEAUDIO
+	depends on BR2_PACKAGE_ALSA_LIB
+
+comment "pulseaudio support needs the pulseaudio and alsa packages"
+	depends on !BR2_PACKAGE_PULSEAUDIO
+	depends on !BR2_PACKAGE_ALSA_LIB
+
+
 config BR2_PACKAGE_SDL2_X11
 	bool "X11 video driver"
 	depends on BR2_PACKAGE_XORG7
