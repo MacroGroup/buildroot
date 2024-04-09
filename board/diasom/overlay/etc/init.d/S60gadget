@@ -11,8 +11,6 @@ init_gadget()
 	mkdir -p g1
 	cd g1
 
-	[ -f $GADGETS/g1/UDC ] && echo "" > UDC
-
 	# USB ids
 	echo 0x1d6b > idVendor	# Linux Foundation
 	echo 0x104 > idProduct	# Multifunction Composite Gadget
@@ -37,9 +35,9 @@ init_gadget()
 
 stop_gadget()
 {
-	for UDC in $CONFIGFS/usb_gadget/* ; do
-		[ -f $UDC ] || continue
-		echo "" > $UDC
+	for GADGET in $CONFIGFS/usb_gadget/* ; do
+		[ -f $GADGET/UDC ] || continue
+		echo "" > $GADGET/UDC
 	done
 }
 
@@ -47,6 +45,8 @@ stop_gadget()
 
 case "$1" in
 start)
+	stop_gadget
+
 	# i.NX8M
 	init_gadget ci_hdrc.0 && echo "Gadget status: OK"
 
