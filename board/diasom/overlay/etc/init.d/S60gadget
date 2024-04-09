@@ -11,9 +11,9 @@ init_gadget()
 	mkdir -p g1
 	cd g1
 
-	# USB ids
+	# USB IDS
 	echo 0x1d6b > idVendor	# Linux Foundation
-	echo 0x104 > idProduct	# Multifunction Composite Gadget
+	echo 0x0104 > idProduct	# Multifunction Composite Gadget
 
 	# USB strings
 	mkdir -p strings/0x409
@@ -24,8 +24,19 @@ init_gadget()
 	# Create the configuration
 	mkdir -p configs/c.1
 
+	# Windows extensions to force config
+	echo "1" > os_desc/use
+	echo "0xcd" > os_desc/b_vendor_code
+	echo "MSFT100" > os_desc/qw_sign
+	ln -sf configs/c.1 os_desc
+
 	mkdir -p functions/mass_storage.1
 	echo "/dev/disk/by-label/rootfs" > functions/mass_storage.1/lun.0/file
+	[ -f functions/mass_storage.1/stall ] || echo 1 > functions/mass_storage.1/stall
+	echo 0 > functions/mass_storage.1/lun.0/cdrom
+	echo 0 > functions/mass_storage.1/lun.0/nofua
+	echo 1 > functions/mass_storage.1/lun.0/removable
+
 	ln -sf functions/mass_storage.1 configs/c.1
 
 	echo $1 > UDC
