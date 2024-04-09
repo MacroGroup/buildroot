@@ -19,6 +19,24 @@ init_ms()
 	ln -sf functions/mass_storage.1 configs/c.1
 }
 
+init_rndis()
+{
+	mkdir -p functions/rndis.1
+	echo "RNDIS" > functions/rndis.1/os_desc/interface.rndis/compatible_id
+	echo "5162001" > functions/rndis.1/os_desc/interface.rndis/sub_compatible_id
+	ln -sf functions/rndis.1 configs/c.1
+}
+
+init_uac2()
+{
+	mkdir -p functions/uac2.1
+	echo 0x1 > functions/uac2.1/c_chmask
+	echo 48000 > functions/uac2.1/c_srate
+	echo 0xf > functions/uac2.1/p_chmask
+	echo 48000 > functions/uac2.1/p_srate
+	ln -sf functions/uac2.1 configs/c.1
+}
+
 init_gadget()
 {
 	[ -d /sys/class/udc/$1 ] || return 1
@@ -52,6 +70,12 @@ init_gadget()
 
 	# Mass storage gadget
 	init_ms
+
+	# Microsoft "Remote NDIS" (RNDIS) Ethernet protocol
+	#init_rndis
+
+	# USB Audio Class 2 (UAC2)
+	#init_uac2
 
 	echo $1 > UDC
 
