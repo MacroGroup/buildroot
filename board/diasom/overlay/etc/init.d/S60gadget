@@ -2,6 +2,23 @@
 
 CONFIGFS=/sys/kernel/config
 
+init_acm()
+{
+	mkdir -p functions/acm.1
+	ln -sf functions/acm.1 configs/c.1
+}
+
+init_ms()
+{
+	mkdir -p functions/mass_storage.1
+	echo "/dev/disk/by-label/rootfs" > functions/mass_storage.1/lun.0/file
+	[ -f functions/mass_storage.1/stall ] || echo 0 > functions/mass_storage.1/stall
+	echo 0 > functions/mass_storage.1/lun.0/cdrom
+	echo 0 > functions/mass_storage.1/lun.0/nofua
+	echo 1 > functions/mass_storage.1/lun.0/removable
+	ln -sf functions/mass_storage.1 configs/c.1
+}
+
 init_gadget()
 {
 	[ -d /sys/class/udc/$1 ] || return 1
@@ -30,14 +47,11 @@ init_gadget()
 	echo "MSFT100" > os_desc/qw_sign
 	ln -sf configs/c.1 os_desc
 
-	mkdir -p functions/mass_storage.1
-	echo "/dev/disk/by-label/rootfs" > functions/mass_storage.1/lun.0/file
-	[ -f functions/mass_storage.1/stall ] || echo 0 > functions/mass_storage.1/stall
-	echo 0 > functions/mass_storage.1/lun.0/cdrom
-	echo 0 > functions/mass_storage.1/lun.0/nofua
-	echo 1 > functions/mass_storage.1/lun.0/removable
+	# CDC ACM
+	init_acm
 
-	ln -sf functions/mass_storage.1 configs/c.1
+	# Mass storage gadget
+	init_ms
 
 	echo $1 > UDC
 
