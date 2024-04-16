@@ -1,3 +1,5 @@
 menu "Diasom BSP packages"
 
+source "package/diasom/libusbgx-git/Config.in"
+
 endmenu
