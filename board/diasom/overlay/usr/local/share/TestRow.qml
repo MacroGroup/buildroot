@@ -11,12 +11,16 @@ Item {
     property int resultValue: 0
     property string title: "test"
     property alias restart: restart
+    property alias result: result
+    property alias buttonBackground: buttonBackground
 
     property string font_color: "#969696"
     property string success_color: "#37A439"
     property string failed_color: "#E91E63"
     property string unknown_color: "#276BB0"
+    property string running_color: "#606A73"
     property string warning_color: "#FF6F00"
+
 
     function setValue(value) {
         if (value === "undefined") {
@@ -26,21 +30,24 @@ Item {
         if (value === Tester.Success) {
             result.text = qsTr("Успешно")
             result.color = success_color
+            buttonBackground.color = unknown_color
         } else if (value === Tester.Failed){
             result.text = qsTr("Неудача")
             result.color = failed_color
+            buttonBackground.color = unknown_color
         } else if (value === Tester.Error){
             result.text = qsTr("Ошибка")
             result.color = warning_color
         } else if (value === Tester.Progress){
             result.text = qsTr("Выполняется")
-            result.color = unknown_color
+            result.color = running_color
         } else if (value === Tester.NotTested) {
             result.text = qsTr("Неизвестно")
             result.color = unknown_color
         } else if (value === Tester.Manual) {
             result.text = qsTr("Выполнено")
             result.color = success_color
+            buttonBackground.color = unknown_color
         }
     }
 

@@ -2,7 +2,6 @@ import QtQuick 2.12
 import QtQuick.Window 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
-import QtWayland.Compositor 1.0
 import macro.tester 1.0
 
 import org.freedesktop.gstreamer.GLVideoItem 1.0
@@ -69,8 +68,6 @@ Window {
 
         anchors.top: parent.top
         anchors.topMargin: 10
-        // width: 200
-        // height: 50
 
         icon.width: 50
         icon.height: 50
@@ -82,9 +79,7 @@ Window {
             anchors.fill: parent
             color: "transparent"
         }
-        // text: "Камера"
         onClicked: function() {
-            bg_camera_button.color = font_color
             if( contentCol.visible == true ) {
                 contentCol.visible = false
                 colorsRow.visible = false
@@ -98,85 +93,36 @@ Window {
                 buttonsRow.visible = true
                 video.visible = false;
             }
-            bg_camera_button.color = "white"
-            
         }
     }
 
-    Button {
-        id: doom
+    TestIcons {
+        id: doom_id
         anchors.left: parent.left
         anchors.leftMargin: 250
-
-        anchors.top: parent.top
-        anchors.topMargin: 10
-        // width: 200
-        // height: 50
-
-        icon.width: 50
-        icon.height: 50
-        icon.color: "transparent"
-        icon.source: "/usr/local/share/icons/doom.png"
-
-        background: Rectangle {
-            id: bg_doom
-            anchors.fill: parent
-            color: "transparent"
-        }
-        // text: "Камера"
-        onClicked: function() {
+        button_icon.icon.source: "/usr/local/share/icons/doom.png"
+        button_icon.onClicked: function() {
+            doom_id.setVisible(true);
             tester.startDOOM();
         }
     }
-
-    Button {
+    TestIcons {
         id: glmark
         anchors.left: parent.left
         anchors.leftMargin: 350
-
-        anchors.top: parent.top
-        anchors.topMargin: 10
-        // width: 200
-        // height: 50
-
-        icon.width: 50
-        icon.height: 50
-        icon.color: "transparent"
-        icon.source: "/usr/local/share/icons/glmark2.svg"
-
-        background: Rectangle {
-            id: bg_glmark
-            anchors.fill: parent
-            color: "transparent"
-        }
-        // text: "Камера"
-        onClicked: function() {
+        button_icon.icon.source: "/usr/local/share/icons/glmark2.svg"
+        button_icon.onClicked: function() {
+            glmark.setVisible(true);
             tester.startGLMARK();
         }
     }
-
-    Button {
+    TestIcons {
         id: load_cpu
         anchors.left: parent.left
         anchors.leftMargin: 450
-
-        anchors.top: parent.top
-        anchors.topMargin: 10
-        // width: 200
-        // height: 50
-
-        icon.width: 50
-        icon.height: 50
-        icon.color: "transparent"
-        icon.source: "/usr/local/share/icons/load_cpu.png"
-
-        background: Rectangle {
-            id: bg_load_cpu
-            anchors.fill: parent
-            color: "transparent"
-        }
-        // text: "Камера"
-        onClicked: function() {
+        button_icon.icon.source: "/usr/local/share/icons/load_cpu.png"
+        button_icon.onClicked: function() {
+            load_cpu.setVisible(true);
             tester.startCPUTEST();
         }
     }
@@ -237,97 +183,6 @@ Window {
                     text: "not started"
                 }
             }
-
-            RowLayout {
-                anchors.leftMargin: 32
-                anchors.rightMargin: 16
-                spacing: 16
-                Layout.fillWidth: true
-                Layout.alignment: Qt.AlignJustify
-
-                Label {
-                    id: addrText
-
-                    font.capitalization: Font.AllUppercase
-                    font.pixelSize: 24
-                    font.bold: true
-                    font.family: "Inter"
-
-                    color: font_color
-
-                    text: tester.addr
-                }
-            }
-
-            RowLayout {
-                anchors.leftMargin: 32
-                anchors.rightMargin: 32
-                spacing: 16
-                Layout.fillWidth: true
-                Layout.alignment: Qt.AlignJustify
-
-                Label {
-                    id: targetIpLabel
-
-                    font.capitalization: Font.AllUppercase
-                    font.pixelSize: 24
-                    font.bold: true
-                    font.family: "Inter"
-
-                    color: font_color
-
-                    text: "Ping target: "
-                }
-
-                Label {
-                    id: targetIpText
-
-                    font.capitalization: Font.AllUppercase
-                    font.pixelSize: 24
-                    font.bold: true
-                    font.family: "Inter"
-
-                    color: font_color
-
-                    text: tester.targetIp
-                }
-            }
-
-            RowLayout {
-                anchors.leftMargin: 32
-                anchors.rightMargin: 32
-                spacing: 16
-                Layout.fillWidth: true
-                Layout.alignment: Qt.AlignJustify
-
-                Label {
-                    id: cardNumberLabel
-                    visible: false
-
-                    font.capitalization: Font.AllUppercase
-                    font.pixelSize: 24
-                    font.bold: true
-                    font.family: "Inter"
-
-                    color: font_color
-
-                    text: "Requested card: "
-                }
-
-                Label {
-                    id: cardNumberText
-                    visible: false
-
-                    font.capitalization: Font.AllUppercase
-                    font.pixelSize: 24
-                    font.bold: true
-                    font.family: "Inter"
-
-                    color: font_color
-
-                    text: tester.cardNumber
-                }
-            }
         }
 
         Column {
@@ -339,13 +194,13 @@ Window {
             TestRow {
                 id: microsd_test
                 title: "Micro SD"
-                restart.onClicked: function () { setValue(tester.testMicrosd()) }
+                restart.onClicked: function () { microsd_test.setValue(tester.testMicrosd()) }
             }
 
             TestRow {
                 id: emmc_test
                 title: "EMMC"
-                restart.onClicked: function () { setValue(tester.testEmmc()) }
+                restart.onClicked: function () { tester.testEmmc() }
             }
 
 
@@ -424,25 +279,6 @@ Window {
                 title: "UART3-9"
                 restart.onClicked: function () { setValue(tester.testUart39()) }
             }
-
-            // TestRow {
-            //     id: gpio1_test
-            //     title: "SPI2_CS0-UART3_IO_IN"
-            //     restart.onClicked: function () { setValue(tester.testGpio1()) }
-            // }
-
-            // TestRow {
-            //     id: gpio2_test
-            //     title: "SPI2_CS1-UART3_IO_IN"
-            //     restart.onClicked: function () { setValue(tester.testGpio2()) }
-            // }
-
-            // TestRow {
-            //     id: gpio3_test
-            //     title: "UART3_IO_OUT-UART3_IO_IN"
-            //     restart.onClicked: function () { setValue(tester.testGpio3()) }
-            // }
-
         }
 
         Column {
@@ -454,7 +290,7 @@ Window {
             Row {
                 id: colorsRow
                 anchors.horizontalCenter : parent.horizontalCenter
-                visible: false
+                visible: true
                 spacing: 32
 
                 Rectangle {
@@ -509,7 +345,7 @@ Window {
             Row {
                 id: buttonsRow
                 anchors.horizontalCenter: parent.horizontalCenter
-                visible: false
+                visible: true
                 spacing: 32
 
                 Button {
@@ -531,23 +367,23 @@ Window {
                     }
                 }
 
-                Button {
-                    id: camera_button
-                    width: 200
-                    height: 50
+                // Button {
+                //     id: camera_button
+                //     width: 200
+                //     height: 50
 
-                    background: Rectangle {
-                        id: bg_camera_button
-                        anchors.fill: parent
-                        color: "white"
-                    }
-                    text: "Камера"
-                    onClicked: function() {
-                        bg_camera_button.color = font_color
-                        tester.testCamera()
-                        buttonsRow.enabled = false
-                    }
-                }
+                //     background: Rectangle {
+                //         id: bg_camera_button
+                //         anchors.fill: parent
+                //         color: "white"
+                //     }
+                //     text: "Камера"
+                //     onClicked: function() {
+                //         bg_camera_button.color = font_color
+                //         tester.testCamera()
+                //         buttonsRow.enabled = false
+                //     }
+                // }
             }
 
             Button {
@@ -570,13 +406,13 @@ Window {
     Timer {
         id: autotest_timer
         running: true
-        interval: 3000
+        interval: 100
         repeat: false
         onTriggered: function() {
             autotest_text.text = "Тест запущен"
             statusText.text = "Running"
             statusText.color = "white"
-            tester.runTest("all")
+            // tester.runTest("all")
         }
     }
 
@@ -600,6 +436,15 @@ Window {
         onSingleTestFinished: parseSingleTest(results)
         onNeedAction: showNeededAction(results)
         onFreqUpdate: setFreqAction(result)
+        onStatusProcess: {
+            if( value === "glmark") {
+                glmark.setVisible(false)
+            } else if( value === "doom") {
+                doom_id.setVisible(false)
+            } else if(value === "load_cpu") {
+                load_cpu.setVisible(false);
+            }
+        }
     }
 
     // function showNeededAction(results) {
@@ -674,9 +519,9 @@ Window {
     //            statusText.color = "red"
         }
 
-        autotest_text.text = "Для повторной проверки\nподсветки, звука\nвоспользуйтесь кнопками"
-        buttonsRow.visible = true
-        colorsRow.visible = true
+        autotest_text.text = "Для проверки звука\nвоспользуйтесь кнопкой"
+        // buttonsRow.visible = true
+        // colorsRow.visible = true
     }
 
     function parseSingleTest(results) {
@@ -742,21 +587,15 @@ Window {
             spi1_test.setValue(value)
         } else if (name === "spi2") {
             spi2_test.setValue(value)
-        } else if( name == "nvme" ) {
+        } else if( name === "nvme" ) {
             nvme_test.setValue(value)
-        } else if( name == "uart78" ) {
+        } else if( name === "uart78" ) {
             uart78_test.setValue(value)
-        } else if( name == "uart39" ) {
+        } else if( name === "uart39" ) {
             uart39_test.setValue(value)
-        // } else if( name == "gpio1" ) {
-        //     gpio1_test.setValue(value)
-        // } else if( name == "gpio2" ) {
-        //     gpio2_test.setValue(value)
-        // } else if( name == "gpio3" ) {
-        //     gpio3_test.setValue(value)
-        } else if( name == "wlan" ) {
+        } else if( name === "wlan" ) {
             wlan_test.setValue(value)
-        } else if ( name == "emmc" ) {
+        } else if ( name === "emmc" ) {
             emmc_test.setValue(value);
         }
     }
