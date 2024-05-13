@@ -1,5 +1,6 @@
 menu "Diasom BSP packages"
 
 source "package/diasom/libusbgx-git/Config.in"
+source "package/diasom/rockchip/Config.in"
 
 endmenu
