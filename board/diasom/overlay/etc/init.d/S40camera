@@ -40,6 +40,8 @@ init_camera_rockchip()
 		CAMERA=XC7160
 	elif [ -d /sys/bus/i2c/drivers/imx335/4-001a ]; then
 		CAMERA=IMX335
+	elif [ -d /sys/bus/i2c/drivers/imx335/7-001a ]; then
+		CAMERA=IMX335
 	fi
 
 	[ ! -z $CAMERA ] || { echo "Not found"; return; }
