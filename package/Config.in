@@ -997,6 +997,7 @@ menu "External python modules"
 	source "package/python-bcrypt/Config.in"
 	source "package/python-beautifulsoup4/Config.in"
 	source "package/python-bidict/Config.in"
+	source "package/python-bitarray/Config.in"
 	source "package/python-bitstring/Config.in"
 	source "package/python-bleak/Config.in"
 	source "package/python-blinker/Config.in"
@@ -2799,5 +2800,7 @@ menu "Text editors and viewers"
 	source "package/uemacs/Config.in"
 	source "package/vim/Config.in"
 endmenu
+
+source "package/diasom/Config.in"
 
 endmenu

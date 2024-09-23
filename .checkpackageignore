@@ -428,9 +428,6 @@ package/flite/0001-fix-alsa-static.patch Upstream
 package/fltk/0001-disable-tests.patch Upstream
 package/fluxbox/0001-fixes-bug-1138.patch Upstream
 package/freeradius-client/0001-fix-for-nettle.patch Upstream
-package/freerdp/0001-Fix-variable-declaration-in-loop.patch Upstream
-package/freerdp/0002-Fixed-variable-declaration-in-loop.patch Upstream
-package/freerdp/0003-winpr-include-winpr-file.h-fix-build-on-uclibc.patch Upstream
 package/freescale-imx/imx-kobs/0001-Fix-musl-build.patch Upstream
 package/freescale-imx/imx-kobs/0002-Fix-build-for-recent-toolchains.patch Upstream
 package/freescale-imx/imx-uuc/S80imx-uuc Indent Shellcheck Variables
@@ -755,8 +752,6 @@ package/libuhttpd/0001-add-compatibility-for-wolfssl-5-0.patch Upstream
 package/libuio/0001-configure.ac-set-automake-strictness-to-foreign.patch Upstream
 package/liburcu/0001-Only-blacklist-ARM-gcc-4.8.0-and-4.8.1.patch Upstream
 package/libusbgx/0001-Add-include-of-sys-sysmacro.h.patch Upstream
-package/libuwsc/0001-CMakeLists.txt-add-BUILD_EXAMPLE.patch Upstream
-package/libuwsc/0002-fix-bad-indentation.patch Upstream
 package/libvpx/0001-vpx_mem-vpx_mem.h-Fix-compilation-with-uClibc.patch Upstream
 package/libwebsock/0001-Switch-to-use-pkg-config-to-detect-libevent-and-open.patch Upstream
 package/libwebsock/0002-fix-ssl.patch Upstream
@@ -934,9 +929,6 @@ package/nginx/0008-src-os-unix-ngx_linux_config.h-only-include-dlfcn.h-.patch Up
 package/nginx/0009-auto-os-linux-fix-build-with-libxcrypt.patch Upstream
 package/nginx/0010-Allow-forcing-of-endianness-for-cross-compilation.patch Upstream
 package/nginx/S50nginx Indent Variables
-package/ngrep/0001-Fix-typo-in-configure-in-when-testing-for-use_pcre.patch Upstream
-package/ngrep/0002-Check-for-libnet_init-in-configure-in.patch Upstream
-package/ngrep/0003-fix-disable-tcpkill.patch Upstream
 package/nilfs-utils/0001-nilfs_cleanerd-link-dynamically.patch Upstream
 package/nmap/0001-libdnet-wrapper-configure.patch Upstream
 package/nodejs/nodejs-src/0001-add-qemu-wrapper-support.patch Upstream
@@ -1448,7 +1440,6 @@ package/wilc-driver/0005-Fix-cast-warnings.patch Upstream
 package/wipe/0001-musl.patch Upstream
 package/wireless_tools/0001-remove-bzero.patch Upstream
 package/wireshark/0001-cmake-lemon-wipe-CMAKE_-EXE_LINKER_FLAGS-SYSROOT-if-.patch Upstream
-package/wlroots/0001-Add-feature-macros-to-more-C-files-.patch Upstream
 package/woff2/0001-CMake-Handle-multiple-libraries-being-returned-for-B.patch Upstream
 package/wpa_supplicant/0001-build-re-enable-options-for-libwpa_client.so-and-.patch Upstream
 package/wpa_supplicant/ifupdown.sh Shellcheck

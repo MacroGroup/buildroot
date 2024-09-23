@@ -1,0 +1,14 @@
+diff -urN camera_engine_rkaiq.orig/CMakeLists.txt camera_engine_rkaiq/CMakeLists.txt
+--- camera_engine_rkaiq.orig/CMakeLists.txt	2024-04-25 15:29:37.955734330 +0300
++++ camera_engine_rkaiq/CMakeLists.txt	2024-04-25 15:31:55.109248511 +0300
+@@ -13,7 +13,9 @@
+     set(AIQ_DIR ${PROJECT_SOURCE_DIR}/rkaiq)
+     message(WARNING "use rkaiq dir:${PROJECT_SOURCE_DIR}/rkaiq")
+ endif()
+-add_subdirectory(rkisp_demo)
++if(ENABLE_RKISP_DEMO)
++    add_subdirectory(rkisp_demo)
++endif()
+ add_subdirectory(IspFec)
+ add_subdirectory(smart_ir)
+ add_subdirectory(media_enquiry)
