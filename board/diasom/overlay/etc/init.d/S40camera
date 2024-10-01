@@ -42,6 +42,8 @@ init_camera_rockchip()
 		CAMERA=IMX335
 	elif [ -d /sys/bus/i2c/drivers/imx335/7-001a ]; then
 		CAMERA=IMX335
+	elif [ -d /sys/bus/i2c/drivers/ar0233/10-0010 ]; then
+		CAMERA=AR0233
 	fi
 
 	FMT="SGRBG12_1X12/1920x1080"
