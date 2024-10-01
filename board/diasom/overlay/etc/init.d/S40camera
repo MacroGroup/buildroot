@@ -53,6 +53,11 @@ init_camera_rockchip()
 		media-ctl -V "'ds90ub953 7-0018':0 [fmt:$FMT field:none]"
 	fi
 
+	# Setup media format for DS90UB954 FPD-Link deserializer
+	if [ -d /sys/bus/i2c/drivers/ds90ub960/7-0030 ]; then
+		media-ctl -V "'ds90ub960 7-0030':0 [fmt:$FMT field:none]"
+	fi
+
 	[ ! -z $CAMERA ] || { echo "Not found"; return; }
 
 	# Not need any special
