@@ -1,0 +1,11 @@
+diff -urN a/rkaiq/ipc_server/MessageParser.cpp b/rkaiq/ipc_server/MessageParser.cpp
+--- a/rkaiq/ipc_server/MessageParser.cpp	2024-01-11 12:05:24.000000000 +0300
++++ b/rkaiq/ipc_server/MessageParser.cpp	2024-10-02 17:35:17.905179107 +0300
+@@ -15,6 +15,7 @@
+  */
+ 
+ #include "MessageParser.hpp"
++#include <cstdio>
+ 
+ #define BUFFER_MAX_SIZE (1024 * 512)
+ 
