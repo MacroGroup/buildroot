@@ -46,6 +46,8 @@ init_camera_rockchip()
 		CAMERA=AR0233
 	fi
 
+	[ ! -z $CAMERA ] || { echo "Not found"; return; }
+
 	FMT="SGRBG12_1X12/1920x1080"
 
 	# Setup media format for DS90UB953 FPD-Link serializer
@@ -57,8 +59,6 @@ init_camera_rockchip()
 	if [ -d /sys/bus/i2c/drivers/ds90ub960/7-0030 ]; then
 		media-ctl -V "'ds90ub960 7-0030':0 [fmt:$FMT field:none]"
 	fi
-
-	[ ! -z $CAMERA ] || { echo "Not found"; return; }
 
 	# Not need any special
 
