@@ -37,7 +37,7 @@ QT5BASE_CONFIGURE_OPTS += \
 	-optimized-qmake \
 	-no-iconv \
 	-system-zlib \
-	-qt-pcre \
+	-system-pcre \
 	-no-pch \
 	-shared \
 	-no-feature-relocatable
