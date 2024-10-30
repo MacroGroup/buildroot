@@ -8,7 +8,7 @@ if [ ! -f $ROOT/imx-usb-loader ]; then
 fi
 
 if [ ! -f $ROOT/barebox-diasom-imx8m-evb.img ]; then
-	echo "\"barebox-diasom-imx9m-evb.img\" image is not found!"
+	echo "\"barebox-diasom-imx8m-evb.img\" image is not found!"
 	exit 1
 fi
 
