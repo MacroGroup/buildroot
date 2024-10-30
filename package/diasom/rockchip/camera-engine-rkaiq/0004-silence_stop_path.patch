@@ -1,0 +1,12 @@
+diff -urN camera_engine_rkaiq/rkaiq_3A_server/S40rkaiq_3A camera_engine_rkaiq.fix/rkaiq_3A_server/S40rkaiq_3A
+--- camera_engine_rkaiq/rkaiq_3A_server/S40rkaiq_3A	2024-04-25 15:29:43.892756599 +0300
++++ camera_engine_rkaiq.fix/rkaiq_3A_server/S40rkaiq_3A	2024-10-30 21:42:30.789202511 +0300
+@@ -12,7 +12,7 @@
+       /bin/sh -- -c "/usr/bin/rkaiq_3A_server 2>&1 | logger -t rkaiq_3A"
+     ;;
+   stop)
+-    killall rkaiq_3A_server
++    killall rkaiq_3A_server 2>/dev/null
+     ;;
+   *)
+     echo "Usage: $0 {start|stop}"
