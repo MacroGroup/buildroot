@@ -8,7 +8,7 @@ fi
 print_gpio()
 {
 	FIRSTBANK=0
-	if grep -Eq 'diasom,ds-imx8m-evb' /proc/device-tree/compatible; then
+	if grep -Eq 'fsl,imx8mm' /proc/device-tree/compatible; then
 		FIRSTBANK=1
 	fi
 
@@ -87,7 +87,7 @@ test_gpio()
 test_gpio_pair()
 {
 	GPIOBASE=0
-	if grep -Eq 'diasom,ds-imx8m-evb' /proc/device-tree/compatible; then
+	if grep -Eq 'fsl,imx8mm' /proc/device-tree/compatible; then
 		GPIOBASE=32
 	fi
 
@@ -104,7 +104,7 @@ test_gpio_pair()
 test_gpio_trio()
 {
 	GPIOBASE=0
-	if grep -Eq 'diasom,ds-imx8m-evb' /proc/device-tree/compatible; then
+	if grep -Eq 'fsl,imx8mm' /proc/device-tree/compatible; then
 		GPIOBASE=32
 	fi
 
@@ -122,7 +122,7 @@ test_gpio_trio()
 	echo "OK"
 }
 
-test_gpio_imx8m()
+test_gpio_imx8m_som_evb()
 {
 	echo "Testing GPIO lines:"
 
@@ -173,8 +173,8 @@ test_gpio_imx8m()
 	echo "Done!"
 }
 
-if grep -Eq 'diasom,ds-imx8m-evb' /proc/device-tree/compatible; then
-	test_gpio_imx8m
+if grep -Eq 'diasom,ds-imx8m-som-evb' /proc/device-tree/compatible; then
+	test_gpio_imx8m_som_evb
 	exit 0
 fi
 
