@@ -7,8 +7,8 @@ if [ ! -f $ROOT/rk-usb-loader ]; then
 	exit 1
 fi
 
-if [ ! -f $ROOT/barebox-diasom-rk3568-evb.img ]; then
-	echo "\"barebox-diasom-rk3568-evb.img\" image is not found!"
+if [ ! -f $ROOT/barebox-diasom-rk3568-som-evb.img ]; then
+	echo "\"barebox-diasom-rk3568-som-evb.img\" image is not found!"
 	exit 1
 fi
 
@@ -21,6 +21,6 @@ echo "Attention: You will need a superuser password for the script to work!"
 read -n 1 -s -p "Press any key to continue..."
 echo
 
-sudo $ROOT/rk-usb-loader -d $ROOT/barebox-diasom-rk3568-evb.img
+sudo $ROOT/rk-usb-loader -d $ROOT/barebox-diasom-rk3568-som-evb.img
 
 exit 0
