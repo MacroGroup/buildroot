@@ -35,7 +35,11 @@ plugincheck $OUTSINK
 if [ -d /sys/class/drm/card0-LVDS-1 ]; then
 	FMT="video/x-raw,width=1024,height=768"
 else
-	FMT="video/x-raw,width=1920,height=1080"
+	if grep -Eq 'disconnected' /sys/class/drm/card0-HDMI-A-1/status; then
+		FMT="video/x-raw,width=600,height=480"
+	else
+		FMT="video/x-raw,width=1920,height=1080"
+	fi
 fi
 
 gst-launch-1.0 \
