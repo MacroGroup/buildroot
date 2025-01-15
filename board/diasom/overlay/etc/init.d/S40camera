@@ -40,12 +40,8 @@ init_camera_rockchip()
 		CAMERA=XC7160
 	elif [ -d /sys/bus/i2c/drivers/imx335/4-001a ]; then
 		CAMERA=IMX335
-	elif [ -d /sys/bus/i2c/drivers/imx415/4-001a ]; then
-		CAMERA=IMX415
 	elif [ -d /sys/bus/i2c/drivers/imx335/7-001a ]; then
 		CAMERA=IMX335
-	elif [ -d /sys/bus/i2c/drivers/imx415/7-001a ]; then
-		CAMERA=IMX415
 	elif [ -d /sys/bus/i2c/drivers/ar0233/10-0010 ]; then
 		CAMERA=AR0233
 	fi
