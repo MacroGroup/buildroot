@@ -6,7 +6,7 @@ MOD=/tmp/esp32
 [ -e $DEV ] || { echo "Script is not supported on this platform!"; exit 1; }
 
 # Ensure no listener on serial port
-killall tail 2&> /dev/null
+killall tail 2>/dev/null
 
 # Turn Power OFF
 gpioset gpiochip3 31=0
@@ -19,7 +19,7 @@ PID=$!
 ctrl_c()
 {
 	# Remove UART listener
-	kill $PID 2&> /dev/null
+	kill $PID 2>/dev/null
 
 	# Turn Power OFF
 	gpioset gpiochip3 31=0
@@ -27,7 +27,7 @@ ctrl_c()
 	exit 0
 }
 
-MODE=$(cat $MOD 2&> /dev/null)
+MODE=$(cat $MOD 2>/dev/null)
 # Check if already downloaded
 if [ "$MODE" != "hello" ]; then
 	# Switch to UART download mode

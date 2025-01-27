@@ -29,7 +29,7 @@ setup_direction()
 
 setup_gpio()
 {
-	echo -n $1 > /sys/class/gpio/export 2&>/dev/null
+	echo -n $1 > /sys/class/gpio/export 2>/dev/null
 	setup_direction $1 "in"
 	print_gpio $1
 }
