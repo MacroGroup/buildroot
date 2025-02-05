@@ -1,5 +1,9 @@
 menu "Diasom BSP packages"
 
+config BR2_DIASOM_GIT
+	string "Diasom GIT site"
+	default "https://github.com/MacroGroup"
+
 source "package/diasom/rockchip/Config.in"
 
 endmenu
