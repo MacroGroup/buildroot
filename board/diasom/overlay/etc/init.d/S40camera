@@ -31,7 +31,8 @@ init_camera_imx()
 
 init_camera_rockchip()
 {
-	[ -d /sys/bus/platform/devices/fe870000.csi2-dphy-hw ] || return
+	[[ -d /sys/bus/platform/devices/fe870000.csi2-dphy-hw || \
+	   -d /sys/bus/platform/devices/fe870000.phy ]] || return
 
 	CAMERA=
 	printf "Camera status: "
