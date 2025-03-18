@@ -1,6 +1,6 @@
 #! /bin/bash
 
-init_camera_imx()
+init_camera_imx8mm()
 {
 	[ -d /sys/bus/platform/devices/32e30000.mipi-csi ] || return
 
@@ -29,7 +29,7 @@ init_camera_imx()
 	echo "$CAMERA found"
 }
 
-init_camera_rockchip()
+init_camera_rk3568()
 {
 	[[ -d /sys/bus/platform/devices/fe870000.csi2-dphy-hw || \
 	   -d /sys/bus/platform/devices/fe870000.phy ]] || return
@@ -72,8 +72,8 @@ init_camera_rockchip()
 
 case "$1" in
 start)
-	init_camera_imx
-	init_camera_rockchip
+	init_camera_imx8mm
+	init_camera_rk3568
 
 	;;
 stop)
