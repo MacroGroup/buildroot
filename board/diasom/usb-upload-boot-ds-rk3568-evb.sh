@@ -1,29 +1,55 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
-script_path=$(readlink -f -- "$0")
-ROOT=$(dirname -- "$script_path")
+script_dir=$(cd $(dirname ${BASH_SOURCE[0]}) && pwd -P)
 
-if [ ! -f $ROOT/rk-usb-loader ]; then
-	echo "\"rk-usb-loader\" program is not found!"
+loader_bin="rk-usb-loader"
+bootloader_img="barebox-diasom-rk3568-som-evb.img"
+
+check_dependency() {
+	if ! command -v "$1" &>/dev/null; then
+		echo "Error: Required command '$1' not found in PATH" >&2
+		return 1
+	fi
+}
+
+check_file() {
+	if [ ! -f "$1" ]; then
+		echo "Error: Required file '$1' not found in $script_dir" >&2
+		return 1
+	fi
+}
+
+verify_requirements() {
+	local error=0
+	check_dependency "sudo" || error=1
+	check_file "${script_dir}/${loader_bin}" || error=1
+	check_file "${script_dir}/${bootloader_img}" || error=1
+	return $error
+}
+
+main() {
+	echo "This script loads the bootloader into the processor memory and runs it."
+	echo
+	echo "Steps:"
+	echo "1. Connect USB cable from development board to computer"
+	echo "2. Power on the development board"
+	echo "3. Superuser privileges will be requested"
+	echo
+	read -n 1 -s -r -p "Press any key to begin (Ctrl+C to cancel)..."
+	echo -e "\n\nStarting upload process..."
+
+	sudo "${script_dir}/${loader_bin}" -d "${script_dir}/${bootloader_img}"
+
+	echo -e "\nBootloader upload complete!"
+}
+
+if ! verify_requirements; then
+	echo -e "\nPlease ensure all requirements are met and try again." >&2
 	exit 1
 fi
 
-if [ ! -f $ROOT/barebox-diasom-rk3568-som-evb.img ]; then
-	echo "\"barebox-diasom-rk3568-som-evb.img\" image is not found!"
-	exit 1
-fi
-
-echo "This script loads the bootloader program into the processor"
-echo "memory and runs it."
-echo "To start downloading, connect the USB cable from the development"
-echo "board to your computer, then turn on the board's power."
-echo "Attention: You will need a superuser password for the script to work!"
-
-read -n 1 -s -p "Press any key to continue..."
-echo
-
-sudo $ROOT/rk-usb-loader -d $ROOT/barebox-diasom-rk3568-som-evb.img
+main
 
 exit 0
