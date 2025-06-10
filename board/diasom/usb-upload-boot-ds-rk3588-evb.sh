@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -euo pipefail
+
 script_path=$(readlink -f -- "$0")
 ROOT=$(dirname -- "$script_path")
 
