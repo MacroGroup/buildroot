@@ -1,6 +1,7 @@
 #!/bin/bash
 
-ROOT=$(dirname -- $(readlink -f -- "$0"))
+script_path=$(readlink -f -- "$0")
+ROOT=$(dirname -- "$script_path")
 
 if [ ! -f $ROOT/rk-usb-loader ]; then
 	echo "\"rk-usb-loader\" program is not found!"
