@@ -5,7 +5,7 @@ set -euo pipefail
 script_dir=$(cd $(dirname ${BASH_SOURCE[0]}) && pwd -P)
 
 fastboot_bin="fastboot"
-sdcard_img="ds-rk3588-evb-sdcard.img"
+sdcard_img="ds-rk3588-btb-evb-sdcard.img"
 
 check_dependency() {
 	if ! command -v "$1" &>/dev/null; then
