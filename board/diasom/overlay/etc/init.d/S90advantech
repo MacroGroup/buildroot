@@ -1,0 +1,77 @@
+#!/bin/bash
+
+NAME=max6958-daemon.sh
+DAEMON_PATH=/usr/local/bin
+DAEMON=$DAEMON_PATH/$NAME
+PIDFILE=/var/run/$NAME.pid
+CHIP_ADDR=0x38
+DIGITS=4
+
+find_i2c_device() {
+	i2c_buses=$(ls /dev/i2c-* 2>/dev/null | sed 's|/dev/i2c-||')
+	[ -z "$i2c_buses" ] && return 1
+
+	for bus in $i2c_buses; do
+		i2cdetect -y $bus | grep -q "${CHIP_ADDR#0x}" && {
+			echo $bus
+			return 0
+		}
+	done
+
+	return 1
+}
+
+start() {
+	I2C_DEV=$(find_i2c_device)
+	[ $? -ne 0 ] && return 1
+
+	if [ -f $PIDFILE ]; then
+		echo "Already running"
+		return 1
+	fi
+
+	echo -n "Starting $NAME: "
+
+	$DAEMON $I2C_DEV > /dev/null 2>&1 &
+	PID=$!
+	echo $PID > $PIDFILE
+	echo "OK"
+}
+
+stop() {
+	PID=$(cat $PIDFILE 2>/dev/null)
+	[ ! -f $PIDFILE ] && return 1
+
+	echo -n "Stopping $NAME: "
+
+	kill -TERM $PID > /dev/null 2>&1
+	rm -f $PIDFILE
+	echo "OK"
+}
+
+case "$1" in
+	start)
+		start
+		;;
+	stop)
+		stop
+		;;
+	restart)
+		stop
+		sleep 1
+		start
+		;;
+	status)
+		if [ -f $PIDFILE ]; then
+			echo "Running (PID: $(cat $PIDFILE))"
+		else
+			echo "Stopped"
+		fi
+		;;
+	*)
+		echo "Usage: $0 {start|stop|restart|status}"
+		exit 1
+		;;
+esac
+
+exit 0
