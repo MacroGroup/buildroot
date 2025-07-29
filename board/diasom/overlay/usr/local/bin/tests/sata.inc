@@ -1,7 +1,7 @@
 #!/bin/bash
 
 check_dependencies_sata() {
-	for i in bc hdparm; do
+	for i in bc fio jq hdparm; do
 		if ! command -v "$i" &>/dev/null; then
 			echo "Error: $i not installed"
 			return 1
@@ -35,16 +35,13 @@ get_sata_device() {
 	return 1
 }
 
-test_sata() {
-	local speed="$1"
-
+check_sata_basic() {
 	if ! dmesg | grep -i sata | grep -iq 'link up'; then
 		echo "Error"
 		return 1
 	fi
 
-	local sata_dev
-	sata_dev=$(get_sata_device)
+	local sata_dev=$(get_sata_device)
 
 	if [ -z "$sata_dev" ]; then
 		echo "Missing"
@@ -56,12 +53,18 @@ test_sata() {
 		return 1
 	fi
 
-	local hdparm_output
-	hdparm_output=$(hdparm -t "$sata_dev" 2>&1)
+	echo "$sata_dev"
 
-	local buffered_speed
+	return 0
+}
 
-	buffered_speed=$(echo "$hdparm_output" | awk '/Timing buffered disk reads/ {
+test_sata_read() {
+	local speed="$1"
+	local sata_dev="$2"
+
+	local hdparm_output=$(hdparm -t "$sata_dev" 2>&1)
+
+	local buffered_speed=$(echo "$hdparm_output" | awk '/Timing buffered disk reads/ {
 		if ($(NF) == "kB/s") {
 			print $(NF-1)/1000
 		} else if ($(NF) == "MB/s") {
@@ -77,6 +80,7 @@ test_sata() {
 	fi
 
 	echo "$buffered_speed MB/s"
+
 	if (( $(echo "$buffered_speed > $speed" | bc -l) )); then
 		return 0
 	else
@@ -84,18 +88,70 @@ test_sata() {
 	fi
 }
 
-ds_rk3568_som_smarc_evb_test_sata() {
-	if [ "$1" = "register" ]; then
-		return 0
+test_sata_write() {
+	local speed="$1"
+	local sata_dev="$2"
+
+	local fio_output
+	fio_output=$(fio --name=write_test --filename="$sata_dev" --rw=write \
+		--bs=1M --direct=1 --ioengine=libaio --size=10M --runtime=2 \
+		--time_based --output-format=json 2>&1)
+
+	if [ $? -ne 0 ]; then
+		echo "Error"
+		return 1
 	fi
 
-	test_sata 150
+	local write_speed
+	write_speed=$(echo "$fio_output" | jq -r '.jobs[0].write.bw' 2>/dev/null)
+
+	if [[ ! "$write_speed" =~ ^[0-9.]+$ ]]; then
+		echo "Error"
+		return 1
+	fi
+
+	write_speed=$(echo "scale=2; $write_speed / 1024" | bc)
+
+	echo "$write_speed MB/s"
+
+	if (( $(echo "$write_speed > $speed" | bc -l) )); then
+		return 0
+	else
+		return 2
+	fi
+}
+
+test_sata_read_speed() {
+	local sata_info=$(check_sata_basic)
+	local ret=$?
+
+	if [ $ret -ne 0 ]; then
+		echo "$sata_info"
+		return $ret
+	fi
+
+	local sata_dev=$(echo "$sata_info" | tail -1)
+	test_sata_read 150 "$sata_dev"
+}
+
+test_sata_write_speed() {
+	local sata_info=$(check_sata_basic)
+	local ret=$?
+
+	if [ $ret -ne 0 ]; then
+		echo "$sata_info"
+		return $ret
+	fi
+
+	local sata_dev=$(echo "$sata_info" | tail -1)
+	test_sata_write 150 "$sata_dev"
 }
 
 if [ -f /proc/device-tree/compatible ]; then
 	if check_dependencies_sata; then
 		if grep -Eq 'diasom,ds-rk3568-som-smarc-evb' /proc/device-tree/compatible; then
-			register_test "ds_rk3568_som_smarc_evb_test_sata" "SATA"
+			register_test "test_sata_read_speed" "SATA Read"
+			register_test "test_sata_write_speed" "SATA Write"
 			return 0
 		else
 			echo "Error: Cannot find suitable devicetree compatible string"

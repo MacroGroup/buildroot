@@ -16,16 +16,14 @@ test_i2c_device() {
 	local addr="$2"
 	local optional="${3:-0}"
 
-	local output
-	output=$(i2cdetect -y "$bus" 2>/dev/null)
+	local output=$(i2cdetect -y "$bus" 2>/dev/null)
 	if [ $? -ne 0 ]; then
 		echo "Error"
 		return 1
 	fi
 
 	local addr_hex=$(printf "%02x" $((addr)))
-	local status
-	status=$(echo "$output" | awk -v addr="$addr_hex" '
+	local status=$(echo "$output" | awk -v addr="$addr_hex" '
 		BEGIN { found=0 }
 		{
 			if ($0 ~ /^[0-9a-f]{2}:/) {
