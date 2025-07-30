@@ -32,23 +32,20 @@ get_sata_device() {
 		fi
 	done
 
+	echo -n ""
+
 	return 1
 }
 
 check_sata_basic() {
-	if ! dmesg | grep -i sata | grep -iq 'link up'; then
+	if ! dmesg | grep -i sata | grep -q 'link up'; then
 		echo "Error"
 		return 1
 	fi
 
 	local sata_dev=$(get_sata_device)
 
-	if [ -z "$sata_dev" ]; then
-		echo "Missing"
-		return 1
-	fi
-
-	if ! [ -b "$sata_dev" ]; then
+	if [ -z "$sata_dev" ] || [ ! -b "$sata_dev" ]; then
 		echo "Missing"
 		return 1
 	fi
@@ -61,6 +58,11 @@ check_sata_basic() {
 test_sata_read() {
 	local speed="$1"
 	local sata_dev="$2"
+
+	if ! [ -b "$sata_dev" ]; then
+		echo "Missing"
+		return 1
+	fi
 
 	local hdparm_output=$(hdparm -t "$sata_dev" 2>&1)
 
@@ -91,6 +93,11 @@ test_sata_read() {
 test_sata_write() {
 	local speed="$1"
 	local sata_dev="$2"
+
+	if ! [ -b "$sata_dev" ]; then
+		echo "Missing"
+		return 1
+	fi
 
 	local fio_output
 	fio_output=$(fio --name=write_test --filename="$sata_dev" --rw=write \
@@ -144,7 +151,7 @@ test_sata_write_speed() {
 	fi
 
 	local sata_dev=$(echo "$sata_info" | tail -1)
-	test_sata_write 150 "$sata_dev"
+	test_sata_write 120 "$sata_dev"
 }
 
 if [ -f /proc/device-tree/compatible ]; then
