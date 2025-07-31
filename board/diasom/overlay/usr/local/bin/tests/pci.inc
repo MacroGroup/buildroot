@@ -3,7 +3,7 @@
 readonly PCIE_MIN_SPEED=100
 
 check_dependencies_pci() {
-	for i in fio jq iperf3 lspci nvme; do
+	for i in fio ip iperf3 iw jq lspci nvme; do
 		if ! command -v "$i" &>/dev/null; then
 			echo "Error: $i not installed"
 			return 1
@@ -222,9 +222,49 @@ test_pci_read_speed_wlan() {
 		return 2
 	fi
 
-	echo "WLAN: $iface: Not implemented"
+	for if in $(ip link show | awk -F: '/^[0-9]+: mon[0-9]+:/ {print $2}'); do
+		ip link del $if >/dev/null 2>&1
+	done
 
-	return 2
+	local mon_iface="mon$RANDOM"
+
+	if ! iw phy "$(cat /sys/class/net/$iface/phy80211/name)" interface add $mon_iface type monitor 2>/dev/null; then
+		echo "WLAN: Cannot create monitor interface"
+		return 2
+	fi
+
+	ip link set $mon_iface up
+	iperf3 -s -B 127.0.0.1 >/dev/null 2>&1 &
+	local server_pid=$!
+	sleep 0.5
+
+	local output=$(timeout 5 iperf3 -c 127.0.0.1 -R -t 1 -i 0 -u -b 0 --json 2>/dev/null)
+	kill $server_pid 2>/dev/null
+	wait $server_pid 2>/dev/null
+	ip link del $mon_iface 2>/dev/null
+
+	if [ -z "$output" ]; then
+		echo "WLAN: Error"
+		return 1
+	fi
+
+	local speed_bps=$(echo "$output" | jq -r '.end.sum_received.bits_per_second')
+	if [[ ! "$speed_bps" =~ ^[0-9.]+$ ]]; then
+		echo "WLAN: Error"
+		return 1
+	fi
+
+	local speed_mbs=$(echo "scale=2; $speed_bps / 8 / 1024 / 1024" | bc)
+	local min_speed=$(get_pcie_speed "$device" false)
+	local result="${speed_mbs} MB/s"
+
+	echo "WLAN: $result"
+
+	if (( $(echo "$speed_mbs >= $min_speed" | bc -l) )); then
+		return 0
+	else
+		return 2
+	fi
 }
 
 test_pci_write_speed_wlan() {
@@ -236,9 +276,49 @@ test_pci_write_speed_wlan() {
 		return 2
 	fi
 
-	echo "WLAN: $iface: Not implemented"
+	for if in $(ip link show | awk -F: '/^[0-9]+: mon[0-9]+:/ {print $2}'); do
+		ip link del $if >/dev/null 2>&1
+	done
 
-	return 2
+	local mon_iface="mon$RANDOM"
+
+	if ! iw phy "$(cat /sys/class/net/$iface/phy80211/name)" interface add $mon_iface type monitor 2>/dev/null; then
+		echo "WLAN: Cannot create monitor interface"
+		return 2
+	fi
+
+	ip link set $mon_iface up
+	iperf3 -s -B 127.0.0.1 >/dev/null 2>&1 &
+	local server_pid=$!
+	sleep 0.5
+
+	local output=$(timeout 5 iperf3 -c 127.0.0.1 -t 1 -i 0 -u -b 0 --json 2>/dev/null)
+	kill $server_pid 2>/dev/null
+	wait $server_pid 2>/dev/null
+	ip link del $mon_iface 2>/dev/null
+
+	if [ -z "$output" ]; then
+		echo "WLAN: Error"
+		return 1
+	fi
+
+	local speed_bps=$(echo "$output" | jq -r '.end.sum_sent.bits_per_second')
+	if [[ ! "$speed_bps" =~ ^[0-9.]+$ ]]; then
+		echo "WLAN: Error"
+		return 1
+	fi
+
+	local speed_mbs=$(echo "scale=2; $speed_bps / 8 / 1024 / 1024" | bc)
+	local min_speed=$(get_pcie_speed "$device" true)
+	local result="${speed_mbs} MB/s"
+
+	echo "WLAN: $result"
+
+	if (( $(echo "$speed_mbs >= $min_speed" | bc -l) )); then
+		return 0
+	else
+		return 2
+	fi
 }
 
 test_pci_read_speed_unknown() {
@@ -422,7 +502,7 @@ ds_rk3568_som_smarc_evb_test_pci() {
 			fi
 		fi
 
-		return 0
+                return 0
 	fi
 
 	if lspci &>/dev/null; then
