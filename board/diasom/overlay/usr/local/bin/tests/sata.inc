@@ -1,5 +1,8 @@
 #!/bin/bash
 
+readonly SATA1_SPEED=150
+readonly SATA2_MIN_SPEED="$SATA1_SPEED"
+
 check_dependencies_sata() {
 	for i in bc fio jq hdparm; do
 		if ! command -v "$i" &>/dev/null; then
@@ -38,8 +41,8 @@ get_sata_device() {
 }
 
 check_sata_basic() {
-	if ! dmesg | grep -i sata | grep -q 'link up'; then
-		echo "Error"
+	if ! dmesg | grep -i sata | grep -iq 'link up'; then
+		echo "Missing"
 		return 1
 	fi
 
@@ -57,7 +60,16 @@ check_sata_basic() {
 
 test_sata_read() {
 	local speed="$1"
-	local sata_dev="$2"
+	local sata_info=$(check_sata_basic)
+	local ret=$?
+
+	if [ $ret -ne 0 ]; then
+		echo "$sata_info"
+		return $ret
+	fi
+
+
+	local sata_dev=$(echo "$sata_info" | tail -1)
 
 	if ! [ -b "$sata_dev" ]; then
 		echo "Missing"
@@ -92,7 +104,15 @@ test_sata_read() {
 
 test_sata_write() {
 	local speed="$1"
-	local sata_dev="$2"
+	local sata_info=$(check_sata_basic)
+	local ret=$?
+
+	if [ $ret -ne 0 ]; then
+		echo "$sata_info"
+		return $ret
+	fi
+
+	local sata_dev=$(echo "$sata_info" | tail -1)
 
 	if ! [ -b "$sata_dev" ]; then
 		echo "Missing"
@@ -128,37 +148,23 @@ test_sata_write() {
 	fi
 }
 
-test_sata_read_speed() {
-	local sata_info=$(check_sata_basic)
-	local ret=$?
+ds_rk3568_som_smarc_evb_test_sata_read() {
+	local speed="$SATA2_MIN_SPEED"
 
-	if [ $ret -ne 0 ]; then
-		echo "$sata_info"
-		return $ret
-	fi
-
-	local sata_dev=$(echo "$sata_info" | tail -1)
-	test_sata_read 150 "$sata_dev"
+	test_sata_read "$speed"
 }
 
-test_sata_write_speed() {
-	local sata_info=$(check_sata_basic)
-	local ret=$?
+ds_rk3568_som_smarc_evb_test_sata_write() {
+	local speed=$(bc <<< "scale=2; $SATA2_MIN_SPEED * 0.8")
 
-	if [ $ret -ne 0 ]; then
-		echo "$sata_info"
-		return $ret
-	fi
-
-	local sata_dev=$(echo "$sata_info" | tail -1)
-	test_sata_write 120 "$sata_dev"
+	test_sata_write "$speed"
 }
 
 if [ -f /proc/device-tree/compatible ]; then
 	if check_dependencies_sata; then
 		if grep -Eq 'diasom,ds-rk3568-som-smarc-evb' /proc/device-tree/compatible; then
-			register_test "test_sata_read_speed" "SATA Read"
-			register_test "test_sata_write_speed" "SATA Write"
+			register_test "ds_rk3568_som_smarc_evb_test_sata_read" "SATA Read"
+			register_test "ds_rk3568_som_smarc_evb_test_sata_write" "SATA Write"
 			return 0
 		else
 			echo "Error: Cannot find suitable devicetree compatible string"
