@@ -3,7 +3,7 @@
 readonly PCIE_MIN_SPEED=100
 
 check_dependencies_pci() {
-	for i in fio jq lspci nvme; do
+	for i in fio jq iperf3 lspci nvme; do
 		if ! command -v "$i" &>/dev/null; then
 			echo "Error: $i not installed"
 			return 1
@@ -199,18 +199,44 @@ test_pci_write_speed_nvme() {
 	fi
 }
 
+get_wlan_interface() {
+	local device="$1"
+	for iface in /sys/class/net/*; do
+		if [ -e "$iface/device" ]; then
+			local iface_dev=$(readlink -f "$iface/device" | awk -F/ '{print $NF}')
+
+			if [ "$iface_dev" = "$device" ]; then
+				basename "$iface"
+				return
+			fi
+		fi
+	done
+}
+
 test_pci_read_speed_wlan() {
 	local device="$1"
+	local iface=$(get_wlan_interface "$device")
 
-	echo "WLAN: Not implemented"
+	if [ -z "$iface" ]; then
+		echo "WLAN: Interface not found (Unsupported card?)"
+		return 2
+	fi
+
+	echo "WLAN: $iface: Not implemented"
 
 	return 2
 }
 
 test_pci_write_speed_wlan() {
 	local device="$1"
+	local iface=$(get_wlan_interface "$device")
 
-	echo "WLAN: Not implemented"
+	if [ -z "$iface" ]; then
+		echo "WLAN: Interface not found (Unsupported card?)"
+		return 2
+	fi
+
+	echo "WLAN: $iface: Not implemented"
 
 	return 2
 }
@@ -219,7 +245,7 @@ test_pci_read_speed_unknown() {
 	local device="$1"
 	local class_code="$2"
 
-	echo "Unsupported: $class_code"
+	echo "Unsupported class: $class_code"
 
 	return 2
 }
@@ -228,7 +254,7 @@ test_pci_write_speed_unknown() {
 	local device="$1"
 	local class_code="$2"
 
-	echo "Unsupported: $class_code"
+	echo "Unsupported class: $class_code"
 
 	return 2
 }
