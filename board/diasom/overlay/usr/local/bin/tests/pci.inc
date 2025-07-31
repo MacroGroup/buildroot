@@ -222,10 +222,6 @@ test_pci_read_speed_wlan() {
 		return 2
 	fi
 
-	for if in $(ip link show | awk -F: '/^[0-9]+: mon[0-9]+:/ {print $2}'); do
-		ip link del $if >/dev/null 2>&1
-	done
-
 	local mon_iface="mon$RANDOM"
 
 	if ! iw phy "$(cat /sys/class/net/$iface/phy80211/name)" interface add $mon_iface type monitor 2>/dev/null; then
@@ -241,7 +237,13 @@ test_pci_read_speed_wlan() {
 	local output=$(timeout 5 iperf3 -c 127.0.0.1 -R -t 1 -i 0 -u -b 0 --json 2>/dev/null)
 	kill $server_pid 2>/dev/null
 	wait $server_pid 2>/dev/null
-	ip link del $mon_iface 2>/dev/null
+
+	sleep 0.5
+	if ip link show $mon_iface &>/dev/null; then
+		ip link set $mon_iface down 2>/dev/null
+		sleep 0.1
+		ip link del $mon_iface 2>/dev/null
+	fi
 
 	if [ -z "$output" ]; then
 		echo "WLAN: Error"
@@ -276,10 +278,6 @@ test_pci_write_speed_wlan() {
 		return 2
 	fi
 
-	for if in $(ip link show | awk -F: '/^[0-9]+: mon[0-9]+:/ {print $2}'); do
-		ip link del $if >/dev/null 2>&1
-	done
-
 	local mon_iface="mon$RANDOM"
 
 	if ! iw phy "$(cat /sys/class/net/$iface/phy80211/name)" interface add $mon_iface type monitor 2>/dev/null; then
@@ -295,7 +293,13 @@ test_pci_write_speed_wlan() {
 	local output=$(timeout 5 iperf3 -c 127.0.0.1 -t 1 -i 0 -u -b 0 --json 2>/dev/null)
 	kill $server_pid 2>/dev/null
 	wait $server_pid 2>/dev/null
-	ip link del $mon_iface 2>/dev/null
+
+	sleep 0.5
+	if ip link show $mon_iface &>/dev/null; then
+		ip link set $mon_iface down 2>/dev/null
+		sleep 0.1
+		ip link del $mon_iface 2>/dev/null
+	fi
 
 	if [ -z "$output" ]; then
 		echo "WLAN: Error"
