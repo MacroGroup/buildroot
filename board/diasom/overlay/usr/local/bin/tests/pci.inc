@@ -230,7 +230,7 @@ test_pci_read_speed_wlan() {
 	local server_pid=$!
 	sleep 0.5
 
-	local output=$(timeout 5 iperf3 -c 127.0.0.1 -R -t 1 -i 0 -u -b 0 --json 2>/dev/null)
+	local output=$(timeout 5 iperf3 -c 127.0.0.1 -t 1 -i 0 -u -b 0 --json 2>/dev/null)
 	kill $server_pid 2>/dev/null
 	wait $server_pid 2>/dev/null
 
@@ -246,7 +246,7 @@ test_pci_read_speed_wlan() {
 		return 1
 	fi
 
-	local speed_bps=$(echo "$output" | jq -r '.end.sum_received.bits_per_second')
+	local speed_bps=$(echo "$output" | jq -r '.end.sum_sent.bits_per_second')
 	if [[ ! "$speed_bps" =~ ^[0-9.]+$ ]]; then
 		echo "WLAN: Error"
 		return 1
@@ -286,7 +286,7 @@ test_pci_write_speed_wlan() {
 	local server_pid=$!
 	sleep 0.5
 
-	local output=$(timeout 5 iperf3 -c 127.0.0.1 -t 1 -i 0 -u -b 0 --json 2>/dev/null)
+	local output=$(timeout 5 iperf3 -c 127.0.0.1 -R -t 1 -i 0 -u -b 0 --json 2>/dev/null)
 	kill $server_pid 2>/dev/null
 	wait $server_pid 2>/dev/null
 
@@ -302,7 +302,7 @@ test_pci_write_speed_wlan() {
 		return 1
 	fi
 
-	local speed_bps=$(echo "$output" | jq -r '.end.sum_sent.bits_per_second')
+	local speed_bps=$(echo "$output" | jq -r '.end.sum_received.bits_per_second')
 	if [[ ! "$speed_bps" =~ ^[0-9.]+$ ]]; then
 		echo "WLAN: Error"
 		return 1
@@ -486,13 +486,13 @@ register_pcie_tests() {
 	register_test "$test_dev_func" "PCI Device $name"
 
 	if [[ -n "$device" ]]; then
-			local test_read_func="test_pci_read_speed_$index"
-			eval "$test_read_func() { test_pci_read_speed \"$device\"; }"
-			register_test "$test_read_func" "PCI Device $name Read"
+		local test_read_func="test_pci_read_speed_$index"
+		eval "$test_read_func() { test_pci_read_speed \"$device\"; }"
+		register_test "$test_read_func" "PCI Device $name Read"
 
-			local test_write_func="test_pci_write_speed_$index"
-			eval "$test_write_func() { test_pci_write_speed \"$device\"; }"
-			register_test "$test_write_func" "PCI Device $name Write"
+		local test_write_func="test_pci_write_speed_$index"
+		eval "$test_write_func() { test_pci_write_speed \"$device\"; }"
+		register_test "$test_write_func" "PCI Device $name Write"
 	fi
 }
 
