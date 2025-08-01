@@ -3,14 +3,8 @@
 readonly PCIE_MIN_SPEED=100
 
 check_dependencies_pci() {
-	for i in fio ip iperf3 iw jq lspci nvme; do
-		if ! command -v "$i" &>/dev/null; then
-			echo "Error: $i not installed"
-			return 1
-		fi
-	done
-
-	return 0
+	local deps=(dd fio hexdump ip iperf3 iw jq lspci nvme sed timeout)
+	check_dependencies "PCI" "${deps[@]}"
 }
 
 test_pci_device() {
@@ -24,11 +18,13 @@ test_pci_device() {
 		else
 			echo "OK"
 		fi
+
 		return 0
-	else
-		echo "Missing"
-		return 1
 	fi
+
+	echo "Missing"
+
+	return 1
 }
 
 get_nvme_device() {
@@ -327,18 +323,18 @@ test_pci_write_speed_wlan() {
 
 test_pci_read_speed_unknown() {
 	local device="$1"
-	local class_code="$2"
+	local class="$2"
 
-	echo "Unsupported class: $class_code"
+	echo "Unsupported class: $class"
 
 	return 2
 }
 
 test_pci_write_speed_unknown() {
 	local device="$1"
-	local class_code="$2"
+	local class="$2"
 
-	echo "Unsupported class: $class_code"
+	echo "Unsupported class: $class"
 
 	return 2
 }
@@ -354,9 +350,9 @@ test_pci_read_speed() {
 	local class_info
 	class_info=$(lspci -n -s "$device" | awk '{print $2}' | cut -d: -f1)
 
-	local class_code=${class_info:0:2}
+	local class=${class_info:0:2}
 
-	case $class_code in
+	case $class in
 	"01")
 		if [ "${class_info:2:2}" = "08" ]; then
 			test_pci_read_speed_nvme "$device"
@@ -384,9 +380,9 @@ test_pci_write_speed() {
 	local class_info
 	class_info=$(lspci -n -s "$device" | awk '{print $2}' | cut -d: -f1)
 
-	local class_code=${class_info:0:2}
+	local class=${class_info:0:2}
 
-	case $class_code in
+	case $class in
 	"01")
 		if [ "${class_info:2:2}" = "08" ]; then
 			test_pci_write_speed_nvme "$device"
@@ -403,125 +399,153 @@ test_pci_write_speed() {
 	esac
 }
 
-test_pci_bus_0() {
-	test_pci_device "0000:00:00.0"
+find_pcie_device() {
+	local value="$1"
+
+	find /sys/devices/platform -name "*.pcie" -type d -print0 2>/dev/null | while IFS= read -r -d $'\0' platform_dir; do
+		node_dir="$platform_dir/of_node"
+
+		[[ -f "$node_dir/reg" ]] || continue
+
+		local file_size=$(stat -c %s "$node_dir/reg" 2>/dev/null)
+		[[ -z "$file_size" ]] && continue
+
+		local region_size=8
+		local num_regions=$((file_size / region_size))
+
+		for ((i=0; i<num_regions; i++)); do
+			local offset=$((i * region_size))
+
+			local addr_bytes=$(dd if="$node_dir/reg" bs=1 skip=$((offset + 4)) count=4 2>/dev/null | hexdump -v -e '/1 "%02x"')
+
+			while [[ ${#addr_bytes} -lt 8 ]]; do
+				addr_bytes="0$addr_bytes"
+			done
+
+			if [[ "$addr_bytes" == "$value" ]]; then
+				local pci_dir=$(find "$platform_dir" -maxdepth 1 -type d -name 'pci*' -print -quit)
+				[[ -z "$pci_dir" ]] && continue
+
+				local device=$(
+					find "$pci_dir" -maxdepth 1 -type d -name '????:??:??.?' 2>/dev/null | while IFS= read -r path; do
+						local name=$(basename "$path")
+						if echo "$name" | grep -Eq '^[0-9]{4}:[0-9]{2}:[0-9]{2}\.[0-9]$'; then
+							echo "$name"
+							break
+						fi
+					done | head -n1
+				)
+
+				if [[ -n "$device" ]]; then
+					echo "$device"
+					return
+				fi
+			fi
+		done
+	done
+
+	echo -n ""
 }
 
-test_pci_device_0() {
-	test_pci_device "0000:01:00.0"
-}
+register_pcie_tests() {
+	local name="$1"
+	local addr="$2"
+	local index="$3"
 
-test_pci_read_speed_0() {
-	test_pci_read_speed "0000:01:00.0"
-}
+	local root_port=$(find_pcie_device "$addr")
 
-test_pci_write_speed_0() {
-	test_pci_write_speed "0000:01:00.0"
-}
-
-test_pci_bus_1() {
-	test_pci_device "0001:10:00.0"
-}
-
-test_pci_device_1() {
-	test_pci_device "0001:11:00.0"
-}
-
-test_pci_read_speed_1() {
-	test_pci_read_speed "0001:11:00.0"
-}
-
-test_pci_write_speed_1() {
-	test_pci_write_speed "0001:11:00.0"
-}
-
-test_pci_bus_2() {
-	test_pci_device "0002:20:00.0"
-}
-
-test_pci_device_2() {
-	test_pci_device "0002:21:00.0"
-}
-
-test_pci_read_speed_2() {
-	test_pci_read_speed "0002:21:00.0"
-}
-
-test_pci_write_speed_2() {
-	test_pci_write_speed "0002:21:00.0"
-}
-
-check_pci_bus_presence() {
-	local bus_test_func="$1"
-
-	if $bus_test_func >/dev/null 2>&1; then
-		return 0
-	else
-		return 1
+	if [[ -z "$root_port" ]]; then
+		return
 	fi
-}
 
-check_pci_device_presence() {
-	local device_test_func="$1"
+	local test_bus_func="test_pci_bus_$index"
+	eval "$test_bus_func() { test_pci_device \"$root_port\"; }"
+	register_test "$test_bus_func" "PCI Bus $name"
 
-	if $device_test_func >/dev/null 2>&1; then
-		return 0
+	local device=""
+	for dev in /sys/bus/pci/devices/"$root_port"/*; do
+		if [[ -d "$dev" ]]; then
+			local dev_name=$(basename "$dev")
+			if [[ "$dev_name" == "$root_port" ]]; then
+				continue
+			fi
+
+			if [[ "$dev_name" =~ ^[0-9]{4}:[0-9]{2}:[0-9]{2}\.[0-9]$ ]]; then
+				device="$dev_name"
+				break
+			fi
+		fi
+	done
+
+	local test_dev_func="test_pci_device_$index"
+	if [[ -n "$device" ]]; then
+		eval "$test_dev_func() { test_pci_device \"$device\"; }"
 	else
-		return 1
+		eval "$test_dev_func() { echo \"Missing\"; return 1; }"
+	fi
+	register_test "$test_dev_func" "PCI Device $name"
+
+	if [[ -n "$device" ]]; then
+			local test_read_func="test_pci_read_speed_$index"
+			eval "$test_read_func() { test_pci_read_speed \"$device\"; }"
+			register_test "$test_read_func" "PCI Device $name Read"
+
+			local test_write_func="test_pci_write_speed_$index"
+			eval "$test_write_func() { test_pci_write_speed \"$device\"; }"
+			register_test "$test_write_func" "PCI Device $name Write"
 	fi
 }
 
 ds_rk3568_som_smarc_evb_test_pci() {
 	if [ "$1" = "register" ]; then
-		register_test "test_pci_bus_0" "PCI Bus 0"
+		local addrs=(
+			"fe280000"
+			"fe270000"
+			"fe260000"
+		)
+		local names=(
+			"PCIE_A"
+			"PCIE_B"
+			"PCIE_C"
+		)
 
-		if check_pci_bus_presence test_pci_bus_0; then
-			register_test "test_pci_device_0" "PCI Device 0"
+		local idx=0
+		for ((i=0; i<${#addrs[@]}; i++)); do
+			register_pcie_tests "${names[i]}" "${addrs[i]}" "$idx"
+			((idx++))
+		done
 
-			if check_pci_device_presence test_pci_device_0; then
-				register_test "test_pci_read_speed_0" "PCI Device 0 Read"
-				register_test "test_pci_write_speed_0" "PCI Device 0 Write"
-			fi
-		fi
-
-		register_test "test_pci_bus_1" "PCI Bus 1"
-
-		if check_pci_bus_presence test_pci_bus_1; then
-			register_test "test_pci_device_1" "PCI Device 1"
-
-			if check_pci_device_presence test_pci_device_1; then
-				register_test "test_pci_read_speed_1" "PCI Device 1 Read"
-				register_test "test_pci_write_speed_1" "PCI Device 1 Write"
-			fi
-		fi
-
-		register_test "test_pci_bus_2" "PCI Bus 2"
-
-		if check_pci_bus_presence test_pci_bus_2; then
-			register_test "test_pci_device_2" "PCI Device 2"
-
-			if check_pci_device_presence test_pci_device_2; then
-				register_test "test_pci_read_speed_2" "PCI Device 2 Read"
-				register_test "test_pci_write_speed_2" "PCI Device 2 Write"
-			fi
-		fi
-
-                return 0
+		return 0
 	fi
 
 	if lspci &>/dev/null; then
 		echo "OK"
+
 		return 0
-	else
-		echo "Missing"
-		return 1
 	fi
+
+	echo "Missing"
+
+	return 1
 }
+
+if ! declare -F register_test > /dev/null; then
+	echo "Script cannot be executed alone"
+
+	return 1
+fi
+
+if ! declare -F check_dependencies > /dev/null; then
+	echo "Script cannot be executed alone"
+
+	return 1
+fi
 
 if [ -f /proc/device-tree/compatible ]; then
 	if check_dependencies_pci; then
 		if grep -Eq 'diasom,ds-rk3568-som-smarc-evb' /proc/device-tree/compatible; then
 			register_test "ds_rk3568_som_smarc_evb_test_pci" "PCI Core"
+
 			return 0
 		else
 			echo "Error: Cannot find suitable devicetree compatible string"

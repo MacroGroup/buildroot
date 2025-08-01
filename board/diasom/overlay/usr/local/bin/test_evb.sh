@@ -29,6 +29,26 @@ TEST_FUNCTIONS=()
 TEST_NAMES=()
 MAX_NAME_LEN=0
 
+check_dependencies() {
+	local module=$1
+	shift
+	local deps=("$@")
+
+	local base_deps=(awk basename bc cat cut dmesg echo find grep head ls mount printf readlink stat tail tr)
+	deps+=("${base_deps[@]}")
+
+	local sorted_deps=($(printf "%s\n" "${deps[@]}" | sort -u))
+
+	for cmd in "${sorted_deps[@]}"; do
+		if ! command -v "$cmd" &>/dev/null; then
+			echo "Error [$module]: $cmd not installed"
+			return 1
+		fi
+	done
+
+	return 0
+}
+
 register_test() {
 	local test_function="$1"
 	local test_name="$2"

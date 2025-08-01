@@ -4,14 +4,8 @@ readonly SATA1_SPEED=150
 readonly SATA2_MIN_SPEED="$SATA1_SPEED"
 
 check_dependencies_sata() {
-	for i in bc fio jq hdparm; do
-		if ! command -v "$i" &>/dev/null; then
-			echo "Error: $i not installed"
-			return 1
-		fi
-	done
-
-	return 0
+	local deps=(fio hdparm jq)
+	check_dependencies "SATA" "${deps[@]}"
 }
 
 get_sata_device() {
@@ -160,11 +154,24 @@ ds_rk3568_som_smarc_evb_test_sata_write() {
 	test_sata_write "$speed"
 }
 
+if ! declare -F register_test > /dev/null; then
+	echo "Script cannot be executed alone"
+
+	return 1
+fi
+
+if ! declare -F check_dependencies > /dev/null; then
+	echo "Script cannot be executed alone"
+
+	return 1
+fi
+
 if [ -f /proc/device-tree/compatible ]; then
 	if check_dependencies_sata; then
 		if grep -Eq 'diasom,ds-rk3568-som-smarc-evb' /proc/device-tree/compatible; then
 			register_test "ds_rk3568_som_smarc_evb_test_sata_read" "SATA Read"
 			register_test "ds_rk3568_som_smarc_evb_test_sata_write" "SATA Write"
+
 			return 0
 		else
 			echo "Error: Cannot find suitable devicetree compatible string"

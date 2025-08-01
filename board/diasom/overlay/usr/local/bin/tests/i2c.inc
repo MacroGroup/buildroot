@@ -1,14 +1,8 @@
 #!/bin/bash
 
 check_dependencies_i2c() {
-	for i in i2cdetect; do
-		if ! command -v "$i" &>/dev/null; then
-			echo "Error: $i not installed"
-			return 1
-		fi
-	done
-
-	return 0
+	local deps=(i2cdetect)
+	check_dependencies "I2C" "${deps[@]}"
 }
 
 test_i2c_device() {
@@ -69,6 +63,7 @@ check_i2c_bus() {
 	fi
 
 	echo "OK"
+
 	return 0
 }
 
@@ -98,12 +93,15 @@ ds_rk3568_som_smarc_evb_test_i2c2() {
 			register_test "test_i2c2_0x23" "I2C2 Device 0x23"
 			register_test "test_i2c2_0x70" "I2C2 Device 0x70"
 		fi
+
 		echo "OK"
+
 		return 0
-	else
-		echo "Missing"
-		return 1
 	fi
+
+	echo "Missing"
+
+	return 1
 }
 
 ds_rk3568_som_smarc_evb_test_i2c3() {
@@ -113,12 +111,15 @@ ds_rk3568_som_smarc_evb_test_i2c3() {
 			register_test "test_i2c3_0x51" "I2C3 Device 0x51"
 			register_test "test_i2c3_0x68" "I2C3 Device 0x68"
 		fi
+
 		echo "OK"
+
 		return 0
-	else
-		echo "Missing"
-		return 1
 	fi
+
+	echo "Missing"
+
+	return 1
 }
 
 ds_rk3568_som_smarc_evb_test_i2c4() {
@@ -153,6 +154,18 @@ ds_rk3568_som_smarc_evb_test_i2c8() {
 	check_i2c_bus 8
 }
 
+if ! declare -F register_test > /dev/null; then
+	echo "Script cannot be executed alone"
+
+	return 1
+fi
+
+if ! declare -F check_dependencies > /dev/null; then
+	echo "Script cannot be executed alone"
+
+	return 1
+fi
+
 if [ -f /proc/device-tree/compatible ]; then
 	if check_dependencies_i2c; then
 		if grep -Eq 'diasom,ds-rk3568-som-smarc-evb' /proc/device-tree/compatible; then
@@ -162,11 +175,12 @@ if [ -f /proc/device-tree/compatible ]; then
 			register_test "ds_rk3568_som_smarc_evb_test_i2c6" "I2C6 Bus"
 			register_test "ds_rk3568_som_smarc_evb_test_i2c7" "I2C7 Bus"
 			register_test "ds_rk3568_som_smarc_evb_test_i2c8" "I2C8 Bus"
+
 			return 0
 		else
 			echo "Error: Cannot find suitable devicetree compatible string"
 		fi
-        fi
+	fi
 else
 	echo "Error: Script cannot be used without devicetree"
 fi
