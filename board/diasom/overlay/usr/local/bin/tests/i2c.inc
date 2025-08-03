@@ -90,8 +90,8 @@ test_i2c3_0x68() {
 ds_rk3568_som_smarc_evb_test_i2c2() {
 	if [ -e /dev/i2c-2 ]; then
 		if [ "$1" = "register" ]; then
-			register_test "test_i2c2_0x23" "I2C2 Device 0x23"
-			register_test "test_i2c2_0x70" "I2C2 Device 0x70"
+			register_test "test_i2c2_0x23" "I2C2 Device 0x23 (I2C GPIO)"
+			register_test "test_i2c2_0x70" "I2C2 Device 0x70 (I2C MUX)"
 		fi
 
 		echo "OK"
@@ -107,9 +107,9 @@ ds_rk3568_som_smarc_evb_test_i2c2() {
 ds_rk3568_som_smarc_evb_test_i2c3() {
 	if [ -e /dev/i2c-3 ]; then
 		if [ "$1" = "register" ]; then
-			register_test "test_i2c3_0x50" "I2C3 Device 0x50"
-			register_test "test_i2c3_0x51" "I2C3 Device 0x51"
-			register_test "test_i2c3_0x68" "I2C3 Device 0x68"
+			register_test "test_i2c3_0x50" "I2C3 Device 0x50 (EEPROM)"
+			register_test "test_i2c3_0x51" "I2C3 Device 0x51 (EEPROM)"
+			register_test "test_i2c3_0x68" "I2C3 Device 0x68 (RTC)"
 		fi
 
 		echo "OK"
@@ -169,12 +169,12 @@ fi
 if [ -f /proc/device-tree/compatible ]; then
 	if check_dependencies_i2c; then
 		if grep -Eq 'diasom,ds-rk3568-som-smarc-evb' /proc/device-tree/compatible; then
-			register_test "ds_rk3568_som_smarc_evb_test_i2c2" "I2C2 Bus"
-			register_test "ds_rk3568_som_smarc_evb_test_i2c3" "I2C3 Bus"
-			register_test "ds_rk3568_som_smarc_evb_test_i2c4" "I2C4 Bus"
-			register_test "ds_rk3568_som_smarc_evb_test_i2c6" "I2C6 Bus"
-			register_test "ds_rk3568_som_smarc_evb_test_i2c7" "I2C7 Bus"
-			register_test "ds_rk3568_som_smarc_evb_test_i2c8" "I2C8 Bus"
+			register_test "ds_rk3568_som_smarc_evb_test_i2c2" "I2C2 Bus (Internal)"
+			register_test "ds_rk3568_som_smarc_evb_test_i2c3" "I2C3 Bus (I2C_GP)"
+			register_test "ds_rk3568_som_smarc_evb_test_i2c4" "I2C4 Bus (I2C_PM)"
+			register_test "ds_rk3568_som_smarc_evb_test_i2c6" "I2C6 Bus (I2C_CAM0)"
+			register_test "ds_rk3568_som_smarc_evb_test_i2c7" "I2C7 Bus (I2C_CAM1)"
+			register_test "ds_rk3568_som_smarc_evb_test_i2c8" "I2C8 Bus (I2C_LCD)"
 
 			return 0
 		else
