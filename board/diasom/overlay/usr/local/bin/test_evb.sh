@@ -184,10 +184,19 @@ if [ ${#TEST_FUNCTIONS[@]} -eq 0 ]; then
 	fi
 fi
 
-initial_count=${#TEST_FUNCTIONS[@]}
+declare -A registered_functions
+test_functions_copy=("${TEST_FUNCTIONS[@]}")
+initial_count=${#test_functions_copy[@]}
+
 for ((i=0; i<initial_count; i++)); do
-	test_func="${TEST_FUNCTIONS[i]}"
-	if type "$test_func" &>/dev/null; then
+	test_func="${test_functions_copy[i]}"
+
+	if ! type "$test_func" &>/dev/null; then
+		continue
+	fi
+
+	if [[ -z "${registered_functions[$test_func]}" ]]; then
+		registered_functions[$test_func]=1
 		"$test_func" register >/dev/null 2>&1
 	fi
 done

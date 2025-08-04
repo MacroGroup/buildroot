@@ -453,10 +453,7 @@ register_pcie_tests() {
 	local index="$3"
 
 	local root_port=$(find_pcie_device "$addr")
-
-	if [[ -z "$root_port" ]]; then
-		return
-	fi
+	[[ -z "$root_port" ]] && return
 
 	local test_bus_func="test_pci_bus_$index"
 	eval "$test_bus_func() { test_pci_device \"$root_port\"; }"
@@ -504,9 +501,9 @@ ds_rk3568_som_smarc_evb_test_pci() {
 			"fe260000"
 		)
 		local names=(
-			"PCIE_A"
-			"PCIE_B"
-			"PCIE_C"
+			"3x2 (PCIE_A)"
+			"3x1 (PCIE_B)"
+			"2x1 (PCIE_C)"
 		)
 
 		local idx=0
