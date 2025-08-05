@@ -20,12 +20,12 @@ get_sata_device() {
 			fi
 		fi
 
-		if [ -f "$dev/device/vendor" ]; then
-			vendor=$(cat "$dev/device/vendor")
-			if [[ "$vendor" =~ [aA][tT][aA] ]]; then
-				echo "/dev/$dev_name"
-				return 0
-			fi
+		real_path=$(readlink -f "$dev/device" 2>/dev/null)
+		[[ -z "$real_path" ]] && continue
+
+		if [[ "$real_path" == *"/ata"* ]] || [[ "$real_path" == *"/sata"* ]] || [[ "$real_path" == *"/ahci"* ]]; then
+			echo "/dev/$dev_name"
+			return 0
 		fi
 	done
 
