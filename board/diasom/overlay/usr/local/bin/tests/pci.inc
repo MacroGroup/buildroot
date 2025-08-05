@@ -146,7 +146,7 @@ test_pci_read_speed_nvme() {
 
 	echo "NVMe: $result"
 
-	if (( $(echo "$read_speed >= $min_read_speed" | bc -l) )); then
+	if (( $(echo "$read_speed > $min_read_speed" | bc -l) )); then
 		return 0
 	else
 		return 2
@@ -188,7 +188,7 @@ test_pci_write_speed_nvme() {
 	local result="${write_speed} MB/s"
 
 	echo "NVMe: $result"
-	if (( $(echo "$write_speed >= $min_write_speed" | bc -l) )); then
+	if (( $(echo "$write_speed > $min_write_speed" | bc -l) )); then
 		return 0
 	else
 		return 2
