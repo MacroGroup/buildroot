@@ -122,8 +122,8 @@ test_pci_read_speed_nvme() {
 
 	local read_output
 	read_output=$(fio --name=read_test --filename="$nvme_dev" --rw=read \
-		--bs=128k --iodepth=64 --runtime=2s --time_based --direct=1 \
-		--ioengine=libaio --output-format=json 2>&1)
+		--bs=1M --iodepth=64 --runtime=2 --time_based --direct=1 \
+		--ioengine=libaio --numjobs=2 --output-format=json 2>&1)
 
 	if [ $? -ne 0 ]; then
 		echo "NVMe: Error"
@@ -142,9 +142,7 @@ test_pci_read_speed_nvme() {
 
 	local min_read_speed=$(get_pcie_speed "$device" false)
 
-	local result="${read_speed} MB/s"
-
-	echo "NVMe: $result"
+	echo "NVMe: ${read_speed} MB/s"
 
 	if (( $(echo "$read_speed > $min_read_speed" | bc -l) )); then
 		return 0
@@ -165,8 +163,8 @@ test_pci_write_speed_nvme() {
 
 	local write_output
 	write_output=$(fio --name=write_test --filename="$nvme_dev" --rw=write \
-		--bs=128k --iodepth=64 --runtime=2s --time_based --direct=1 \
-		--ioengine=libaio --output-format=json 2>&1)
+		--bs=1M --iodepth=64 --runtime=2 --time_based --direct=1 \
+		--ioengine=libaio --numjobs=2 --output-format=json 2>&1)
 
 	if [ $? -ne 0 ]; then
 		echo "NVMe: Error"
@@ -185,9 +183,7 @@ test_pci_write_speed_nvme() {
 
 	local min_write_speed=$(get_pcie_speed "$device" true)
 
-	local result="${write_speed} MB/s"
-
-	echo "NVMe: $result"
+	echo "NVMe: ${write_speed} MB/s"
 	if (( $(echo "$write_speed > $min_write_speed" | bc -l) )); then
 		return 0
 	else
@@ -226,7 +222,7 @@ test_pci_read_speed_wlan() {
 	fi
 
 	ip link set $mon_iface up
-	iperf3 -s -B 127.0.0.1 >/dev/null 2>&1 &
+	iperf3 -s -B 127.0.0.1 -p 5201 >/dev/null 2>&1 &
 	local server_pid=$!
 	sleep 0.5
 
@@ -254,9 +250,8 @@ test_pci_read_speed_wlan() {
 
 	local speed_mbs=$(echo "scale=2; $speed_bps / 8 / 1024 / 1024" | bc)
 	local min_speed=$(get_pcie_speed "$device" false)
-	local result="${speed_mbs} MB/s"
 
-	echo "WLAN: $result"
+	echo "WLAN: ${speed_mbs} MB/s"
 
 	if (( $(echo "$speed_mbs >= $min_speed" | bc -l) )); then
 		return 0
@@ -282,7 +277,7 @@ test_pci_write_speed_wlan() {
 	fi
 
 	ip link set $mon_iface up
-	iperf3 -s -B 127.0.0.1 >/dev/null 2>&1 &
+	iperf3 -s -B 127.0.0.1 -p 5201 >/dev/null 2>&1 &
 	local server_pid=$!
 	sleep 0.5
 
@@ -310,9 +305,8 @@ test_pci_write_speed_wlan() {
 
 	local speed_mbs=$(echo "scale=2; $speed_bps / 8 / 1024 / 1024" | bc)
 	local min_speed=$(get_pcie_speed "$device" true)
-	local result="${speed_mbs} MB/s"
 
-	echo "WLAN: $result"
+	echo "WLAN: ${speed_mbs} MB/s"
 
 	if (( $(echo "$speed_mbs >= $min_speed" | bc -l) )); then
 		return 0
@@ -494,7 +488,7 @@ register_pcie_tests() {
 }
 
 ds_rk3568_som_smarc_evb_test_pci() {
-	if [ "$1" = "register" ]; then
+	if lspci &>/dev/null; then
 		local addrs=(
 			"fe280000"
 			"fe270000"
@@ -512,10 +506,6 @@ ds_rk3568_som_smarc_evb_test_pci() {
 			((idx++))
 		done
 
-		return 0
-	fi
-
-	if lspci &>/dev/null; then
 		echo "OK"
 
 		return 0
@@ -526,30 +516,26 @@ ds_rk3568_som_smarc_evb_test_pci() {
 	return 1
 }
 
-if ! declare -F register_test > /dev/null; then
+if ! declare -F register_test >/dev/null || ! declare -F check_dependencies >/dev/null; then
 	echo "Script cannot be executed alone"
 
 	return 1
 fi
 
-if ! declare -F check_dependencies > /dev/null; then
-	echo "Script cannot be executed alone"
-
-	return 1
-fi
-
-if [ -f /proc/device-tree/compatible ]; then
-	if check_dependencies_pci; then
-		if grep -Eq 'diasom,ds-rk3568-som-smarc-evb' /proc/device-tree/compatible; then
-			register_test "ds_rk3568_som_smarc_evb_test_pci" "PCI Core"
-
-			return 0
-		else
-			echo "Error: Cannot find suitable devicetree compatible string"
-		fi
-	fi
-else
+if [ ! -f /proc/device-tree/compatible ]; then
 	echo "Error: Script cannot be used without devicetree"
+
+	return 1
+fi
+
+check_dependencies_pci || return 1
+
+if grep -Eq 'diasom,ds-rk3568-som-smarc-evb' /proc/device-tree/compatible; then
+	register_test "ds_rk3568_som_smarc_evb_test_pci" "PCI Core"
+
+	return 0
+else
+	echo "Error: Cannot find suitable devicetree compatible string"
 fi
 
 return 1
