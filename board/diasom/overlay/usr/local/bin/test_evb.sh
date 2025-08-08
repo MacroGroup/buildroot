@@ -40,9 +40,20 @@ check_dependencies() {
 	for cmd in "${sorted_deps[@]}"; do
 		if ! command -v "$cmd" &>/dev/null; then
 			echo "Error [$module]: $cmd not installed"
+
 			return 1
 		fi
 	done
+
+	return 0
+}
+
+check_devicetree() {
+	if [ ! -f /proc/device-tree/compatible ]; then
+		echo "Error: Script cannot be used without devicetree"
+
+		return 1
+	fi
 
 	return 0
 }
@@ -138,6 +149,8 @@ register_self_tests() {
 	register_test "test_color_warning" "Test Color \"Warning\""
 	register_test "test_color_error" "Test Color \"Error\""
 }
+
+check_dependencies "CORE" "" || exit 1
 
 if [ $# -gt 0 ]; then
 	TEST_FILTER="$1"

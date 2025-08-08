@@ -91,9 +91,11 @@ test_i2c3_0x68() {
 }
 
 ds_rk3568_som_smarc_evb_test_i2c2() {
+	local indent="  "
+
 	if [ -e /dev/i2c-2 ]; then
-		register_test "@test_i2c2_0x23" "I2C2 Device 0x23 (I2C GPIO)"
-		register_test "@test_i2c2_0x70" "I2C2 Device 0x70 (I2C MUX)"
+		register_test "@test_i2c2_0x70" "${indent}I2C2 Device 0x70 (I2C MUX)"
+		register_test "@test_i2c2_0x23" "${indent}I2C2 Device 0x23 (I2C GPIO)"
 
 		echo "OK"
 
@@ -106,10 +108,12 @@ ds_rk3568_som_smarc_evb_test_i2c2() {
 }
 
 ds_rk3568_som_smarc_evb_test_i2c3() {
+	local indent="  "
+
 	if [ -e /dev/i2c-3 ]; then
-		register_test "@test_i2c3_0x50" "I2C3 Device 0x50 (EEPROM)"
-		register_test "@test_i2c3_0x51" "I2C3 Device 0x51 (EEPROM)"
-		register_test "@test_i2c3_0x68" "I2C3 Device 0x68 (RTC)"
+		register_test "@test_i2c3_0x68" "${indent}I2C3 Device 0x68 (RTC)"
+		register_test "@test_i2c3_0x51" "${indent}I2C3 Device 0x51 (EEPROM)"
+		register_test "@test_i2c3_0x50" "${indent}I2C3 Device 0x50 (EEPROM)"
 
 		echo "OK"
 
@@ -137,17 +141,13 @@ ds_rk3568_som_smarc_evb_test_i2c8() {
 	check_i2c_bus 8
 }
 
-if ! declare -F register_test >/dev/null || ! declare -F check_dependencies >/dev/null; then
+if ! declare -F register_test >/dev/null || ! declare -F check_dependencies >/dev/null || ! declare -F check_devicetree >/dev/null; then
 	echo "Script cannot be executed alone"
 
 	return 1
 fi
 
-if [ ! -f /proc/device-tree/compatible ]; then
-	echo "Error: Script cannot be used without devicetree"
-
-	return 1
-fi
+check_devicetree || return 1
 
 check_dependencies_i2c || return 1
 

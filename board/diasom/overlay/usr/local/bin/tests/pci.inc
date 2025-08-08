@@ -122,8 +122,8 @@ test_pci_read_speed_nvme() {
 
 	local read_output
 	read_output=$(fio --name=read_test --filename="$nvme_dev" --rw=read \
-		--bs=1M --iodepth=64 --runtime=2 --time_based --direct=1 \
-		--ioengine=libaio --numjobs=2 --output-format=json 2>&1)
+		--bs=128k --iodepth=64 --runtime=2 --time_based --direct=1 \
+		--ioengine=libaio --output-format=json 2>&1)
 
 	if [ $? -ne 0 ]; then
 		echo "NVMe: Error"
@@ -163,8 +163,8 @@ test_pci_write_speed_nvme() {
 
 	local write_output
 	write_output=$(fio --name=write_test --filename="$nvme_dev" --rw=write \
-		--bs=1M --iodepth=64 --runtime=2 --time_based --direct=1 \
-		--ioengine=libaio --numjobs=2 --output-format=json 2>&1)
+		--bs=128k --iodepth=64 --runtime=2 --time_based --direct=1 \
+		--ioengine=libaio --output-format=json 2>&1)
 
 	if [ $? -ne 0 ]; then
 		echo "NVMe: Error"
@@ -222,6 +222,7 @@ test_pci_read_speed_wlan() {
 	fi
 
 	ip link set $mon_iface up
+	sleep 0.5
 	iperf3 -s -B 127.0.0.1 -p 5201 >/dev/null 2>&1 &
 	local server_pid=$!
 	sleep 0.5
@@ -516,17 +517,13 @@ ds_rk3568_som_smarc_evb_test_pci() {
 	return 1
 }
 
-if ! declare -F register_test >/dev/null || ! declare -F check_dependencies >/dev/null; then
+if ! declare -F register_test >/dev/null || ! declare -F check_dependencies >/dev/null || ! declare -F check_devicetree >/dev/null; then
 	echo "Script cannot be executed alone"
 
 	return 1
 fi
 
-if [ ! -f /proc/device-tree/compatible ]; then
-	echo "Error: Script cannot be used without devicetree"
-
-	return 1
-fi
+check_devicetree || return 1
 
 check_dependencies_pci || return 1
 

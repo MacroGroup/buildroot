@@ -77,26 +77,22 @@ test_mmc_read_speed() {
 	return 1
 }
 
-test_mmc() {
+test_sd() {
 	test_mmc_read_speed "SD"
 }
 
-if ! declare -F register_test >/dev/null || ! declare -F check_dependencies >/dev/null; then
+if ! declare -F register_test >/dev/null || ! declare -F check_dependencies >/dev/null || ! declare -F check_devicetree >/dev/null; then
 	echo "Script cannot be executed alone"
 
 	return 1
 fi
 
-if [ ! -f /proc/device-tree/compatible ]; then
-	echo "Error: Script cannot be used without devicetree"
-
-	return 1
-fi
+check_devicetree || return 1
 
 check_dependencies_mmc || return 1
 
 if grep -Eq 'diasom,ds-rk3568-som-smarc-evb' /proc/device-tree/compatible; then
-	register_test "test_mmc" "SD"
+	register_test "test_sd" "SD"
 
 	return 0
 else

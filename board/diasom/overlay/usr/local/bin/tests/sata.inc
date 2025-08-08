@@ -71,7 +71,7 @@ test_sata_read() {
 	local fio_output
 	fio_output=$(fio --name=read_test --filename="$sata_dev" --rw=read \
 		--bs=1M --iodepth=32 --direct=1 --ioengine=libaio \
-		--size=100M --runtime=2 --time_based --group_reporting \
+		--size=10M --runtime=2 --time_based --group_reporting \
 		--output-format=json 2>/dev/null)
 
 	if [ $? -ne 0 ]; then
@@ -118,8 +118,9 @@ test_sata_write() {
 
 	local fio_output
 	fio_output=$(fio --name=write_test --filename="$sata_dev" --rw=write \
-		--bs=1M --direct=1 --ioengine=libaio --size=100M --runtime=2 \
-		--iodepth=32 --time_based --output-format=json 2>&1)
+		--bs=1M --direct=1 --ioengine=libaio --size=10M --runtime=2 \
+		--iodepth=32 --time_based --group_reporting \
+		--output-format=json 2>/dev/null)
 
 	if [ $? -ne 0 ]; then
 		echo "Error"
@@ -145,17 +146,13 @@ test_sata_write() {
 	fi
 }
 
-if ! declare -F register_test >/dev/null || ! declare -F check_dependencies >/dev/null; then
+if ! declare -F register_test >/dev/null || ! declare -F check_dependencies >/dev/null || ! declare -F check_devicetree >/dev/null; then
 	echo "Script cannot be executed alone"
 
 	return 1
 fi
 
-if [ ! -f /proc/device-tree/compatible ]; then
-	echo "Error: Script cannot be used without devicetree"
-
-	return 1
-fi
+check_devicetree || return 1
 
 check_dependencies_sata || return 1
 

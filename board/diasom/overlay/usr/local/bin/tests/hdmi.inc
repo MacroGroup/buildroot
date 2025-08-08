@@ -27,17 +27,13 @@ test_hdmi0() {
 	test_hdmi "HDMI-A-1"
 }
 
-if ! declare -F register_test >/dev/null || ! declare -F check_dependencies >/dev/null; then
+if ! declare -F register_test >/dev/null || ! declare -F check_dependencies >/dev/null || ! declare -F check_devicetree >/dev/null; then
 	echo "Script cannot be executed alone"
 
 	return 1
 fi
 
-if [ ! -f /proc/device-tree/compatible ]; then
-	echo "Error: Script cannot be used without devicetree"
-
-	return 1
-fi
+check_devicetree || return 1
 
 check_dependencies_hdmi || return 1
 
