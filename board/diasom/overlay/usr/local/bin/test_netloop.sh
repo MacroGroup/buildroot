@@ -1,6 +1,6 @@
 #!/bin/sh
 
-for i in awk ip iperf usleep; do
+for i in awk ethtool ip iperf usleep; do
 	if ! command -v "$i" >/dev/null 2>&1; then
 		echo "Script cannot be executed due missing \"$i\" tool!" >&2
 		exit 1
@@ -14,6 +14,19 @@ fi
 
 SERVER_IFACE=$1
 CLIENT_IFACE=$2
+
+check_cable_connection() {
+	local iface="$1"
+
+	local link_status
+	link_status=$(ethtool "$iface" 2>/dev/null | awk '/Link detected:/ {print $3}')
+
+	if [ "$link_status" = "yes" ]; then
+		return 0
+	fi
+
+	return 1
+}
 
 cleanup() {
 	{ kill "$IPERF_PID" 2>&1; } >/dev/null
@@ -41,6 +54,16 @@ fi
 	echo "Network interface $CLIENT_IFACE does not exist!" >&2
 	exit 1
 }
+
+if ! check_cable_connection "$SERVER_IFACE"; then
+	echo "Ethernet cable is not connected to $SERVER_IFACE!" >&2
+	exit 1
+fi
+
+if ! check_cable_connection "$CLIENT_IFACE"; then
+	echo "Ethernet cable is not connected to $CLIENT_IFACE!" >&2
+	exit 1
+fi
 
 { ip netns add ns_server 2>&1; } >/dev/null || exit 1
 { ip netns add ns_client 2>&1; } >/dev/null || exit 1

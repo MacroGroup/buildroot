@@ -32,7 +32,7 @@ check_dependencies() {
 	shift
 	local deps=("$@")
 
-	local base_deps=(awk basename bc cat cut dmesg echo find grep head ls mount printf readlink stat tail tr)
+	local base_deps=(awk basename bc cat cut dmesg echo find grep head ls mktemp mount printf readlink stat tail tr)
 	deps+=("${base_deps[@]}")
 
 	local sorted_deps=($(printf "%s\n" "${deps[@]}" | sort -u))
