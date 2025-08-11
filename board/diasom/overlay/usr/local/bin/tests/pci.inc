@@ -1,5 +1,9 @@
 #!/bin/bash
 
+declare -A USB_PCI_MAP=(
+	["diasom,ds-rk3568-som-smarc-evb"]="ds_rk3568_som_smarc_evb_test_pci"
+)
+
 readonly PCIE_MIN_SPEED=100
 
 check_dependencies_pci() {
@@ -475,46 +479,38 @@ register_pcie_tests() {
 	else
 		eval "$test_dev_func() { echo \"Missing\"; return 1; }"
 	fi
-	register_test "$test_dev_func" "PCI Device $name"
+	register_test "$test_dev_func" "  PCI Device $name"
 
 	if [[ -n "$device" ]]; then
 		local test_read_func="test_pci_read_speed_$index"
 		eval "$test_read_func() { test_pci_read_speed \"$device\"; }"
-		register_test "$test_read_func" "PCI Device $name Read"
+		register_test "$test_read_func" "  PCI Device $name Read"
 
 		local test_write_func="test_pci_write_speed_$index"
 		eval "$test_write_func() { test_pci_write_speed \"$device\"; }"
-		register_test "$test_write_func" "PCI Device $name Write"
+		register_test "$test_write_func" "  PCI Device $name Write"
 	fi
 }
 
 ds_rk3568_som_smarc_evb_test_pci() {
-	if lspci &>/dev/null; then
-		local addrs=(
-			"fe280000"
-			"fe270000"
-			"fe260000"
-		)
-		local names=(
-			"3x2 (PCIE_A)"
-			"3x1 (PCIE_B)"
-			"2x1 (PCIE_C)"
-		)
+	local addrs=(
+		"fe280000"
+		"fe270000"
+		"fe260000"
+	)
+	local names=(
+		"3x2 (PCIE_A)"
+		"3x1 (PCIE_B)"
+		"2x1 (PCIE_C)"
+	)
 
-		local idx=0
-		for ((i=0; i<${#addrs[@]}; i++)); do
-			register_pcie_tests "${names[i]}" "${addrs[i]}" "$idx"
-			((idx++))
-		done
+	local idx=0
+	for ((i=0; i<${#addrs[@]}; i++)); do
+		register_pcie_tests "${names[i]}" "${addrs[i]}" "$idx"
+		((idx++))
+	done
 
-		echo "OK"
-
-		return 0
-	fi
-
-	echo "Missing"
-
-	return 1
+	return 0
 }
 
 if ! declare -F register_test >/dev/null || ! declare -F check_dependencies >/dev/null || ! declare -F check_devicetree >/dev/null; then
@@ -527,12 +523,22 @@ check_devicetree || return 1
 
 check_dependencies_pci || return 1
 
-if grep -Eq 'diasom,ds-rk3568-som-smarc-evb' /proc/device-tree/compatible; then
-	register_test "ds_rk3568_som_smarc_evb_test_pci" "PCI Core"
+found_compatible=0
+while IFS= read -r -d '' compatible; do
+	compat_str=$(echo -n "$compatible" | tr -d '\0')
 
-	return 0
-else
+	for pattern in "${!USB_PCI_MAP[@]}"; do
+		if [[ $compat_str == "$pattern" || $compat_str == "$pattern"* ]]; then
+			${USB_PCI_MAP[$pattern]}
+			found_compatible=1
+			return $?
+		fi
+	done
+done < /proc/device-tree/compatible
+
+if [ $found_compatible -eq 0 ]; then
 	echo "Error: Cannot find suitable devicetree compatible string"
+	return 1
 fi
 
 return 1

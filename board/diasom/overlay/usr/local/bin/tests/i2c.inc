@@ -76,6 +76,15 @@ test_i2c2_0x23() {
 
 test_i2c2_0x70() {
 	test_i2c_device 2 0x70
+	local ret=$?
+
+	if [ $ret -eq 0 ]; then
+		register_test "@ds_rk3568_som_smarc_evb_test_i2c8" "    I2C8 Bus (I2C_LCD)"
+		register_test "@ds_rk3568_som_smarc_evb_test_i2c7" "    I2C7 Bus (I2C_CAM1)"
+		register_test "@ds_rk3568_som_smarc_evb_test_i2c6" "    I2C6 Bus (I2C_CAM0)"
+	fi
+
+	return $ret
 }
 
 test_i2c3_0x50() {
@@ -155,9 +164,6 @@ if grep -Eq 'diasom,ds-rk3568-som-smarc-evb' /proc/device-tree/compatible; then
 	register_test "ds_rk3568_som_smarc_evb_test_i2c2" "I2C2 Bus (Internal)"
 	register_test "ds_rk3568_som_smarc_evb_test_i2c3" "I2C3 Bus (I2C_GP)"
 	register_test "ds_rk3568_som_smarc_evb_test_i2c4" "I2C4 Bus (I2C_PM)"
-	register_test "ds_rk3568_som_smarc_evb_test_i2c6" "I2C6 Bus (I2C_CAM0)"
-	register_test "ds_rk3568_som_smarc_evb_test_i2c7" "I2C7 Bus (I2C_CAM1)"
-	register_test "ds_rk3568_som_smarc_evb_test_i2c8" "I2C8 Bus (I2C_LCD)"
 
 	return 0
 else
