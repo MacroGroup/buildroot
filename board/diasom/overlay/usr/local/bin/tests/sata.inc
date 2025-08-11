@@ -1,5 +1,9 @@
 #!/bin/bash
 
+declare -A SATA_DT_MAP=(
+	["diasom,ds-rk3568-som-smarc-evb"]="test_sata"
+)
+
 readonly SATA1_SPEED=150
 readonly SATA2_MIN_SPEED="$SATA1_SPEED"
 
@@ -146,6 +150,12 @@ test_sata_write() {
 	fi
 }
 
+test_sata() {
+	register_test "test_sata_read" "SATA Read"
+
+        return 0
+}
+
 if ! declare -F register_test >/dev/null || ! declare -F check_dependencies >/dev/null || ! declare -F check_devicetree >/dev/null; then
 	echo "Script cannot be executed alone"
 
@@ -156,12 +166,22 @@ check_devicetree || return 1
 
 check_dependencies_sata || return 1
 
-if grep -Eq 'diasom,ds-rk3568-som-smarc-evb' /proc/device-tree/compatible; then
-	register_test "test_sata_read" "SATA Read"
+found_compatible=0
+while IFS= read -r -d '' compatible; do
+	compat_str=$(echo -n "$compatible" | tr -d '\0')
 
-	return 0
-else
+	for pattern in "${!SATA_DT_MAP[@]}"; do
+		if [[ $compat_str == "$pattern" || $compat_str == "$pattern"* ]]; then
+			${SATA_DT_MAP[$pattern]}
+			found_compatible=1
+			return $?
+		fi
+	done
+done < /proc/device-tree/compatible
+
+if [ $found_compatible -eq 0 ]; then
 	echo "Error: Cannot find suitable devicetree compatible string"
+	return 1
 fi
 
-return 1
+return 0

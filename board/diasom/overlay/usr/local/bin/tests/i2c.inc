@@ -1,5 +1,9 @@
 #!/bin/bash
 
+declare -A I2C_DT_MAP=(
+	["diasom,ds-rk3568-som-smarc-evb"]="ds_rk3568_som_smarc_evb_test_i2c"
+)
+
 check_dependencies_i2c() {
 	local deps=(i2cdetect)
 	check_dependencies "I2C" "${deps[@]}"
@@ -100,11 +104,9 @@ test_i2c3_0x68() {
 }
 
 ds_rk3568_som_smarc_evb_test_i2c2() {
-	local indent="  "
-
 	if [ -e /dev/i2c-2 ]; then
-		register_test "@test_i2c2_0x70" "${indent}I2C2 Device 0x70 (I2C MUX)"
-		register_test "@test_i2c2_0x23" "${indent}I2C2 Device 0x23 (I2C GPIO)"
+		register_test "@test_i2c2_0x70" "  I2C2 Device 0x70 (I2C MUX)"
+		register_test "@test_i2c2_0x23" "  I2C2 Device 0x23 (I2C GPIO)"
 
 		echo "OK"
 
@@ -117,12 +119,10 @@ ds_rk3568_som_smarc_evb_test_i2c2() {
 }
 
 ds_rk3568_som_smarc_evb_test_i2c3() {
-	local indent="  "
-
 	if [ -e /dev/i2c-3 ]; then
-		register_test "@test_i2c3_0x68" "${indent}I2C3 Device 0x68 (RTC)"
-		register_test "@test_i2c3_0x51" "${indent}I2C3 Device 0x51 (EEPROM)"
-		register_test "@test_i2c3_0x50" "${indent}I2C3 Device 0x50 (EEPROM)"
+		register_test "@test_i2c3_0x68" "  I2C3 Device 0x68 (RTC)"
+		register_test "@test_i2c3_0x51" "  I2C3 Device 0x51 (EEPROM)"
+		register_test "@test_i2c3_0x50" "  I2C3 Device 0x50 (EEPROM)"
 
 		echo "OK"
 
@@ -150,6 +150,14 @@ ds_rk3568_som_smarc_evb_test_i2c8() {
 	check_i2c_bus 8
 }
 
+ds_rk3568_som_smarc_evb_test_i2c() {
+	register_test "ds_rk3568_som_smarc_evb_test_i2c2" "I2C2 Bus (Internal)"
+	register_test "ds_rk3568_som_smarc_evb_test_i2c3" "I2C3 Bus (I2C_GP)"
+	register_test "ds_rk3568_som_smarc_evb_test_i2c4" "I2C4 Bus (I2C_PM)"
+
+	return 0
+}
+
 if ! declare -F register_test >/dev/null || ! declare -F check_dependencies >/dev/null || ! declare -F check_devicetree >/dev/null; then
 	echo "Script cannot be executed alone"
 
@@ -160,14 +168,22 @@ check_devicetree || return 1
 
 check_dependencies_i2c || return 1
 
-if grep -Eq 'diasom,ds-rk3568-som-smarc-evb' /proc/device-tree/compatible; then
-	register_test "ds_rk3568_som_smarc_evb_test_i2c2" "I2C2 Bus (Internal)"
-	register_test "ds_rk3568_som_smarc_evb_test_i2c3" "I2C3 Bus (I2C_GP)"
-	register_test "ds_rk3568_som_smarc_evb_test_i2c4" "I2C4 Bus (I2C_PM)"
+found_compatible=0
+while IFS= read -r -d '' compatible; do
+	compat_str=$(echo -n "$compatible" | tr -d '\0')
 
-	return 0
-else
+	for pattern in "${!I2C_DT_MAP[@]}"; do
+		if [[ $compat_str == "$pattern" || $compat_str == "$pattern"* ]]; then
+			${I2C_DT_MAP[$pattern]}
+			found_compatible=1
+			return $?
+		fi
+	done
+done < /proc/device-tree/compatible
+
+if [ $found_compatible -eq 0 ]; then
 	echo "Error: Cannot find suitable devicetree compatible string"
+	return 1
 fi
 
-return 1
+return 0

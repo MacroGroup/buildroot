@@ -1,5 +1,9 @@
 #!/bin/bash
 
+declare -A MMC_DT_MAP=(
+	["diasom,ds-rk3568-som-smarc-evb"]="ds_rk3568_som_smarc_evb_test_mmc"
+)
+
 check_dependencies_mmc() {
 	local deps=(fio jq)
 	check_dependencies "MMC" "${deps[@]}"
@@ -81,6 +85,12 @@ test_sd() {
 	test_mmc_read_speed "SD"
 }
 
+ds_rk3568_som_smarc_evb_test_mmc() {
+	register_test "test_sd" "SD"
+
+	return 0
+}
+
 if ! declare -F register_test >/dev/null || ! declare -F check_dependencies >/dev/null || ! declare -F check_devicetree >/dev/null; then
 	echo "Script cannot be executed alone"
 
@@ -91,12 +101,22 @@ check_devicetree || return 1
 
 check_dependencies_mmc || return 1
 
-if grep -Eq 'diasom,ds-rk3568-som-smarc-evb' /proc/device-tree/compatible; then
-	register_test "test_sd" "SD"
+found_compatible=0
+while IFS= read -r -d '' compatible; do
+	compat_str=$(echo -n "$compatible" | tr -d '\0')
 
-	return 0
-else
+	for pattern in "${!MMC_DT_MAP[@]}"; do
+		if [[ $compat_str == "$pattern" || $compat_str == "$pattern"* ]]; then
+			${MMC_DT_MAP[$pattern]}
+			found_compatible=1
+			return $?
+		fi
+	done
+done < /proc/device-tree/compatible
+
+if [ $found_compatible -eq 0 ]; then
 	echo "Error: Cannot find suitable devicetree compatible string"
+	return 1
 fi
 
-return 1
+return 0

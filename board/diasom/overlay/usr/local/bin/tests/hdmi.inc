@@ -1,11 +1,15 @@
 #!/bin/bash
 
+declare -A HDMI_DT_MAP=(
+	["diasom,ds-rk3568-som-smarc-evb"]="test_hdmi"
+)
+
 check_dependencies_hdmi() {
 	local deps=(modetest)
 	check_dependencies "HDMI" "${deps[@]}"
 }
 
-test_hdmi() {
+test_hdmi_card() {
 	local interface="$1"
 
 	if [ -d "/sys/class/drm/card0-$interface" ]; then
@@ -24,7 +28,13 @@ test_hdmi() {
 }
 
 test_hdmi0() {
-	test_hdmi "HDMI-A-1"
+	test_hdmi_card "HDMI-A-1"
+}
+
+test_hdmi() {
+	register_test "test_hdmi0" "HDMI0"
+
+	return 0
 }
 
 if ! declare -F register_test >/dev/null || ! declare -F check_dependencies >/dev/null || ! declare -F check_devicetree >/dev/null; then
@@ -37,12 +47,22 @@ check_devicetree || return 1
 
 check_dependencies_hdmi || return 1
 
-if grep -Eq 'diasom,ds-rk3568-som-smarc-evb' /proc/device-tree/compatible; then
-	register_test "test_hdmi0" "HDMI0"
+found_compatible=0
+while IFS= read -r -d '' compatible; do
+	compat_str=$(echo -n "$compatible" | tr -d '\0')
 
-	return 0
-else
+	for pattern in "${!HDMI_DT_MAP[@]}"; do
+		if [[ $compat_str == "$pattern" || $compat_str == "$pattern"* ]]; then
+			${HDMI_DT_MAP[$pattern]}
+			found_compatible=1
+			return $?
+		fi
+	done
+done < /proc/device-tree/compatible
+
+if [ $found_compatible -eq 0 ]; then
 	echo "Error: Cannot find suitable devicetree compatible string"
+	return 1
 fi
 
-return 1
+return 0
