@@ -1,6 +1,6 @@
 #!/bin/bash
 
-declare -A USB_PCI_MAP=(
+declare -A PCI_DT_MAP=(
 	["diasom,ds-rk3568-som-smarc-evb"]="ds_rk3568_som_smarc_evb_test_pci"
 )
 
@@ -527,9 +527,9 @@ found_compatible=0
 while IFS= read -r -d '' compatible; do
 	compat_str=$(echo -n "$compatible" | tr -d '\0')
 
-	for pattern in "${!USB_PCI_MAP[@]}"; do
+	for pattern in "${!PCI_DT_MAP[@]}"; do
 		if [[ $compat_str == "$pattern" || $compat_str == "$pattern"* ]]; then
-			${USB_PCI_MAP[$pattern]}
+			${PCI_DT_MAP[$pattern]}
 			found_compatible=1
 			return $?
 		fi
@@ -541,4 +541,4 @@ if [ $found_compatible -eq 0 ]; then
 	return 1
 fi
 
-return 1
+return 0
