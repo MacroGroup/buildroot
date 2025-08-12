@@ -25,7 +25,8 @@ TEST_DIR="${SCRIPT_DIR}/tests"
 
 declare -a TEST_QUEUE
 declare -a TEST_NAMES
-MAX_NAME_LEN=36
+declare -a TEST_LEVELS
+MAX_NAME_LEN=38
 
 check_dependencies() {
 	local module=$1
@@ -61,15 +62,24 @@ check_devicetree() {
 register_test() {
 	local test_function="$1"
 	local test_name="$2"
+	local test_level="${3:-0}"
 
 	if [[ "$test_function" == @* ]]; then
 		test_function="${test_function#@}"
 		TEST_QUEUE=("$test_function" "${TEST_QUEUE[@]}")
 		TEST_NAMES=("$test_name" "${TEST_NAMES[@]}")
+		TEST_LEVELS=("$test_level" "${TEST_LEVELS[@]}")
 	else
 		TEST_QUEUE+=("$test_function")
 		TEST_NAMES+=("$test_name")
+		TEST_LEVELS+=("$test_level")
 	fi
+
+	local padded_name=""
+	local i
+	for ((i=0; i<test_level; i++)); do
+		padded_name+="  "
+	done
 
 	local name_length=${#test_name}
 	[ $name_length -gt $MAX_NAME_LEN ] && MAX_NAME_LEN=$name_length
@@ -91,9 +101,11 @@ run_tests() {
 	while [ ${#TEST_QUEUE[@]} -gt 0 ]; do
 		local test_function="${TEST_QUEUE[0]}"
 		local original_test_name="${TEST_NAMES[0]}"
+		local test_level="${TEST_LEVELS[0]}"
 
 		TEST_QUEUE=("${TEST_QUEUE[@]:1}")
 		TEST_NAMES=("${TEST_NAMES[@]:1}")
+		TEST_LEVELS=("${TEST_LEVELS[@]:1}")
 
 		> "$output_file"
 
@@ -103,8 +115,15 @@ run_tests() {
 		local output
 		output=$(<"$output_file")
 
-		local padding="$MAX_NAME_LEN"
-		printf "%-${padding}s : " "$original_test_name"
+		local padding_spaces=""
+		local i
+		for ((i=0; i<test_level; i++)); do
+			padding_spaces+="  "
+		done
+		local displayed_name="${padding_spaces}${original_test_name}"
+
+		local temp_padding=$MAX_NAME_LEN
+		printf "%-${temp_padding}s : " "$displayed_name"
 
 		if [ $exit_code -eq 0 ]; then
 			echo -e "[ ${COLOR_OK}$output${COLOR_RESET} ]"
@@ -124,7 +143,13 @@ run_tests() {
 }
 
 register_self_tests() {
+	test_deep2() {
+		echo "OK"
+		return 0
+	}
+
 	test_deep() {
+		register_test "test_deep2" "Test Deep Register Padding" 1
 		echo "OK"
 		return 0
 	}

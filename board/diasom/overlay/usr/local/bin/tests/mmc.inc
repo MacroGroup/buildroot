@@ -9,7 +9,7 @@ check_dependencies_mmc() {
 	check_dependencies "MMC" "${deps[@]}"
 }
 
-get_block_device_mmc() {
+test_mmc_get_block_device() {
 	local devtype="$1"
 
 	for block in /sys/block/mmcblk*; do
@@ -42,7 +42,7 @@ get_block_device_mmc() {
 
 test_mmc_read_speed() {
 	local devtype="$1"
-	local block_dev=$(get_block_device_mmc "$devtype")
+	local block_dev=$(test_mmc_get_block_device "$devtype")
 	local ret=$?
 
 	if [ $ret -ne 0 ]; then

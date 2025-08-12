@@ -12,7 +12,7 @@ check_dependencies_sata() {
 	check_dependencies "SATA" "${deps[@]}"
 }
 
-get_sata_device() {
+test_sata_get_block_device() {
 	for dev in /sys/block/sd*; do
 		[ -e "$dev" ] || continue
 		dev_name=$(basename "$dev")
@@ -38,13 +38,13 @@ get_sata_device() {
 	return 1
 }
 
-check_sata_basic() {
+test_sata_check_basic() {
 	if ! dmesg | grep -i sata | grep -iq 'link up'; then
 		echo "Missing"
 		return 1
 	fi
 
-	local sata_dev=$(get_sata_device)
+	local sata_dev=$(test_sata_get_block_device)
 
 	if [ -z "$sata_dev" ] || [ ! -b "$sata_dev" ]; then
 		echo "Missing"
@@ -58,7 +58,7 @@ check_sata_basic() {
 
 test_sata_read() {
 	local speed="$SATA2_MIN_SPEED"
-	local sata_info=$(check_sata_basic)
+	local sata_info=$(test_sata_check_basic)
 	local ret=$?
 
 	if [ $ret -ne 0 ]; then
@@ -106,7 +106,7 @@ test_sata_read() {
 
 test_sata_write() {
 	local speed=$(bc <<< "scale=2; $SATA2_MIN_SPEED * 0.8")
-	local sata_info=$(check_sata_basic)
+	local sata_info=$(test_sata_check_basic)
 	local ret=$?
 
 	if [ $ret -ne 0 ]; then
@@ -153,7 +153,7 @@ test_sata_write() {
 test_sata() {
 	register_test "test_sata_read" "SATA Read"
 
-        return 0
+	return 0
 }
 
 if ! declare -F register_test >/dev/null || ! declare -F check_dependencies >/dev/null || ! declare -F check_devicetree >/dev/null; then

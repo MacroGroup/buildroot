@@ -31,7 +31,7 @@ test_pci_device() {
 	return 1
 }
 
-get_nvme_device() {
+test_pci_get_nvme_device() {
 	local device="$1"
 	local nvme_ctrl
 	nvme_ctrl=$(grep -l "$device" /sys/class/nvme/*/address | cut -d/ -f5)
@@ -62,7 +62,7 @@ get_nvme_device() {
 	return 0
 }
 
-get_pcie_speed() {
+test_pci_get_speed() {
 	local device="$1"
 	local writetest="$2"
 
@@ -116,7 +116,7 @@ get_pcie_speed() {
 
 test_pci_read_speed_nvme() {
 	local device="$1"
-	local nvme_dev=$(get_nvme_device "$device")
+	local nvme_dev=$(test_pci_get_nvme_device "$device")
 	local ret=$?
 
 	if [ $ret -ne 0 ]; then
@@ -144,7 +144,7 @@ test_pci_read_speed_nvme() {
 
 	read_speed=$(echo "scale=2; $read_speed / 1024" | bc)
 
-	local min_read_speed=$(get_pcie_speed "$device" false)
+	local min_read_speed=$(test_pci_get_speed "$device" false)
 
 	echo "NVMe: ${read_speed} MB/s"
 
@@ -157,7 +157,7 @@ test_pci_read_speed_nvme() {
 
 test_pci_write_speed_nvme() {
 	local device="$1"
-	local nvme_dev=$(get_nvme_device "$device")
+	local nvme_dev=$(test_pci_get_nvme_device "$device")
 	local ret=$?
 
 	if [ $ret -ne 0 ]; then
@@ -185,7 +185,7 @@ test_pci_write_speed_nvme() {
 
 	write_speed=$(echo "scale=2; $write_speed / 1024" | bc)
 
-	local min_write_speed=$(get_pcie_speed "$device" true)
+	local min_write_speed=$(test_pci_get_speed "$device" true)
 
 	echo "NVMe: ${write_speed} MB/s"
 	if (( $(echo "$write_speed > $min_write_speed" | bc -l) )); then
@@ -195,7 +195,7 @@ test_pci_write_speed_nvme() {
 	fi
 }
 
-get_wlan_interface() {
+test_pci_get_wlan_interface() {
 	local device="$1"
 	for iface in /sys/class/net/*; do
 		if [ -e "$iface/device" ]; then
@@ -211,7 +211,7 @@ get_wlan_interface() {
 
 test_pci_read_speed_wlan() {
 	local device="$1"
-	local iface=$(get_wlan_interface "$device")
+	local iface=$(test_pci_get_wlan_interface "$device")
 
 	if [ -z "$iface" ]; then
 		echo "WLAN: Interface not found (Unsupported card?)"
@@ -254,7 +254,7 @@ test_pci_read_speed_wlan() {
 	fi
 
 	local speed_mbs=$(echo "scale=2; $speed_bps / 8 / 1024 / 1024" | bc)
-	local min_speed=$(get_pcie_speed "$device" false)
+	local min_speed=$(test_pci_get_speed "$device" false)
 
 	echo "WLAN: ${speed_mbs} MB/s"
 
@@ -267,7 +267,7 @@ test_pci_read_speed_wlan() {
 
 test_pci_write_speed_wlan() {
 	local device="$1"
-	local iface=$(get_wlan_interface "$device")
+	local iface=$(test_pci_get_wlan_interface "$device")
 
 	if [ -z "$iface" ]; then
 		echo "WLAN: Interface not found (Unsupported card?)"
@@ -309,7 +309,7 @@ test_pci_write_speed_wlan() {
 	fi
 
 	local speed_mbs=$(echo "scale=2; $speed_bps / 8 / 1024 / 1024" | bc)
-	local min_speed=$(get_pcie_speed "$device" true)
+	local min_speed=$(test_pci_get_speed "$device" true)
 
 	echo "WLAN: ${speed_mbs} MB/s"
 
@@ -398,7 +398,7 @@ test_pci_write_speed() {
 	esac
 }
 
-find_pcie_device() {
+test_pci_find_device() {
 	local value="$1"
 
 	find /sys/devices/platform -name "*.pcie" -type d -print0 2>/dev/null | while IFS= read -r -d $'\0' platform_dir; do
@@ -412,6 +412,7 @@ find_pcie_device() {
 		local region_size=8
 		local num_regions=$((file_size / region_size))
 
+		local i
 		for ((i=0; i<num_regions; i++)); do
 			local offset=$((i * region_size))
 
@@ -446,15 +447,16 @@ find_pcie_device() {
 	echo -n ""
 }
 
-register_pcie_tests() {
+test_pci_register_tests() {
 	local name="$1"
 	local addr="$2"
-	local index="$3"
 
-	local root_port=$(find_pcie_device "$addr")
+	local root_port=$(test_pci_find_device "$addr")
 	[[ -z "$root_port" ]] && return
 
-	local test_bus_func="test_pci_bus_$index"
+	local safe_addr="${addr//[^[:alnum:]]/_}"
+
+	local test_bus_func="test_pci_bus_$safe_addr"
 	eval "$test_bus_func() { test_pci_device \"$root_port\"; }"
 	register_test "$test_bus_func" "PCI Bus $name"
 
@@ -473,22 +475,22 @@ register_pcie_tests() {
 		fi
 	done
 
-	local test_dev_func="test_pci_device_$index"
+	local test_dev_func="test_pci_device_$safe_addr"
 	if [[ -n "$device" ]]; then
 		eval "$test_dev_func() { test_pci_device \"$device\"; }"
 	else
 		eval "$test_dev_func() { echo \"Missing\"; return 1; }"
 	fi
-	register_test "$test_dev_func" "  PCI Device $name"
+	register_test "$test_dev_func" "PCI Device $name" 1
 
 	if [[ -n "$device" ]]; then
-		local test_read_func="test_pci_read_speed_$index"
+		local test_read_func="test_pci_read_speed_$safe_addr"
 		eval "$test_read_func() { test_pci_read_speed \"$device\"; }"
-		register_test "$test_read_func" "  PCI Device $name Read"
+		register_test "$test_read_func" "PCI Device $name Read" 1
 
-		local test_write_func="test_pci_write_speed_$index"
+		local test_write_func="test_pci_write_speed_$safe_addr"
 		eval "$test_write_func() { test_pci_write_speed \"$device\"; }"
-		register_test "$test_write_func" "  PCI Device $name Write"
+		register_test "$test_write_func" "PCI Device $name Write" 1
 	fi
 }
 
@@ -504,10 +506,9 @@ ds_rk3568_som_smarc_evb_test_pci() {
 		"2x1 (PCIE_C)"
 	)
 
-	local idx=0
+	local i
 	for ((i=0; i<${#addrs[@]}; i++)); do
-		register_pcie_tests "${names[i]}" "${addrs[i]}" "$idx"
-		((idx++))
+		test_pci_register_tests "${names[i]}" "${addrs[i]}"
 	done
 
 	return 0

@@ -61,7 +61,7 @@ test_i2c_device() {
 	fi
 }
 
-check_i2c_bus() {
+test_i2c_check_bus() {
 	local bus="$1"
 
 	if [ ! -e "/dev/i2c-$bus" ]; then
@@ -83,9 +83,9 @@ test_i2c2_0x70() {
 	local ret=$?
 
 	if [ $ret -eq 0 ]; then
-		register_test "@ds_rk3568_som_smarc_evb_test_i2c8" "    I2C8 Bus (I2C_LCD)"
-		register_test "@ds_rk3568_som_smarc_evb_test_i2c7" "    I2C7 Bus (I2C_CAM1)"
-		register_test "@ds_rk3568_som_smarc_evb_test_i2c6" "    I2C6 Bus (I2C_CAM0)"
+		register_test "@ds_rk3568_som_smarc_evb_test_i2c8" "I2C8 Bus (I2C_LCD)" 2
+		register_test "@ds_rk3568_som_smarc_evb_test_i2c7" "I2C7 Bus (I2C_CAM1)" 2
+		register_test "@ds_rk3568_som_smarc_evb_test_i2c6" "I2C6 Bus (I2C_CAM0)" 2
 	fi
 
 	return $ret
@@ -105,8 +105,8 @@ test_i2c3_0x68() {
 
 ds_rk3568_som_smarc_evb_test_i2c2() {
 	if [ -e /dev/i2c-2 ]; then
-		register_test "@test_i2c2_0x70" "  I2C2 Device 0x70 (I2C MUX)"
-		register_test "@test_i2c2_0x23" "  I2C2 Device 0x23 (I2C GPIO)"
+		register_test "@test_i2c2_0x70" "I2C2 Device 0x70 (I2C MUX)" 1
+		register_test "@test_i2c2_0x23" "I2C2 Device 0x23 (I2C GPIO)" 1
 
 		echo "OK"
 
@@ -120,9 +120,9 @@ ds_rk3568_som_smarc_evb_test_i2c2() {
 
 ds_rk3568_som_smarc_evb_test_i2c3() {
 	if [ -e /dev/i2c-3 ]; then
-		register_test "@test_i2c3_0x68" "  I2C3 Device 0x68 (RTC)"
-		register_test "@test_i2c3_0x51" "  I2C3 Device 0x51 (EEPROM)"
-		register_test "@test_i2c3_0x50" "  I2C3 Device 0x50 (EEPROM)"
+		register_test "@test_i2c3_0x68" "I2C3 Device 0x68 (RTC)" 1
+		register_test "@test_i2c3_0x51" "I2C3 Device 0x51 (EEPROM)" 1
+		register_test "@test_i2c3_0x50" "I2C3 Device 0x50 (EEPROM)" 1
 
 		echo "OK"
 
@@ -135,19 +135,19 @@ ds_rk3568_som_smarc_evb_test_i2c3() {
 }
 
 ds_rk3568_som_smarc_evb_test_i2c4() {
-	check_i2c_bus 4
+	test_i2c_check_bus 4
 }
 
 ds_rk3568_som_smarc_evb_test_i2c6() {
-	check_i2c_bus 6
+	test_i2c_check_bus 6
 }
 
 ds_rk3568_som_smarc_evb_test_i2c7() {
-	check_i2c_bus 7
+	test_i2c_check_bus 7
 }
 
 ds_rk3568_som_smarc_evb_test_i2c8() {
-	check_i2c_bus 8
+	test_i2c_check_bus 8
 }
 
 ds_rk3568_som_smarc_evb_test_i2c() {
