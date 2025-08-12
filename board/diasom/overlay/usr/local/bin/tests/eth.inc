@@ -80,14 +80,14 @@ test_eth_speed() {
 
 		sleep 4.5
 
-		if [ -n "$OLD_CONSOLE_LEVEL" ] && [ -w /proc/sys/kernel/printk ]; then
-			echo "$OLD_CONSOLE_LEVEL" > /proc/sys/kernel/printk 2>/dev/null
+		if [ -n "$ETH_CONSOLE_LEVEL" ] && [ -w /proc/sys/kernel/printk ]; then
+			echo "$ETH_CONSOLE_LEVEL" > /proc/sys/kernel/printk 2>/dev/null
 		fi
 	}
 	trap cleanup EXIT RETURN INT TERM
 
 	if [ -r /proc/sys/kernel/printk ]; then
-		OLD_CONSOLE_LEVEL=$(awk '{print $1}' /proc/sys/kernel/printk 2>/dev/null)
+		ETH_CONSOLE_LEVEL=$(awk '{print $1}' /proc/sys/kernel/printk 2>/dev/null)
 		echo 1 > /proc/sys/kernel/printk 2>/dev/null
 	fi
 
