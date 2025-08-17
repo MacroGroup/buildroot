@@ -48,7 +48,7 @@ test_uart() {
 		return 1
 	fi
 
-	socat -u "OPEN:$device,b$baud_rate,raw,echo=0" "PIPE:$pipe" &
+	socat -u "OPEN:$device,b$baud_rate,raw,echo=0" "PIPE:$pipe" 2>/dev/null &
 	local socat_pid=$!
 
 	sleep 0.8
@@ -60,15 +60,14 @@ test_uart() {
 
 	kill -INT "$socat_pid" 2>/dev/null
 	wait "$socat_pid" 2>/dev/null
-
 	rm -f "$pipe" 2>/dev/null
 
 	if [[ "$data" == "$received_data" ]]; then
-		echo "OK"
+		echo "$baud_rate OK"
 		return 0
 	fi
 
-	echo "Failed"
+	echo "$baud_rate Failed"
 
 	return 1
 }
