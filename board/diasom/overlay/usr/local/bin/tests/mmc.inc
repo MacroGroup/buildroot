@@ -1,7 +1,9 @@
 #!/bin/bash
 
 declare -A MMC_DT_MAP=(
-	["diasom,ds-rk3568-som-smarc-evb"]="ds_rk3568_som_smarc_evb_test_mmc"
+	["diasom,ds-rk3568-som"]="test_mmc"
+	["diasom,ds-rk3568-som-evb"]="test_sd"
+	["diasom,ds-rk3568-som-smarc-evb"]="test_sd"
 )
 
 check_dependencies_mmc() {
@@ -81,14 +83,20 @@ test_mmc_read_speed() {
 	return 1
 }
 
-test_sd() {
+test_mmc_mmc() {
+	test_mmc_read_speed "MMC"
+}
+
+test_mmc_sd() {
 	test_mmc_read_speed "SD"
 }
 
-ds_rk3568_som_smarc_evb_test_mmc() {
-	register_test "test_sd" "SD"
+test_mmc() {
+	register_test "test_mmc_sd" "eMMC"
+}
 
-	return 0
+test_sd() {
+	register_test "test_mmc_sd" "SD"
 }
 
 if ! declare -F register_test >/dev/null || ! declare -F check_dependencies >/dev/null || ! declare -F check_devicetree >/dev/null; then
@@ -106,10 +114,9 @@ while IFS= read -r -d '' compatible; do
 	compat_str=$(echo -n "$compatible" | tr -d '\0')
 
 	for pattern in "${!MMC_DT_MAP[@]}"; do
-		if [[ $compat_str == "$pattern" || $compat_str == "$pattern"* ]]; then
+		if [[ $compat_str == "$pattern" ]]; then
 			${MMC_DT_MAP[$pattern]}
 			found_compatible=1
-			return $?
 		fi
 	done
 done < /proc/device-tree/compatible

@@ -154,8 +154,6 @@ ds_rk3568_som_smarc_evb_test_i2c() {
 	register_test "ds_rk3568_som_smarc_evb_test_i2c2" "I2C2 Bus (Internal)"
 	register_test "ds_rk3568_som_smarc_evb_test_i2c3" "I2C3 Bus (I2C_GP)"
 	register_test "ds_rk3568_som_smarc_evb_test_i2c4" "I2C4 Bus (I2C_PM)"
-
-	return 0
 }
 
 if ! declare -F register_test >/dev/null || ! declare -F check_dependencies >/dev/null || ! declare -F check_devicetree >/dev/null; then
@@ -173,10 +171,9 @@ while IFS= read -r -d '' compatible; do
 	compat_str=$(echo -n "$compatible" | tr -d '\0')
 
 	for pattern in "${!I2C_DT_MAP[@]}"; do
-		if [[ $compat_str == "$pattern" || $compat_str == "$pattern"* ]]; then
+		if [[ $compat_str == "$pattern" ]]; then
 			${I2C_DT_MAP[$pattern]}
 			found_compatible=1
-			return $?
 		fi
 	done
 done < /proc/device-tree/compatible

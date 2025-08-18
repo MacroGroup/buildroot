@@ -1,7 +1,8 @@
 #!/bin/bash
 
 declare -A ETH_DT_MAP=(
-	["diasom,ds-rk3568-som-smarc-evb"]="test_eth_end0_end1"
+	["diasom,ds-rk3568-som-evb"]="ds_rk3568_som_evb_test_eth"
+	["diasom,ds-rk3568-som-smarc-evb"]="ds_rk3568_som_smarc_evb_test_eth"
 )
 
 declare -a ETH_INTERFACES
@@ -194,7 +195,7 @@ test_eth() {
 	return 1
 }
 
-test_eth_speed_end0_end1() {
+test_eth_loop_end0_end1() {
 	test_eth_speed "end0" "end1"
 }
 
@@ -207,18 +208,22 @@ test_eth_end1() {
 	local ret=$?
 
 	if [[ " ${ETH_INTERFACES[@]} " =~ " end0 " ]] && [[ " ${ETH_INTERFACES[@]} " =~ " end1 " ]]; then
-		register_test "@test_eth_speed_end0_end1" "Ethernet Bandwidth (GBE0-GBE1)"
+		register_test "@test_eth_loop_end0_end1" "Eth0-Eth1 Bandwidth"
 	fi
 
 	return $ret
 }
 
-test_eth_end0_end1()
+ds_rk3568_som_evb_test_eth()
+{
+	register_test "test_eth_end0" "Ethernet 0 (GMAC0)"
+	register_test "test_eth_end1" "Ethernet 1 (GMAC1)"
+}
+
+ds_rk3568_som_smarc_evb_test_eth()
 {
 	register_test "test_eth_end0" "Ethernet 0 (GBE0)"
 	register_test "test_eth_end1" "Ethernet 1 (GBE1)"
-
-	return 0
 }
 
 if ! declare -F register_test >/dev/null || ! declare -F check_dependencies >/dev/null || ! declare -F check_devicetree >/dev/null; then
@@ -236,10 +241,9 @@ while IFS= read -r -d '' compatible; do
 	compat_str=$(echo -n "$compatible" | tr -d '\0')
 
 	for pattern in "${!ETH_DT_MAP[@]}"; do
-		if [[ $compat_str == "$pattern" || $compat_str == "$pattern"* ]]; then
+		if [[ $compat_str == "$pattern" ]]; then
 			${ETH_DT_MAP[$pattern]}
 			found_compatible=1
-			return $?
 		fi
 	done
 done < /proc/device-tree/compatible

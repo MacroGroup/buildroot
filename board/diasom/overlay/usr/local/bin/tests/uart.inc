@@ -53,7 +53,10 @@ test_uart() {
 
 	sleep 0.8
 
-	echo -n "$data" > "$device"
+	if ! echo -n "$data" > "$device" 2>/dev/null; then
+		echo "$baud_rate Failed"
+		return 1
+	fi
 
 	local received_data
 	received_data=$(timeout 2 cat "$pipe")
@@ -88,8 +91,6 @@ ds_rk3568_som_smarc_evb_test_uart() {
 	register_test "ds_rk3568_som_smarc_evb_test_uart4" "UART4 (SER0)"
 	register_test "ds_rk3568_som_smarc_evb_test_uart8" "UART8 (SER2)"
 	register_test "ds_rk3568_som_smarc_evb_test_uart5" "UART5 (SER3)"
-
-	return 0
 }
 
 if ! declare -F register_test >/dev/null || ! declare -F check_dependencies >/dev/null || ! declare -F check_devicetree >/dev/null; then
@@ -107,10 +108,9 @@ while IFS= read -r -d '' compatible; do
 	compat_str=$(echo -n "$compatible" | tr -d '\0')
 
 	for pattern in "${!UART_DT_MAP[@]}"; do
-		if [[ $compat_str == "$pattern" || $compat_str == "$pattern"* ]]; then
+		if [[ $compat_str == "$pattern" ]]; then
 			${UART_DT_MAP[$pattern]}
 			found_compatible=1
-			return $?
 		fi
 	done
 done < /proc/device-tree/compatible

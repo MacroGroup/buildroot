@@ -152,8 +152,6 @@ test_sata_write() {
 
 test_sata() {
 	register_test "test_sata_read" "SATA Read"
-
-	return 0
 }
 
 if ! declare -F register_test >/dev/null || ! declare -F check_dependencies >/dev/null || ! declare -F check_devicetree >/dev/null; then
@@ -171,10 +169,9 @@ while IFS= read -r -d '' compatible; do
 	compat_str=$(echo -n "$compatible" | tr -d '\0')
 
 	for pattern in "${!SATA_DT_MAP[@]}"; do
-		if [[ $compat_str == "$pattern" || $compat_str == "$pattern"* ]]; then
+		if [[ $compat_str == "$pattern" ]]; then
 			${SATA_DT_MAP[$pattern]}
 			found_compatible=1
-			return $?
 		fi
 	done
 done < /proc/device-tree/compatible

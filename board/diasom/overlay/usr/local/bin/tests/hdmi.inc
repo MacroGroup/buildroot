@@ -1,7 +1,8 @@
 #!/bin/bash
 
 declare -A HDMI_DT_MAP=(
-	["diasom,ds-rk3568-som-smarc-evb"]="test_hdmi"
+	["diasom,ds-rk3568-som-evb"]="test_hdmi0"
+	["diasom,ds-rk3568-som-smarc-evb"]="test_hdmi0"
 )
 
 check_dependencies_hdmi() {
@@ -27,14 +28,12 @@ test_hdmi_card() {
 	return 1
 }
 
-test_hdmi0() {
+test_hdmi_hdmi0() {
 	test_hdmi_card "HDMI-A-1"
 }
 
-test_hdmi() {
-	register_test "test_hdmi0" "HDMI0"
-
-	return 0
+test_hdmi0() {
+	register_test "test_hdmi_hdmi0" "HDMI0"
 }
 
 if ! declare -F register_test >/dev/null || ! declare -F check_dependencies >/dev/null || ! declare -F check_devicetree >/dev/null; then
@@ -52,10 +51,9 @@ while IFS= read -r -d '' compatible; do
 	compat_str=$(echo -n "$compatible" | tr -d '\0')
 
 	for pattern in "${!HDMI_DT_MAP[@]}"; do
-		if [[ $compat_str == "$pattern" || $compat_str == "$pattern"* ]]; then
+		if [[ $compat_str == "$pattern" ]]; then
 			${HDMI_DT_MAP[$pattern]}
 			found_compatible=1
-			return $?
 		fi
 	done
 done < /proc/device-tree/compatible
