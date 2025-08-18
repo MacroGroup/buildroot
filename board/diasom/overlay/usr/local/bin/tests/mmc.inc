@@ -14,6 +14,7 @@ check_dependencies_mmc() {
 test_mmc_get_block_device() {
 	local devtype="$1"
 
+	local block
 	for block in /sys/block/mmcblk*; do
 		local block_name=$(basename "$block")
 		block_dev="/dev/$block_name"
@@ -92,7 +93,7 @@ test_mmc_sd() {
 }
 
 test_mmc() {
-	register_test "test_mmc_sd" "eMMC"
+	register_test "test_mmc_mmc" "eMMC"
 }
 
 test_sd() {
