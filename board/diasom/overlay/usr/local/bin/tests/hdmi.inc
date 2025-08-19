@@ -14,13 +14,10 @@ test_hdmi_card() {
 	local interface="$1"
 
 	if [ -d "/sys/class/drm/card0-$interface" ]; then
-		echo "OK"
-		return 0
-	fi
-
-	if modetest -c | grep -q "$interface"; then
-		echo "OK"
-		return 0
+		if modetest -c | grep -q "$interface"; then
+			echo "OK"
+			return 0
+		fi
 	fi
 
 	echo "Missing"
