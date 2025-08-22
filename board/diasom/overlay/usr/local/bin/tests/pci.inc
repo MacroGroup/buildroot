@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=SC2181
 
 declare -A PCI_DT_MAP=(
 	["diasom,ds-rk3568-som-smarc-evb"]="ds_rk3568_som_smarc_evb_test_pci"
@@ -13,10 +14,13 @@ check_dependencies_pci() {
 
 test_pci_device() {
 	local device="$1"
-	local pci_info=$(lspci -n -s "$device" 2>/dev/null)
+
+	local pci_info
+	pci_info=$(lspci -n -s "$device" 2>/dev/null)
 
 	if [ -n "$pci_info" ]; then
-		local pci_id=$(echo "$pci_info" | awk '{print $3}')
+		local pci_id
+		pci_id=$(echo "$pci_info" | awk '{print $3}')
 		if [ -n "$pci_id" ]; then
 			echo "$pci_id"
 		else
@@ -33,7 +37,7 @@ test_pci_device() {
 
 test_pci_get_nvme_device() {
 	local device="$1"
-	local nvme_ctrl
+	local nvme_ctrl nvme_dev
 	nvme_ctrl=$(grep -l "$device" /sys/class/nvme/*/address | cut -d/ -f5)
 
 	if [ -z "$nvme_ctrl" ]; then
@@ -41,10 +45,9 @@ test_pci_get_nvme_device() {
 		return 2
 	fi
 
-	local nvme_dev="/dev/${nvme_ctrl}n1"
-
+	nvme_dev="/dev/${nvme_ctrl}n1"
 	if [ ! -b "$nvme_dev" ]; then
-		nvme_dev=$(ls /dev/${nvme_ctrl}n* 2>/dev/null | head -n1)
+		nvme_dev=$(find /dev -name "${nvme_ctrl}n*" -type b 2>/dev/null | head -n1)
 
 		if [ -z "$nvme_dev" ] || [ ! -b "$nvme_dev" ]; then
 			echo "NVMe: Missing"
@@ -66,12 +69,11 @@ test_pci_get_speed() {
 	local device="$1"
 	local writetest="$2"
 
-	local pcie_info
+	local pcie_info line speed width version speed_val width_val
 	pcie_info=$(lspci -vv -s "$device" 2>/dev/null | grep -E 'LnkSta:|LnkCap:')
-
-	local speed=""
-	local width=""
-	local version=""
+	speed=""
+	width=""
+	version=""
 
 	while IFS= read -r line; do
 		if [[ $line == *"LnkSta:"* ]]; then
@@ -98,8 +100,8 @@ test_pci_get_speed() {
 
 	local min_speed=$PCIE_MIN_SPEED
 	if [[ -n "$speed" && -n "$width" ]]; then
-		local speed_val=$(echo "$speed" | sed 's/GT\/s//')
-		local width_val=$(echo "$width" | sed 's/x//')
+		speed_val=$(echo "$speed" | sed 's/GT\/s//')
+		width_val="${width//x/}"
 
 		min_speed=$(bc <<< "scale=2; $speed_val * $width_val * $encoding_rate * 1000 / 8")
 		# Use 90% effectivity, compare with half value
@@ -116,7 +118,8 @@ test_pci_get_speed() {
 
 test_pci_read_speed_nvme() {
 	local device="$1"
-	local nvme_dev=$(test_pci_get_nvme_device "$device")
+	local nvme_dev
+	nvme_dev=$(test_pci_get_nvme_device "$device")
 	local ret=$?
 
 	if [ $ret -ne 0 ]; then
@@ -128,13 +131,12 @@ test_pci_read_speed_nvme() {
 	read_output=$(fio --name=read_test --filename="$nvme_dev" --rw=read \
 		--bs=128k --iodepth=64 --runtime=2 --time_based --direct=1 \
 		--ioengine=libaio --output-format=json 2>&1)
-
 	if [ $? -ne 0 ]; then
 		echo "NVMe: Error"
 		return 1
 	fi
 
-	local read_speed
+	local read_speed min_read_speed
 	read_speed=$(echo "$read_output" | jq -r '.jobs[0].read.bw' 2>/dev/null)
 
 	if [[ ! "$read_speed" =~ ^[0-9.]+$ ]]; then
@@ -144,7 +146,7 @@ test_pci_read_speed_nvme() {
 
 	read_speed=$(echo "scale=2; $read_speed / 1024" | bc)
 
-	local min_read_speed=$(test_pci_get_speed "$device" false)
+	min_read_speed=$(test_pci_get_speed "$device" false)
 
 	echo "NVMe: ${read_speed} MB/s"
 
@@ -157,7 +159,8 @@ test_pci_read_speed_nvme() {
 
 test_pci_write_speed_nvme() {
 	local device="$1"
-	local nvme_dev=$(test_pci_get_nvme_device "$device")
+	local nvme_dev
+	nvme_dev=$(test_pci_get_nvme_device "$device")
 	local ret=$?
 
 	if [ $ret -ne 0 ]; then
@@ -169,13 +172,12 @@ test_pci_write_speed_nvme() {
 	write_output=$(fio --name=write_test --filename="$nvme_dev" --rw=write \
 		--bs=128k --iodepth=64 --runtime=2 --time_based --direct=1 \
 		--ioengine=libaio --output-format=json 2>&1)
-
 	if [ $? -ne 0 ]; then
 		echo "NVMe: Error"
 		return 1
 	fi
 
-	local write_speed
+	local write_speed min_write_speed
 	write_speed=$(echo "$write_output" | jq -r '.jobs[0].write.bw' 2>/dev/null)
 
 	if [[ ! "$write_speed" =~ ^[0-9.]+$ ]]; then
@@ -185,7 +187,7 @@ test_pci_write_speed_nvme() {
 
 	write_speed=$(echo "scale=2; $write_speed / 1024" | bc)
 
-	local min_write_speed=$(test_pci_get_speed "$device" true)
+	min_write_speed=$(test_pci_get_speed "$device" true)
 
 	echo "NVMe: ${write_speed} MB/s"
 	if (( $(echo "$write_speed > $min_write_speed" | bc -l) )); then
@@ -197,9 +199,12 @@ test_pci_write_speed_nvme() {
 
 test_pci_get_wlan_interface() {
 	local device="$1"
+
+	local iface
 	for iface in /sys/class/net/*; do
 		if [ -e "$iface/device" ]; then
-			local iface_dev=$(readlink -f "$iface/device" | awk -F/ '{print $NF}')
+			local iface_dev
+			iface_dev=$(readlink -f "$iface/device" | awk -F/ '{print $NF}')
 
 			if [ "$iface_dev" = "$device" ]; then
 				basename "$iface"
@@ -211,8 +216,9 @@ test_pci_get_wlan_interface() {
 
 test_pci_read_speed_wlan() {
 	local device="$1"
-	local iface=$(test_pci_get_wlan_interface "$device")
 
+	local iface
+	iface=$(test_pci_get_wlan_interface "$device")
 	if [ -z "$iface" ]; then
 		echo "WLAN: Interface not found (Unsupported card?)"
 		return 2
@@ -220,7 +226,7 @@ test_pci_read_speed_wlan() {
 
 	local mon_iface="mon$RANDOM"
 
-	if ! iw phy "$(cat /sys/class/net/$iface/phy80211/name)" interface add $mon_iface type monitor 2>/dev/null; then
+	if ! iw phy "$(cat "/sys/class/net/$iface/phy80211/name")" interface add $mon_iface type monitor 2>/dev/null; then
 		echo "WLAN: Cannot create monitor interface"
 		return 2
 	fi
@@ -231,7 +237,8 @@ test_pci_read_speed_wlan() {
 	local server_pid=$!
 	sleep 0.5
 
-	local output=$(timeout 5 iperf3 -c 127.0.0.1 -t 1 -i 0 -u -b 0 --json 2>/dev/null)
+	local output
+	output=$(timeout 5 iperf3 -c 127.0.0.1 -t 1 -i 0 -u -b 0 --json 2>/dev/null)
 	kill $server_pid 2>/dev/null
 	wait $server_pid 2>/dev/null
 
@@ -247,14 +254,15 @@ test_pci_read_speed_wlan() {
 		return 1
 	fi
 
-	local speed_bps=$(echo "$output" | jq -r '.end.sum_sent.bits_per_second')
+	local speed_bps speed_mbs min_speed
+	speed_bps=$(echo "$output" | jq -r '.end.sum_sent.bits_per_second')
 	if [[ ! "$speed_bps" =~ ^[0-9.]+$ ]]; then
 		echo "WLAN: Error"
 		return 1
 	fi
 
-	local speed_mbs=$(echo "scale=2; $speed_bps / 8 / 1024 / 1024" | bc)
-	local min_speed=$(test_pci_get_speed "$device" false)
+	speed_mbs=$(echo "scale=2; $speed_bps / 8 / 1024 / 1024" | bc)
+	min_speed=$(test_pci_get_speed "$device" false)
 
 	echo "WLAN: ${speed_mbs} MB/s"
 
@@ -267,8 +275,9 @@ test_pci_read_speed_wlan() {
 
 test_pci_write_speed_wlan() {
 	local device="$1"
-	local iface=$(test_pci_get_wlan_interface "$device")
 
+	local iface
+	iface=$(test_pci_get_wlan_interface "$device")
 	if [ -z "$iface" ]; then
 		echo "WLAN: Interface not found (Unsupported card?)"
 		return 2
@@ -276,7 +285,7 @@ test_pci_write_speed_wlan() {
 
 	local mon_iface="mon$RANDOM"
 
-	if ! iw phy "$(cat /sys/class/net/$iface/phy80211/name)" interface add $mon_iface type monitor 2>/dev/null; then
+	if ! iw phy "$(cat "/sys/class/net/$iface/phy80211/name")" interface add $mon_iface type monitor 2>/dev/null; then
 		echo "WLAN: Cannot create monitor interface"
 		return 2
 	fi
@@ -286,7 +295,8 @@ test_pci_write_speed_wlan() {
 	local server_pid=$!
 	sleep 0.5
 
-	local output=$(timeout 5 iperf3 -c 127.0.0.1 -R -t 1 -i 0 -u -b 0 --json 2>/dev/null)
+	local output
+	output=$(timeout 5 iperf3 -c 127.0.0.1 -R -t 1 -i 0 -u -b 0 --json 2>/dev/null)
 	kill $server_pid 2>/dev/null
 	wait $server_pid 2>/dev/null
 
@@ -302,14 +312,15 @@ test_pci_write_speed_wlan() {
 		return 1
 	fi
 
-	local speed_bps=$(echo "$output" | jq -r '.end.sum_received.bits_per_second')
+	local speed_bps speed_mbs min_speed
+	speed_bps=$(echo "$output" | jq -r '.end.sum_received.bits_per_second')
 	if [[ ! "$speed_bps" =~ ^[0-9.]+$ ]]; then
 		echo "WLAN: Error"
 		return 1
 	fi
 
-	local speed_mbs=$(echo "scale=2; $speed_bps / 8 / 1024 / 1024" | bc)
-	local min_speed=$(test_pci_get_speed "$device" true)
+	speed_mbs=$(echo "scale=2; $speed_bps / 8 / 1024 / 1024" | bc)
+	min_speed=$(test_pci_get_speed "$device" true)
 
 	echo "WLAN: ${speed_mbs} MB/s"
 
@@ -351,7 +362,7 @@ test_pci_read_speed() {
 
 	local class=${class_info:0:2}
 
-	case $class in
+	case "$class" in
 	"01")
 		if [ "${class_info:2:2}" = "08" ]; then
 			test_pci_read_speed_nvme "$device"
@@ -381,7 +392,7 @@ test_pci_write_speed() {
 
 	local class=${class_info:0:2}
 
-	case $class in
+	case "$class" in
 	"01")
 		if [ "${class_info:2:2}" = "08" ]; then
 			test_pci_write_speed_nvme "$device"
@@ -406,29 +417,33 @@ test_pci_find_device() {
 
 		[[ -f "$node_dir/reg" ]] || continue
 
-		local file_size=$(stat -c %s "$node_dir/reg" 2>/dev/null)
+		local file_size region_size num_regions
+		file_size=$(stat -c %s "$node_dir/reg" 2>/dev/null)
 		[[ -z "$file_size" ]] && continue
 
-		local region_size=8
-		local num_regions=$((file_size / region_size))
+		region_size=8
+		num_regions=$((file_size / region_size))
 
 		local i
 		for ((i=0; i<num_regions; i++)); do
 			local offset=$((i * region_size))
 
-			local addr_bytes=$(dd if="$node_dir/reg" bs=1 skip=$((offset + 4)) count=4 2>/dev/null | hexdump -v -e '/1 "%02x"')
+			local addr_bytes
+			addr_bytes=$(dd if="$node_dir/reg" bs=1 skip=$((offset + 4)) count=4 2>/dev/null | hexdump -v -e '/1 "%02x"')
 
 			while [[ ${#addr_bytes} -lt 8 ]]; do
 				addr_bytes="0$addr_bytes"
 			done
 
 			if [[ "$addr_bytes" == "$value" ]]; then
-				local pci_dir=$(find "$platform_dir" -maxdepth 1 -type d -name 'pci*' -print -quit)
+				local pci_dir device
+				pci_dir=$(find "$platform_dir" -maxdepth 1 -type d -name 'pci*' -print -quit)
 				[[ -z "$pci_dir" ]] && continue
 
-				local device=$(
+				device=$(
 					find "$pci_dir" -maxdepth 1 -type d -name '????:??:??.?' 2>/dev/null | while IFS= read -r path; do
-						local name=$(basename "$path")
+						local name
+						name=$(basename "$path")
 						if echo "$name" | grep -Eq '^[0-9]{4}:[0-9]{2}:[0-9]{2}\.[0-9]$'; then
 							echo "$name"
 							break
@@ -451,7 +466,8 @@ test_pci_register_tests() {
 	local name="$1"
 	local addr="$2"
 
-	local root_port=$(test_pci_find_device "$addr")
+	local root_port
+	root_port=$(test_pci_find_device "$addr")
 	[[ -z "$root_port" ]] && return
 
 	local safe_addr="${addr//[^[:alnum:]]/_}"
@@ -463,7 +479,8 @@ test_pci_register_tests() {
 	local device=""
 	for dev in /sys/bus/pci/devices/"$root_port"/*; do
 		if [[ -d "$dev" ]]; then
-			local dev_name=$(basename "$dev")
+			local dev_name
+			dev_name=$(basename "$dev")
 			if [[ "$dev_name" == "$root_port" ]]; then
 				continue
 			fi

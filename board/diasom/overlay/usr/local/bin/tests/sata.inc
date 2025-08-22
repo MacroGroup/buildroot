@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=SC2181
 
 declare -A SATA_DT_MAP=(
 	["diasom,ds-rk3568-som-smarc-evb"]="test_sata"
@@ -44,7 +45,8 @@ test_sata_check_basic() {
 		return 1
 	fi
 
-	local sata_dev=$(test_sata_get_block_device)
+	local sata_dev
+	sata_dev="$(test_sata_get_block_device)"
 
 	if [ -z "$sata_dev" ] || [ ! -b "$sata_dev" ]; then
 		echo "Missing"
@@ -57,8 +59,9 @@ test_sata_check_basic() {
 }
 
 test_sata_read() {
-	local speed="$SATA2_MIN_SPEED"
-	local sata_info=$(test_sata_check_basic)
+	local sata_info speed
+	speed="$SATA2_MIN_SPEED"
+	sata_info=$(test_sata_check_basic)
 	local ret=$?
 
 	if [ $ret -ne 0 ]; then
@@ -66,7 +69,8 @@ test_sata_read() {
 		return $ret
 	fi
 
-	local sata_dev=$(echo "$sata_info" | tail -1)
+	local sata_dev
+	sata_dev=$(echo "$sata_info" | tail -1)
 	if ! [ -b "$sata_dev" ]; then
 		echo "Missing"
 		return 1
@@ -77,7 +81,6 @@ test_sata_read() {
 		--bs=1M --iodepth=32 --direct=1 --ioengine=libaio \
 		--size=10M --runtime=2 --time_based --group_reporting \
 		--output-format=json 2>/dev/null)
-
 	if [ $? -ne 0 ]; then
 		echo "Error"
 		return 1
@@ -105,8 +108,9 @@ test_sata_read() {
 }
 
 test_sata_write() {
-	local speed=$(bc <<< "scale=2; $SATA2_MIN_SPEED * 0.8")
-	local sata_info=$(test_sata_check_basic)
+	local sata_info speed
+	speed=$(bc <<< "scale=2; $SATA2_MIN_SPEED * 0.8")
+	sata_info=$(test_sata_check_basic)
 	local ret=$?
 
 	if [ $ret -ne 0 ]; then
@@ -114,7 +118,8 @@ test_sata_write() {
 		return $ret
 	fi
 
-	local sata_dev=$(echo "$sata_info" | tail -1)
+	local sata_dev
+	sata_dev=$(echo "$sata_info" | tail -1)
 	if ! [ -b "$sata_dev" ]; then
 		echo "Missing"
 		return 1
@@ -125,7 +130,6 @@ test_sata_write() {
 		--bs=1M --direct=1 --ioengine=libaio --size=10M --runtime=2 \
 		--iodepth=32 --time_based --group_reporting \
 		--output-format=json 2>/dev/null)
-
 	if [ $? -ne 0 ]; then
 		echo "Error"
 		return 1

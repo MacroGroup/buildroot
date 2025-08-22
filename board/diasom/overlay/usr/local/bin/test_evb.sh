@@ -1,6 +1,7 @@
 #!/bin/bash
+# shellcheck disable=SC1090,SC2329
 
-if [ -t 1 ]; then
+if [ -t 1 ] && [ -z "${NO_COLOR}" ]; then
 	COLOR_RESET="\e[0m"
 	COLOR_OK="\e[32m"
 	COLOR_WARNING="\e[33m"
@@ -18,7 +19,6 @@ fi
 
 TEST_FILTER=""
 SOURCE="${BASH_SOURCE[0]}"
-SCRIPT_NAME=$(basename -- "$SOURCE")
 DIR=$(dirname -- "$SOURCE")
 SCRIPT_DIR=$(cd -- "$DIR" && pwd)
 TEST_DIR="${SCRIPT_DIR}/tests"
@@ -36,7 +36,11 @@ check_dependencies() {
 	local base_deps=(awk basename bc cat cut dmesg echo find grep head ls mktemp mount printf readlink stat tail tr)
 	deps+=("${base_deps[@]}")
 
-	local sorted_deps=($(printf "%s\n" "${deps[@]}" | sort -u))
+	local sorted_deps
+	mapfile -t sorted_deps < <(printf "%s\n" "${deps[@]}" | sort -u)
+	if [ ${#sorted_deps[@]} -eq 0 ]; then
+		return 0
+	fi
 
 	for cmd in "${sorted_deps[@]}"; do
 		if ! command -v "$cmd" &>/dev/null; then
@@ -82,7 +86,7 @@ register_test() {
 	done
 
 	local name_length=${#test_name}
-	[ $name_length -gt $MAX_NAME_LEN ] && MAX_NAME_LEN=$name_length
+	[ "$name_length" -gt "$MAX_NAME_LEN" ] && MAX_NAME_LEN=$name_length
 }
 
 run_tests() {
@@ -107,7 +111,7 @@ run_tests() {
 		TEST_NAMES=("${TEST_NAMES[@]:1}")
 		TEST_LEVELS=("${TEST_LEVELS[@]:1}")
 
-		> "$output_file"
+		: > "$output_file"
 
 		$test_function >"$output_file" 2>&1
 		local exit_code=$?
@@ -122,7 +126,7 @@ run_tests() {
 		done
 		local displayed_name="${padding_spaces}${original_test_name}"
 
-		local temp_padding=$MAX_NAME_LEN
+		local temp_padding="$MAX_NAME_LEN"
 		printf "%-${temp_padding}s : " "$displayed_name"
 
 		if [ $exit_code -eq 0 ]; then
@@ -175,7 +179,7 @@ register_self_tests() {
 	register_test "test_color_error" "Test Color \"Error\""
 }
 
-check_dependencies "CORE" "" || exit 1
+check_dependencies "CORE" || exit 1
 
 if [ $# -gt 0 ]; then
 	TEST_FILTER="$1"
@@ -187,13 +191,14 @@ if [ $# -gt 1 ]; then
 	exit 1
 fi
 
-if [ ! -d "$TEST_DIR" ]; then
+if [ ! -d "${TEST_DIR:-}" ]; then
 	echo -e "${COLOR_FAIL}Error: Test directory $TEST_DIR not found${COLOR_RESET}" >&2
 else
 	echo -e "${COLOR_HEADER}Searching for test modules in $TEST_DIR...${COLOR_RESET}"
 
 	for test_file in "$TEST_DIR"/*.inc; do
 		[ -f "$test_file" ] || continue
+
 		file_basename=$(basename "$test_file" .inc)
 		file_basename_lc=$(echo "$file_basename" | tr '[:upper:]' '[:lower:]')
 

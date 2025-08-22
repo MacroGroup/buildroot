@@ -16,21 +16,18 @@ test_mmc_get_block_device() {
 
 	local block
 	for block in /sys/block/mmcblk*; do
-		local block_name=$(basename "$block")
+		local block_name block_dev
+		block_name=$(basename "$block")
 		block_dev="/dev/$block_name"
 
 		if [ ! -f "$block/device/type" ]; then
 			continue
 		fi
 
-		local type=$(cat "$block/device/type" 2>/dev/null)
+		local type
+		type=$(cat "$block/device/type" 2>/dev/null)
 		if [ "$type" != "$devtype" ]; then
 			continue
-		fi
-
-		if mount | grep -q "^${block_dev}"; then
-			echo "Mounted"
-			return 2
 		fi
 
 		echo "$block_dev"
@@ -45,7 +42,8 @@ test_mmc_get_block_device() {
 
 test_mmc_read_speed() {
 	local devtype="$1"
-	local block_dev=$(test_mmc_get_block_device "$devtype")
+	local block_dev
+	block_dev=$(test_mmc_get_block_device "$devtype")
 	local ret=$?
 
 	if [ $ret -ne 0 ]; then

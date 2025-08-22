@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=SC2329,SC2181
 
 declare -A ETH_DT_MAP=(
 	["diasom,ds-rk3568-som-evb"]="ds_rk3568_som_evb_test_eth"
@@ -50,15 +51,16 @@ test_eth_cable_connection() {
 test_eth_speed() {
 	local SERVER_IFACE="$1"
 	local CLIENT_IFACE="$2"
-	local speed0=$(test_eth_get_speed "$SERVER_IFACE")
-	local speed1=$(test_eth_get_speed "$CLIENT_IFACE")
-	local max_speed=$((speed0 > speed1 ? speed0 : speed1))
+	local speed0 speed1 max_speed
+	speed0=$(test_eth_get_speed "$SERVER_IFACE")
+	speed1=$(test_eth_get_speed "$CLIENT_IFACE")
+	max_speed=$((speed0 > speed1 ? speed0 : speed1))
 
 	ETH_SERVER_IFACE="$SERVER_IFACE"
 	ETH_CLIENT_IFACE="$CLIENT_IFACE"
 
 	cleanup() {
-		kill "$IPERF_PID" 2>/dev/null
+		kill "${IPERF_PID:-}" 2>/dev/null
 
 		local server_iface="$ETH_SERVER_IFACE"
 		local client_iface="$ETH_CLIENT_IFACE"
@@ -177,7 +179,7 @@ test_eth_speed() {
 test_eth() {
 	local iface="$1"
 
-	if ip link show dev $iface >/dev/null 2>&1; then
+	if ip link show dev "$iface" >/dev/null 2>&1; then
 		if ! test_eth_cable_connection "$iface"; then
 			echo "Unplugged"
 			return 2
@@ -207,7 +209,7 @@ test_eth_end1() {
 	test_eth "end1"
 	local ret=$?
 
-	if [[ " ${ETH_INTERFACES[@]} " =~ " end0 " ]] && [[ " ${ETH_INTERFACES[@]} " =~ " end1 " ]]; then
+	if printf '%s\n' "${ETH_INTERFACES[@]}" | grep -q "end0" && printf '%s\n' "${ETH_INTERFACES[@]}" | grep -q "end1"; then
 		register_test "@test_eth_loop_end0_end1" "Eth0-Eth1 Bandwidth"
 	fi
 
