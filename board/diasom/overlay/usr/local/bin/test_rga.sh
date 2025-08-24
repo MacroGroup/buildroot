@@ -1,4 +1,5 @@
-#!/bin/sh
+#!/bin/bash
+# shellcheck disable=SC2181
 
 for i in gst-inspect-1.0 gst-launch-1.0; do
 	if ! which $i >/dev/null 2>&1; then
@@ -9,8 +10,8 @@ done
 
 plugincheck()
 {
-	gst-inspect-1.0 --exists $1
-	if [[ $? -ne 0 ]]; then
+	gst-inspect-1.0 --exists "$1"
+	if [ $? -ne 0 ]; then
 		echo "Script cannot be executed due missing \"$1\" plugin!"
 		exit 1
 	fi
@@ -19,10 +20,10 @@ plugincheck()
 timetest()
 {
 	echo "Measure image scaling using \"$1\" plugin (10 frames):"
-	time -f "Time used: %U" gst-launch-1.0 -q --no-position \
+	command time -f "Time used: %U" gst-launch-1.0 -q --no-position \
 	videotestsrc num-buffers=10 ! \
 	video/x-raw,width=1920,height=1080 ! \
-	$1 ! \
+	"$1" ! \
 	video/x-raw,width=800,height=600 ! \
 	fakesink sync=false
 }

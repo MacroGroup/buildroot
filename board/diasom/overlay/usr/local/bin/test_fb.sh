@@ -1,4 +1,5 @@
-#!/bin/sh
+#!/bin/bash
+# shellcheck disable=SC2181
 
 for i in gst-inspect-1.0 gst-launch-1.0; do
 	if ! which $i >/dev/null 2>&1; then
@@ -7,16 +8,15 @@ for i in gst-inspect-1.0 gst-launch-1.0; do
 	fi
 done
 
-plugincheck()
-{
-	gst-inspect-1.0 --exists $1
-	if [[ $? -ne 0 ]]; then
+plugincheck() {
+	gst-inspect-1.0 --exists "$1"
+	if [ $? -ne 0 ]; then
 		echo "Script cannot be executed due missing \"$1\" plugin!"
 		exit 1
 	fi
 }
 
-if [ -f $XDG_RUNTIME_DIR/$WAYLAND_DISPLAY.lock ]; then
+if [ -f "$XDG_RUNTIME_DIR"/"$WAYLAND_DISPLAY".lock ]; then
 	OUTSINK=waylandsink
 	echo "Wayland is active. Image will be dispalyed on the wayland screen!"
 else

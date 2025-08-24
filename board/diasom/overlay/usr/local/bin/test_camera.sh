@@ -1,6 +1,7 @@
-#!/bin/sh
+#!/bin/bash
+# shellcheck disable=SC2181
 
-if [ ! -f $XDG_RUNTIME_DIR/$WAYLAND_DISPLAY.lock ]; then
+if [ ! -f "$XDG_RUNTIME_DIR"/"$WAYLAND_DISPLAY".lock ]; then
 	echo "Script works on Wayland screen only!"
 	exit 1
 fi
@@ -14,7 +15,7 @@ done
 
 plugincheck()
 {
-	gst-inspect-1.0 --exists $1
+	gst-inspect-1.0 --exists "$1"
 
 	if [ $? -ne 0 ]; then
 		echo "Script cannot be executed due missing \"$1\" plugin!"
@@ -43,8 +44,8 @@ plugincheck waylandsink
 
 gst-launch-1.0 \
 v4l2src device=/dev/video0 ! \
-$FMT ! \
-$PIPE ! \
+"$FMT" ! \
+"$PIPE" ! \
 video/x-raw,format=RGB16 ! waylandsink
 
 exit 0

@@ -17,10 +17,10 @@ dotest() {
 	wget=$(whichwget)
 
 	bloburl=http://cachefly.cachefly.net/${filename}mb.test
-	blobsize=$(($megabytes*1024*1024))
+	blobsize=$((megabytes*1024*1024))
 
 	if which time >/dev/null 2>/dev/null; then
-		totaltime=$(dotime $wget "$bloburl" -O /dev/null)
+		totaltime=$(dotime "$wget" "$bloburl" -O /dev/null)
 	else
 		start=$(date +%s)
 		$wget "$bloburl" -O /dev/null
@@ -28,9 +28,9 @@ dotest() {
 		totaltime=$(( (stop-start) * 1000))
 	fi
 
-	echo Total time was $totaltime milliseconds for $blobsize bytes
+	echo Total time was "$totaltime" milliseconds for "$blobsize" bytes
 
-	if [ $totaltime -ne 0 ]; then
+	if [ "$totaltime" -ne 0 ]; then
 		bps=$(((1000*blobsize*8)/totaltime))
 		echo $((bps/1024/1024)) Mbps
 		echo $((bps/1024)) kbps
@@ -47,7 +47,7 @@ dotime() {
 	output=$("time" "$@" 2>&1 | tee /dev/tty)
 
 	if [ -z "$output" ]; then
-		echo "Error: Is the time (`which time`) program broken?" >&2
+		echo "Error: Is the time ($(which time)) program broken?" >&2
 		echo "Why was there no stderr?" >&2
 		echo 0
 		return
@@ -65,7 +65,7 @@ dotime() {
 	# We expect real="real	0m 0.22s", but double check
 	if [ "$real" ]; then
 		# Yup, we got what we expected.
-		set - $real
+		set - "$real"
 		min=$2			# 0m
 		min=${min%m}		# 0
 		sec=$3			# 0.22s
@@ -96,9 +96,9 @@ dotime() {
 	sec=${sec%.*}
 
 	# Bourne arithmetic in $(...) treats leading 0 as octal!
-	min=$(nooctal $min)
-	sec=$(nooctal $sec)
-	ms=$(nooctal $ms)
+	min=$(nooctal "$min")
+	sec=$(nooctal "$sec")
+	ms=$(nooctal "$ms")
 
 	echo "$min minutes, $sec seconds, $ms milliseconds" >&2
 
@@ -117,7 +117,7 @@ nooctal() {
 	done
 
 	if [ "$x" ]; then
-		echo $x
+		echo "$x"
 	else
 		echo 0
 	fi
@@ -144,7 +144,7 @@ whichwget() {
 		echo Error: This ought never happen. >&2
 		;;
 	esac
-	echo wget $options
+	echo wget "$options"
 }
 
 echo "======================================================================"
