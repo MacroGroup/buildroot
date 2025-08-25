@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-script_dir=$(cd $(dirname ${BASH_SOURCE[0]}) && pwd -P)
+script_dir=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd -P)
 
 fastboot_bin="fastboot"
 sdcard_img="ds-rk3568-smarc-evb-sdcard.img"
