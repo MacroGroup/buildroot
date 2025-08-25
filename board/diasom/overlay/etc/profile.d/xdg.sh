@@ -11,8 +11,8 @@ if test -z "$WAYLAND_DISPLAY"; then
 	export WAYLAND_DISPLAY=wayland-1
 fi
 
-if [ ! -d $XDG_RUNTIME_DIR ]; then
-	mkdir -p $XDG_RUNTIME_DIR
+if [ ! -d "$XDG_RUNTIME_DIR" ]; then
+	mkdir -p "$XDG_RUNTIME_DIR"
 fi
 
-chmod 0700 $XDG_RUNTIME_DIR
+chmod 0700 "$XDG_RUNTIME_DIR"

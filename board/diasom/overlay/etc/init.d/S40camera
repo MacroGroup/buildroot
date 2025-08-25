@@ -17,7 +17,7 @@ init_camera_imx8mm()
 		CAMDEV="'ap1302.2-003d':2"
 	fi
 
-	[ ! -z $CAMERA ] || { echo "Not found"; return; }
+	[ -n "$CAMERA" ] || { echo "Not found"; return; }
 
 	# Configure media links and PADs
 	media-ctl --reset
@@ -51,7 +51,7 @@ init_camera_rk3568()
 		CAMERA=AR0233
 	fi
 
-	[ ! -z $CAMERA ] || { echo "Not found"; return; }
+	[ -n "$CAMERA" ] || { echo "Not found"; return; }
 
 	FMT="SGRBG12_1X12/1920x1080"
 

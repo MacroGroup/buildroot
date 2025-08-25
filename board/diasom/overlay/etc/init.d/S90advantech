@@ -5,15 +5,14 @@ DAEMON_PATH=/usr/local/bin
 DAEMON=$DAEMON_PATH/$NAME
 PIDFILE=/var/run/$NAME.pid
 CHIP_ADDR=0x38
-DIGITS=4
 
 find_i2c_device() {
 	i2c_buses=$(ls /dev/i2c-* 2>/dev/null | sed 's|/dev/i2c-||')
 	[ -z "$i2c_buses" ] && return 1
 
 	for bus in $i2c_buses; do
-		i2cdetect -y $bus | grep -q "${CHIP_ADDR#0x}" && {
-			echo $bus
+		i2cdetect -y "$bus" | grep -q "${CHIP_ADDR#0x}" && {
+			echo "$bus"
 			return 0
 		}
 	done
@@ -32,7 +31,7 @@ start() {
 
 	echo -n "Starting $NAME: "
 
-	$DAEMON $I2C_DEV > /dev/null 2>&1 &
+	$DAEMON "$I2C_DEV" > /dev/null 2>&1 &
 	PID=$!
 	echo $PID > $PIDFILE
 	echo "OK"
@@ -44,7 +43,7 @@ stop() {
 
 	echo -n "Stopping $NAME: "
 
-	kill -TERM $PID > /dev/null 2>&1
+	kill -TERM "$PID" > /dev/null 2>&1
 	rm -f $PIDFILE
 	echo "OK"
 }

@@ -9,7 +9,7 @@ init_framebuffer()
 
 	FBMODE=$FB0/mode
 	MODE=$(cat $FBMODE 2>/dev/null)
-	[ -z $MODE ] || { echo "OK"; return; }
+	[ -z "$MODE" ] || { echo "OK"; return; }
 
 	FBMODES=$FB0/modes
 	[ -f $FBMODES ] || { echo "Error"; return; }
