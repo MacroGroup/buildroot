@@ -35,7 +35,7 @@ check_dependencies() {
 
 	local base_deps
 	base_deps=(@register_test)
-	base_deps+=(awk basename bc cat cut dmesg echo find grep head ls mktemp mount printf readlink stat tail tr)
+	base_deps+=(awk basename bc cat cut dmesg echo find grep head ls mktemp mount printf readlink sort stat tail tr)
 	deps+=("${base_deps[@]}")
 
 	local sorted_deps
@@ -63,8 +63,15 @@ check_dependencies() {
 }
 
 check_devicetree() {
+	local silent_mode=false
+	if [ "$1" = "silent" ]; then
+		silent_mode=true
+	fi
+
 	if [ ! -f /proc/device-tree/compatible ]; then
-		echo "Error: Script cannot be used without devicetree"
+		if [ "$silent_mode" = false ]; then
+			echo "Error: Script cannot be used without devicetree"
+		fi
 
 		return 1
 	fi

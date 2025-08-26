@@ -9,7 +9,14 @@ declare -A PCI_DT_MAP=(
 readonly PCIE_MIN_SPEED=100
 
 check_dependencies_pci() {
-	local deps=(dd fio hexdump ip iperf3 iw jq lspci nvme sed timeout)
+	local deps=("${WLAN_DEPS[@]}")
+	deps+=(@test_speed_wlan)
+	deps+=(dd fio hexdump jq lspci nvme sed timeout)
+	check_dependencies "PCI" "${deps[@]}"
+}
+
+check_dependencies_pci_default() {
+	local deps+=(lspci xargs)
 	check_dependencies "PCI" "${deps[@]}"
 }
 
@@ -198,138 +205,14 @@ test_pci_write_speed_nvme() {
 	fi
 }
 
-test_pci_get_wlan_interface() {
+test_pci_speed_wlan() {
 	local device="$1"
+	local writetest="$2"
 
-	local iface
-	for iface in /sys/class/net/*; do
-		if [ -e "$iface/device" ]; then
-			local iface_dev
-			iface_dev=$(readlink -f "$iface/device" | awk -F/ '{print $NF}')
+	local min_speed
+	min_speed=$(test_pci_get_speed "$device" "$writetest")
 
-			if [ "$iface_dev" = "$device" ]; then
-				basename "$iface"
-				return
-			fi
-		fi
-	done
-}
-
-test_pci_read_speed_wlan() {
-	local device="$1"
-
-	local iface
-	iface=$(test_pci_get_wlan_interface "$device")
-	if [ -z "$iface" ]; then
-		echo "WLAN: Interface not found (Unsupported card?)"
-		return 2
-	fi
-
-	local mon_iface="mon$RANDOM"
-
-	if ! iw phy "$(cat "/sys/class/net/$iface/phy80211/name")" interface add $mon_iface type monitor 2>/dev/null; then
-		echo "WLAN: Cannot create monitor interface"
-		return 2
-	fi
-
-	ip link set $mon_iface up
-	sleep 0.5
-	iperf3 -s -B 127.0.0.1 -p 5201 >/dev/null 2>&1 &
-	local server_pid=$!
-	sleep 0.5
-
-	local output
-	output=$(timeout 5 iperf3 -c 127.0.0.1 -t 1 -i 0 -u -b 0 --json 2>/dev/null)
-	kill $server_pid 2>/dev/null
-	wait $server_pid 2>/dev/null
-
-	sleep 0.5
-	if ip link show $mon_iface &>/dev/null; then
-		ip link set $mon_iface down 2>/dev/null
-		sleep 0.1
-		ip link del $mon_iface 2>/dev/null
-	fi
-
-	if [ -z "$output" ]; then
-		echo "WLAN: Error"
-		return 1
-	fi
-
-	local speed_bps speed_mbs min_speed
-	speed_bps=$(echo "$output" | jq -r '.end.sum_sent.bits_per_second')
-	if [[ ! "$speed_bps" =~ ^[0-9.]+$ ]]; then
-		echo "WLAN: Error"
-		return 1
-	fi
-
-	speed_mbs=$(echo "scale=2; $speed_bps / 8 / 1024 / 1024" | bc)
-	min_speed=$(test_pci_get_speed "$device" false)
-
-	echo "WLAN: ${speed_mbs} MB/s"
-
-	if (( $(echo "$speed_mbs >= $min_speed" | bc -l) )); then
-		return 0
-	else
-		return 2
-	fi
-}
-
-test_pci_write_speed_wlan() {
-	local device="$1"
-
-	local iface
-	iface=$(test_pci_get_wlan_interface "$device")
-	if [ -z "$iface" ]; then
-		echo "WLAN: Interface not found (Unsupported card?)"
-		return 2
-	fi
-
-	local mon_iface="mon$RANDOM"
-
-	if ! iw phy "$(cat "/sys/class/net/$iface/phy80211/name")" interface add $mon_iface type monitor 2>/dev/null; then
-		echo "WLAN: Cannot create monitor interface"
-		return 2
-	fi
-
-	ip link set $mon_iface up
-	iperf3 -s -B 127.0.0.1 -p 5201 >/dev/null 2>&1 &
-	local server_pid=$!
-	sleep 0.5
-
-	local output
-	output=$(timeout 5 iperf3 -c 127.0.0.1 -R -t 1 -i 0 -u -b 0 --json 2>/dev/null)
-	kill $server_pid 2>/dev/null
-	wait $server_pid 2>/dev/null
-
-	sleep 0.5
-	if ip link show $mon_iface &>/dev/null; then
-		ip link set $mon_iface down 2>/dev/null
-		sleep 0.1
-		ip link del $mon_iface 2>/dev/null
-	fi
-
-	if [ -z "$output" ]; then
-		echo "WLAN: Error"
-		return 1
-	fi
-
-	local speed_bps speed_mbs min_speed
-	speed_bps=$(echo "$output" | jq -r '.end.sum_received.bits_per_second')
-	if [[ ! "$speed_bps" =~ ^[0-9.]+$ ]]; then
-		echo "WLAN: Error"
-		return 1
-	fi
-
-	speed_mbs=$(echo "scale=2; $speed_bps / 8 / 1024 / 1024" | bc)
-	min_speed=$(test_pci_get_speed "$device" true)
-
-	echo "WLAN: ${speed_mbs} MB/s"
-
-	if (( $(echo "$speed_mbs >= $min_speed" | bc -l) )); then
-		return 0
-	else
-		return 2
-	fi
+	test_speed_wlan "$device" "$min_speed" "$writetest"
 }
 
 test_pci_read_speed_unknown() {
@@ -372,7 +255,7 @@ test_pci_read_speed() {
 		fi
 		;;
 	"02")
-		test_pci_read_speed_wlan "$device"
+		test_pci_speed_wlan "$device" false
 		;;
 	*)
 		test_pci_read_speed_unknown "$device" "$class_info"
@@ -402,7 +285,7 @@ test_pci_write_speed() {
 		fi
 		;;
 	"02")
-		test_pci_write_speed_wlan "$device"
+		test_pci_speed_wlan "$device" true
 		;;
 	*)
 		test_pci_write_speed_unknown "$device" "$class_info"
@@ -546,11 +429,30 @@ ds_rk3568_som_smarc_evb_test_pci() {
 	done
 }
 
+test_pci_default() {
+	local devices
+	devices=$(find /sys/bus/pci/devices -maxdepth 1 -name "????:??:??.?" -type l 2>/dev/null | sort | xargs -n1 basename 2>/dev/null)
+
+	if [ -z "$devices" ]; then
+		return 0
+	fi
+
+	#TODO:
+
+	return 0
+}
+
 if ! declare -F check_dependencies &>/dev/null || ! declare -F check_devicetree &>/dev/null; then
 	echo "Script cannot be executed alone"
 
 	return 1
 fi
+
+check_devicetree silent || {
+	check_dependencies_pci_default || return 1
+	test_pci_default
+	return 0
+}
 
 check_devicetree || return 1
 
