@@ -191,15 +191,17 @@ if [ $# -gt 1 ]; then
 	exit 1
 fi
 
+shopt -s nullglob
+
 if [ ! -d "${TEST_DIR:-}" ]; then
 	echo -e "${COLOR_FAIL}Error: Test directory $TEST_DIR not found${COLOR_RESET}" >&2
 else
 	echo -e "${COLOR_HEADER}Searching for test modules in $TEST_DIR...${COLOR_RESET}"
 
-	for test_file in "$TEST_DIR"/*.inc; do
+	for test_file in "$TEST_DIR"/*.tst; do
 		[ -f "$test_file" ] || continue
 
-		file_basename=$(basename "$test_file" .inc)
+		file_basename=$(basename "$test_file" .tst)
 		file_basename_lc=$(echo "$file_basename" | tr '[:upper:]' '[:lower:]')
 
 		if [ -n "$TEST_FILTER" ] && [[ ! "$file_basename_lc" =~ $TEST_FILTER ]]; then
