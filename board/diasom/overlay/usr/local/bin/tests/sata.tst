@@ -158,7 +158,7 @@ test_sata() {
 	register_test "test_sata_read" "SATA Read"
 }
 
-if ! declare -F register_test >/dev/null || ! declare -F check_dependencies >/dev/null || ! declare -F check_devicetree >/dev/null; then
+if ! declare -F check_dependencies &>/dev/null || ! declare -F check_devicetree &>/dev/null; then
 	echo "Script cannot be executed alone"
 
 	return 1

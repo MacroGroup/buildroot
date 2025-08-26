@@ -157,7 +157,7 @@ ds_rk3568_som_smarc_evb_test_i2c() {
 	register_test "ds_rk3568_som_smarc_evb_test_i2c4" "I2C4 Bus (I2C_PM)"
 }
 
-if ! declare -F register_test >/dev/null || ! declare -F check_dependencies >/dev/null || ! declare -F check_devicetree >/dev/null; then
+if ! declare -F check_dependencies &>/dev/null || ! declare -F check_devicetree &>/dev/null; then
 	echo "Script cannot be executed alone"
 
 	return 1

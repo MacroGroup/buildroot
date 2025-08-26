@@ -98,7 +98,7 @@ test_sd() {
 	register_test "test_mmc_sd" "SD"
 }
 
-if ! declare -F register_test >/dev/null || ! declare -F check_dependencies >/dev/null || ! declare -F check_devicetree >/dev/null; then
+if ! declare -F check_dependencies &>/dev/null || ! declare -F check_devicetree &>/dev/null; then
 	echo "Script cannot be executed alone"
 
 	return 1

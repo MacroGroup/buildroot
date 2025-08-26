@@ -638,7 +638,7 @@ ds_rk3568_test_usb() {
 	test_usb_register_expected_devices_tests expected_devices
 }
 
-if ! declare -F register_test >/dev/null || ! declare -F check_dependencies >/dev/null || ! declare -F check_devicetree >/dev/null; then
+if ! declare -F check_dependencies &>/dev/null || ! declare -F check_devicetree &>/dev/null; then
 	echo "Script cannot be executed alone"
 
 	return 1

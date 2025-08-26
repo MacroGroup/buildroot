@@ -33,7 +33,9 @@ check_dependencies() {
 	shift
 	local deps=("$@")
 
-	local base_deps=(awk basename bc cat cut dmesg echo find grep head ls mktemp mount printf readlink stat tail tr)
+	local base_deps
+	base_deps=(@register_test)
+	base_deps+=(awk basename bc cat cut dmesg echo find grep head ls mktemp mount printf readlink stat tail tr)
 	deps+=("${base_deps[@]}")
 
 	local sorted_deps
@@ -43,10 +45,17 @@ check_dependencies() {
 	fi
 
 	for cmd in "${sorted_deps[@]}"; do
-		if ! command -v "$cmd" &>/dev/null; then
-			echo "Error [$module]: $cmd not installed"
-
-			return 1
+		if [[ "$cmd" == @* ]]; then
+			local func_name="${cmd#@}"
+			if ! declare -f "$func_name" &>/dev/null; then
+				echo "Error [$module]: function $func_name not defined"
+				return 1
+			fi
+		else
+			if ! command -v "$cmd" &>/dev/null; then
+				echo "Error [$module]: $cmd not installed"
+				return 1
+			fi
 		fi
 	done
 
@@ -196,7 +205,24 @@ shopt -s nullglob
 if [ ! -d "${TEST_DIR:-}" ]; then
 	echo -e "${COLOR_FAIL}Error: Test directory $TEST_DIR not found${COLOR_RESET}" >&2
 else
-	echo -e "${COLOR_HEADER}Searching for test modules in $TEST_DIR...${COLOR_RESET}"
+	echo -e "${COLOR_HEADER}Loading functions from $TEST_DIR...${COLOR_RESET}"
+
+	func_files=("$TEST_DIR"/*.inc)
+	if [ ${#func_files[@]} -eq 0 ] || [ ! -f "${func_files[0]}" ]; then
+		echo -e "${COLOR_DEBUG}  No functions defined${COLOR_RESET}"
+	else
+		for func_file in "$TEST_DIR"/*.inc; do
+			[ -f "$func_file" ] || continue
+
+			if . "$func_file"; then
+				echo -e "${COLOR_DEBUG}  ✓ Loaded: $(basename "$func_file")${COLOR_RESET}"
+			else
+				echo -e "${COLOR_FAIL}  ✗ Error loading: $(basename "$func_file")${COLOR_RESET}" >&2
+			fi
+		done
+	fi
+
+	echo -e "${COLOR_HEADER}Loading test modules from $TEST_DIR...${COLOR_RESET}"
 
 	for test_file in "$TEST_DIR"/*.tst; do
 		[ -f "$test_file" ] || continue
@@ -218,7 +244,7 @@ else
 fi
 
 if [ ${#TEST_QUEUE[@]} -eq 0 ]; then
-	echo -e "${COLOR_WARNING}No tests registered, running self-tests${COLOR_RESET}"
+	echo -e "${COLOR_DEBUG}No tests registered, running self-tests${COLOR_RESET}"
 	register_self_tests
 fi
 

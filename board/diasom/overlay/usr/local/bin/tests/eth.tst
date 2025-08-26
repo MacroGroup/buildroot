@@ -228,7 +228,7 @@ ds_rk3568_som_smarc_evb_test_eth()
 	register_test "test_eth_end1" "Ethernet 1 (GBE1)"
 }
 
-if ! declare -F register_test >/dev/null || ! declare -F check_dependencies >/dev/null || ! declare -F check_devicetree >/dev/null; then
+if ! declare -F check_dependencies &>/dev/null || ! declare -F check_devicetree &>/dev/null; then
 	echo "Script cannot be executed alone"
 
 	return 1

@@ -37,13 +37,6 @@ find_csi_video_device() {
 
 test_csi() {
 	local csi_name="$1"
-	local video_dev
-	video_dev=$(find_csi_video_device "$csi_name")
-
-	if [ -z "$video_dev" ] || [ ! -c "$video_dev" ]; then
-		echo "Camera not found (Unsupported camera?)"
-		return 1
-	fi
 
 	cleanup() {
 		if [ -n "$CSI_CONSOLE_LEVEL" ] && [ -w /proc/sys/kernel/printk ]; then
@@ -51,6 +44,14 @@ test_csi() {
 		fi
 	}
 	trap cleanup EXIT RETURN INT TERM
+
+	local video_dev
+	video_dev=$(find_csi_video_device "$csi_name")
+	if [ -z "$video_dev" ] || [ ! -c "$video_dev" ]; then
+		echo "Camera not found (Unsupported camera?)"
+		return 1
+	fi
+
 
 	if [ -r /proc/sys/kernel/printk ]; then
 		CSI_CONSOLE_LEVEL=$(awk '{print $1}' /proc/sys/kernel/printk 2>/dev/null)
@@ -100,7 +101,7 @@ ds_rk3568_som_smarc_evb_test_csi() {
 	register_test "test_rockchip_csi0" "CSI (CSI1)"
 }
 
-if ! declare -F register_test >/dev/null || ! declare -F check_dependencies >/dev/null || ! declare -F check_devicetree >/dev/null; then
+if ! declare -F check_dependencies &>/dev/null || ! declare -F check_devicetree &>/dev/null; then
 	echo "Script cannot be executed alone"
 
 	return 1

@@ -2,6 +2,7 @@
 # shellcheck disable=SC2181
 
 declare -A PCI_DT_MAP=(
+	["diasom,ds-rk3568-som-evb"]="ds_rk3568_som_evb_test_pci"
 	["diasom,ds-rk3568-som-smarc-evb"]="ds_rk3568_som_smarc_evb_test_pci"
 )
 
@@ -511,6 +512,22 @@ test_pci_register_tests() {
 	fi
 }
 
+ds_rk3568_som_evb_test_pci() {
+	local addrs=(
+		"fe260000"
+		"fe280000"
+	)
+	local names=(
+		"2x1"
+		"3x2"
+	)
+
+	local i
+	for ((i=0; i<${#addrs[@]}; i++)); do
+		test_pci_register_tests "${names[i]}" "${addrs[i]}"
+	done
+}
+
 ds_rk3568_som_smarc_evb_test_pci() {
 	local addrs=(
 		"fe280000"
@@ -529,7 +546,7 @@ ds_rk3568_som_smarc_evb_test_pci() {
 	done
 }
 
-if ! declare -F register_test >/dev/null || ! declare -F check_dependencies >/dev/null || ! declare -F check_devicetree >/dev/null; then
+if ! declare -F check_dependencies &>/dev/null || ! declare -F check_devicetree &>/dev/null; then
 	echo "Script cannot be executed alone"
 
 	return 1
