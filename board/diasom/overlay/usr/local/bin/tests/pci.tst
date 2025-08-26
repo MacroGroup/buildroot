@@ -430,14 +430,44 @@ ds_rk3568_som_smarc_evb_test_pci() {
 }
 
 test_pci_default() {
-	local devices
-	devices=$(find /sys/bus/pci/devices -maxdepth 1 -name "????:??:??.?" -type l 2>/dev/null | sort | xargs -n1 basename 2>/dev/null)
+	while IFS= read -r device_path; do
+		local device
+		device=$(basename "$device_path")
 
-	if [ -z "$devices" ]; then
-		return 0
-	fi
+		if [[ ! "$device" =~ ^[0-9a-f]{4}:[0-9a-f]{2}:[0-9a-f]{2}\.[0-9a-f]$ ]]; then
+			continue
+		fi
 
-	#TODO:
+		if [ ! -d "$device_path" ]; then
+			continue
+		fi
+
+		local has_children=false
+		local children=()
+
+		for child_path in "$device_path"/*; do
+			local child_name
+			child_name=$(basename "$child_path")
+			if [[ -d "$child_path" && "$child_name" =~ ^[0-9a-f]{4}:[0-9a-f]{2}:[0-9a-f]{2}\.[0-9a-f]$ ]]; then
+				has_children=true
+				children+=("$child_name")
+			fi
+		done
+
+		if $has_children; then
+			local safe_device="${device//[^[:alnum:]]/_}"
+			local test_func="test_pci_device_$safe_device"
+			eval "$test_func() { test_pci_device \"$device\"; }"
+			register_test "$test_func" "PCI Root Port $device"
+
+			for child_device in "${children[@]}"; do
+				local safe_child_device="${child_device//[^[:alnum:]]/_}"
+				local child_test_func="test_pci_device_$safe_child_device"
+				eval "$child_test_func() { test_pci_device \"$child_device\"; }"
+				register_test "$child_test_func" "PCI Device $child_device" 1
+			done
+		fi
+	done < <(find /sys/bus/pci/devices -maxdepth 1 -name "????:??:??.?")
 
 	return 0
 }
