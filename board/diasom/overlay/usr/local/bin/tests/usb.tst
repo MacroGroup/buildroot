@@ -2,7 +2,8 @@
 # shellcheck disable=SC2329,SC2181,SC2034
 
 declare -A USB_DT_MAP=(
-	["diasom,ds-rk3568-som-smarc-evb"]="ds_rk3568_test_usb"
+	["diasom,ds-rk3568-som-evb"]="ds_rk3568_som_evb_test_usb"
+	["diasom,ds-rk3568-som-smarc-evb"]="ds_rk3568_som_smarc_evb_test_usb"
 )
 
 check_dependencies_usb() {
@@ -611,7 +612,27 @@ test_usb_register_tests() {
 	done
 }
 
-ds_rk3568_test_usb() {
+ds_rk3568_som_evb_test_usb() {
+	local addrs=(
+		"fd840000"
+		"fcc00000"
+		"fd8c0000"
+		"fd000000"
+	)
+	local names=(
+		"HOST0 (USB0)"
+		"HOST0 (USB0)"
+		"HOST1 (USB1)"
+		"HOST1 (USB1)"
+	)
+
+	local i
+	for ((i=0; i<${#addrs[@]}; i++)); do
+		test_usb_register_tests "${names[i]}" "${addrs[i]}"
+	done
+}
+
+ds_rk3568_som_smarc_evb_test_usb() {
 	local addrs=(
 		"fd840000"
 		"fcc00000"
