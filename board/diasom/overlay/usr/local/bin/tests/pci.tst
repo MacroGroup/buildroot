@@ -468,41 +468,36 @@ test_pci_default() {
 			done
 		fi
 	done < <(find /sys/bus/pci/devices -maxdepth 1 -name "????:??:??.?")
-
-	return 0
 }
 
-if ! declare -F check_dependencies &>/dev/null || ! declare -F check_devicetree &>/dev/null; then
+if ! declare -F check_dependencies &>/dev/null; then
 	echo "Script cannot be executed alone"
 
 	return 1
 fi
 
-check_devicetree silent || {
+if [ -f /proc/device-tree/compatible ]; then
+	check_dependencies_pci || return 1
+
+	found_compatible=0
+	while IFS= read -r -d '' compatible; do
+		compat_str=$(echo -n "$compatible" | tr -d '\0')
+
+		for pattern in "${!PCI_DT_MAP[@]}"; do
+			if [[ $compat_str == "$pattern" ]]; then
+				${PCI_DT_MAP[$pattern]}
+				found_compatible=1
+			fi
+		done
+	done < /proc/device-tree/compatible
+
+	if [ $found_compatible -eq 0 ]; then
+		echo "Error: Cannot find suitable devicetree compatible string"
+		return 1
+	fi
+else
 	check_dependencies_pci_default || return 1
 	test_pci_default
-	return 0
-}
-
-check_devicetree || return 1
-
-check_dependencies_pci || return 1
-
-found_compatible=0
-while IFS= read -r -d '' compatible; do
-	compat_str=$(echo -n "$compatible" | tr -d '\0')
-
-	for pattern in "${!PCI_DT_MAP[@]}"; do
-		if [[ $compat_str == "$pattern" ]]; then
-			${PCI_DT_MAP[$pattern]}
-			found_compatible=1
-		fi
-	done
-done < /proc/device-tree/compatible
-
-if [ $found_compatible -eq 0 ]; then
-	echo "Error: Cannot find suitable devicetree compatible string"
-	return 1
 fi
 
 return 0
