@@ -597,8 +597,6 @@ test_usb_register_tests() {
 			esac
 		fi
 
-		[[ -z "$name" ]] || name="$port_index"
-
 		local test_bus_func="test_usb_bus_${safe_addr}_${port_index}"
 		eval "$test_bus_func() { test_usb_device \"$root_port\" \"Root Hub\"; }"
 		if [ -z "$name" ]; then
