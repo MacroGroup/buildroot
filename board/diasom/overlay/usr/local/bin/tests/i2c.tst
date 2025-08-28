@@ -10,6 +10,11 @@ check_dependencies_i2c() {
 	check_dependencies "I2C" "${deps[@]}"
 }
 
+check_dependencies_i2c_default() {
+	local deps=()
+	check_dependencies "I2C" "${deps[@]}"
+}
+
 test_i2c_device() {
 	local bus="$1"
 	local addr="$2"
@@ -64,8 +69,9 @@ test_i2c_device() {
 
 test_i2c_check_bus() {
 	local bus="$1"
+	local bus_path="/sys/bus/i2c/devices/i2c-${bus}"
 
-	if [ ! -e "/dev/i2c-$bus" ]; then
+	if [ ! -d "$bus_path" ]; then
 		echo "Missing"
 		return 1
 	fi
@@ -157,6 +163,30 @@ ds_rk3568_som_smarc_evb_test_i2c() {
 	register_test "ds_rk3568_som_smarc_evb_test_i2c4" "I2C4 Bus (I2C_PM)"
 }
 
+test_i2c_default() {
+	local i2c_buses=()
+	local bus
+
+	while IFS= read -r -d '' bus; do
+		local bus_name
+		bus_name=$(basename "$bus")
+		if [[ "$bus_name" =~ ^i2c-[0-9]+$ ]]; then
+			local bus_num=${bus_name#i2c-}
+			i2c_buses+=("$bus_num")
+		fi
+	done < <(find /sys/bus/i2c/devices -name "i2c-*" -type l -print0 2>/dev/null)
+
+	local sorted_buses
+	IFS=$'\n' read -r -d '' -a sorted_buses < <(printf '%s\n' "${i2c_buses[@]}" | sort -n && printf '\0')
+	unset IFS
+
+	for bus_num in "${sorted_buses[@]}"; do
+		local test_bus_func="test_i2c_bus_${bus_num}"
+		eval "${test_bus_func}() { test_i2c_check_bus \"${bus_num}\"; }"
+		register_test "${test_bus_func}" "I2C${bus_num} Bus"
+	 done
+}
+
 if ! declare -F check_dependencies &>/dev/null; then
 	echo "Script cannot be executed alone"
 
@@ -182,6 +212,9 @@ if [ -f /proc/device-tree/compatible ]; then
 		echo "Error: Cannot find suitable devicetree compatible string"
 		return 1
 	fi
+else
+	check_dependencies_i2c_default || return 1
+	test_i2c_default
 fi
 
 return 0
