@@ -13,6 +13,11 @@ check_dependencies_eth() {
 	check_dependencies "ETH" "${deps[@]}"
 }
 
+check_dependencies_eth_default() {
+	local deps=(ip)
+	check_dependencies "ETH" "${deps[@]}"
+}
+
 test_eth_get_speed() {
 	local iface="$1"
 	local speed
@@ -37,12 +42,17 @@ test_eth_get_speed() {
 
 test_eth_cable_connection() {
 	local iface="$1"
+	local carrier_file="/sys/class/net/$iface/carrier"
 
-	local link_status
-	link_status=$(ethtool "$iface" 2>/dev/null | awk '/Link detected:/ {print $3}')
+	if [ -f "$carrier_file" ]; then
+		local carrier
+		carrier=$(cat "$carrier_file" 2>/dev/null)
 
-	if [ "$link_status" = "yes" ]; then
-		return 0
+		if [ "$carrier" = "1" ]; then
+			return 0
+		else
+			return 1
+		fi
 	fi
 
 	return 1
@@ -228,6 +238,32 @@ ds_rk3568_som_smarc_evb_test_eth()
 	register_test "test_eth_end1" "Ethernet 1 (GBE1)"
 }
 
+test_eth_default() {
+	local all_interfaces=()
+	local interface
+	while IFS= read -r -d '' interface; do
+		all_interfaces+=("$(basename "$interface")")
+	done < <(find /sys/class/net -mindepth 1 -maxdepth 1 -type l -print0 2>/dev/null)
+
+	local eth_interfaces=()
+	for interface in "${all_interfaces[@]}"; do
+		local interface_type
+		interface_type=$(cat "/sys/class/net/$interface/type" 2>/dev/null)
+
+		if [[ "$interface_type" != "1" ]]; then
+			continue
+		fi
+
+		eth_interfaces+=("$interface")
+	done
+
+	for interface in "${eth_interfaces[@]}"; do
+		local test_func="test_eth_${interface}"
+		eval "${test_func}() { test_eth \"${interface}\"; }"
+		register_test "${test_func}" "Ethernet ${interface}"
+	done
+}
+
 if ! declare -F check_dependencies &>/dev/null; then
 	echo "Script cannot be executed alone"
 
@@ -253,6 +289,9 @@ if [ -f /proc/device-tree/compatible ]; then
 		echo "Error: Cannot find suitable devicetree compatible string"
 		return 1
 	fi
+else
+	check_dependencies_eth_default || return 1
+	test_eth_default
 fi
 
 return 0
