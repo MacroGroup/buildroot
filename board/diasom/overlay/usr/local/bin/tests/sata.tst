@@ -2,6 +2,7 @@
 # shellcheck disable=SC2181
 
 declare -A SATA_DT_MAP=(
+	["diasom,ds-rk3568-som-evb"]="test_sata_dummy"
 	["diasom,ds-rk3568-som-smarc-evb"]="test_sata"
 )
 
@@ -156,6 +157,10 @@ test_sata_write() {
 
 test_sata() {
 	register_test "test_sata_read" "SATA Read"
+}
+
+test_sata_dummy() {
+	:
 }
 
 if ! declare -F check_dependencies &>/dev/null; then
