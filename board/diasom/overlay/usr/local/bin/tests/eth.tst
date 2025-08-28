@@ -228,31 +228,31 @@ ds_rk3568_som_smarc_evb_test_eth()
 	register_test "test_eth_end1" "Ethernet 1 (GBE1)"
 }
 
-if ! declare -F check_dependencies &>/dev/null || ! declare -F check_devicetree &>/dev/null; then
+if ! declare -F check_dependencies &>/dev/null; then
 	echo "Script cannot be executed alone"
 
 	return 1
 fi
 
-check_devicetree || return 1
+if [ -f /proc/device-tree/compatible ]; then
+	check_dependencies_eth || return 1
 
-check_dependencies_eth || return 1
+	found_compatible=0
+	while IFS= read -r -d '' compatible; do
+		compat_str=$(echo -n "$compatible" | tr -d '\0')
 
-found_compatible=0
-while IFS= read -r -d '' compatible; do
-	compat_str=$(echo -n "$compatible" | tr -d '\0')
+		for pattern in "${!ETH_DT_MAP[@]}"; do
+			if [[ $compat_str == "$pattern" ]]; then
+				${ETH_DT_MAP[$pattern]}
+				found_compatible=1
+			fi
+		done
+	done < /proc/device-tree/compatible
 
-	for pattern in "${!ETH_DT_MAP[@]}"; do
-		if [[ $compat_str == "$pattern" ]]; then
-			${ETH_DT_MAP[$pattern]}
-			found_compatible=1
-		fi
-	done
-done < /proc/device-tree/compatible
-
-if [ $found_compatible -eq 0 ]; then
-	echo "Error: Cannot find suitable devicetree compatible string"
-	return 1
+	if [ $found_compatible -eq 0 ]; then
+		echo "Error: Cannot find suitable devicetree compatible string"
+		return 1
+	fi
 fi
 
 return 0

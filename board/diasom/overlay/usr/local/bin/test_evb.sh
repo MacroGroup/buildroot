@@ -62,23 +62,6 @@ check_dependencies() {
 	return 0
 }
 
-check_devicetree() {
-	local silent_mode=false
-	if [ "$1" = "silent" ]; then
-		silent_mode=true
-	fi
-
-	if [ ! -f /proc/device-tree/compatible ]; then
-		if [ "$silent_mode" = false ]; then
-			echo "Error: Script cannot be used without devicetree"
-		fi
-
-		return 1
-	fi
-
-	return 0
-}
-
 register_test() {
 	local test_function="$1"
 	local test_name="$2"
