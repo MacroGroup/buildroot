@@ -6,8 +6,15 @@ declare -A USB_DT_MAP=(
 	["diasom,ds-rk3568-som-smarc-evb"]="ds_rk3568_som_smarc_evb_test_usb"
 )
 
+declare -A USB_DISABLE_TESTS
+
 check_dependencies_usb() {
 	local deps=(bt-adapter fio jq mkfifo modprobe xargs)
+	check_dependencies "USB" "${deps[@]}"
+}
+
+check_dependencies_usb_default() {
+	local deps=(xargs)
 	check_dependencies "USB" "${deps[@]}"
 }
 
@@ -369,7 +376,12 @@ test_usb_read_speed() {
 	"08")
 		test_usb_read_speed_ms "$device"
 		;;
-	"09")
+	"03")
+		echo "HID (skipped)"
+		return 0
+		;;
+	"11")
+		echo "Interface Association (skipped)"
 		return 0
 		;;
 	"e0")
@@ -386,19 +398,21 @@ test_usb_read_speed() {
 }
 
 test_usb_find_devices() {
-	local value="$1"
+	local value="${1:-}"
 
 	local usb_hubs=()
+
 	local platform_dev=""
+	if [ -n "$value" ]; then
+		for dev in /sys/devices/platform/*; do
+			if [[ -d "$dev" && "$(basename "$dev")" == *"$value"* ]]; then
+				platform_dev="$dev"
+				break
+			fi
+		done
 
-	for dev in /sys/devices/platform/*; do
-		if [[ -d "$dev" && "$(basename "$dev")" == *"$value"* ]]; then
-			platform_dev="$dev"
-			break
-		fi
-	done
-
-	[[ -z "$platform_dev" ]] && { echo -n ""; return; }
+		[[ -z "$platform_dev" ]] && { echo -n ""; return; }
+	fi
 
 	for usb_dev in /sys/bus/usb/devices/usb*; do
 		[[ -d "$usb_dev" ]] || continue
@@ -409,8 +423,12 @@ test_usb_find_devices() {
 			continue
 		fi
 
-		device_path=$(readlink -f "$usb_dev/device")
-		if [[ "$device_path" == "$platform_dev"* ]]; then
+		if [ -n "$platform_dev" ]; then
+			device_path=$(readlink -f "$usb_dev/device")
+			if [[ "$device_path" == "$platform_dev"* ]]; then
+				usb_hubs+=("$usb_name")
+			fi
+		else
 			usb_hubs+=("$usb_name")
 		fi
 	done
@@ -505,9 +523,11 @@ test_usb_register_single_device() {
 		eval "$test_dev_func() { test_usb_device \"$device\"; }"
 		register_test "$test_dev_func" "USB Device Port $((port_number))" "$level"
 
-		local test_read_func="test_usb_read_speed_$full_index"
-		eval "$test_read_func() { test_usb_read_speed \"$device\"; }"
-		register_test "$test_read_func" "USB Device Port $((port_number)) I/O" "$level"
+		if [ -z "${USB_DISABLE_TESTS[*]}" ]; then
+			local test_read_func="test_usb_read_speed_$full_index"
+			eval "$test_read_func() { test_usb_read_speed \"$device\"; }"
+			register_test "$test_read_func" "USB Device Port $((port_number)) I/O" "$level"
+		fi
 	fi
 
 	return 0
@@ -538,16 +558,19 @@ test_usb_register_hub_tests() {
 }
 
 test_usb_register_tests() {
-	local name="$1"
-	local addr="$2"
-	local level="${3:-0}"
+	local name="${1:-}"
+	local addr="${2:-}"
 
 	local root_ports
 	root_ports=$(test_usb_find_devices "$addr")
 	[[ -z "$root_ports" ]] && return
 
 	local safe_addr
-	safe_addr="${addr//[^[:alnum:]]/_}"
+	if [ -z "$addr" ]; then
+		safe_addr="default"
+	else
+		safe_addr="${addr//[^[:alnum:]]/_}"
+	fi
 
 	IFS=' ' read -ra ports_array <<< "$root_ports"
 
@@ -565,17 +588,24 @@ test_usb_register_tests() {
 			480)
 				controller_type="EHCI"
 				;;
-			5000|10000)
-				controller_type="XHCI"
+			5000|10000|20000)
+				local speed_gbs=$((speed_val / 1000))
+				controller_type="XHCI (${speed_gbs} Gb/s)"
 				;;
 			*)
 				;;
 			esac
 		fi
 
+		[[ -z "$name" ]] || name="$port_index"
+
 		local test_bus_func="test_usb_bus_${safe_addr}_${port_index}"
 		eval "$test_bus_func() { test_usb_device \"$root_port\" \"Root Hub\"; }"
-		register_test "$test_bus_func" "USB $name $controller_type" "$level"
+		if [ -z "$name" ]; then
+			register_test "$test_bus_func" "USB $port_index $controller_type"
+		else
+			register_test "$test_bus_func" "USB $name $controller_type"
+		fi
 
 		local devices=()
 		local port_num
@@ -603,7 +633,7 @@ test_usb_register_tests() {
 				continue
 			fi
 
-			if test_usb_register_single_device "$device" "$((level + 1))" "$safe_addr" "$port_index" "$device_index"; then
+			if test_usb_register_single_device "$device" 1 "$safe_addr" "$port_index" "$device_index"; then
 				((device_index++))
 			fi
 		done
@@ -659,6 +689,11 @@ ds_rk3568_som_smarc_evb_test_usb() {
 	test_usb_register_expected_devices_tests expected_devices
 }
 
+
+test_usb_default() {
+	test_usb_register_tests
+}
+
 if ! declare -F check_dependencies &>/dev/null; then
 	echo "Script cannot be executed alone"
 
@@ -684,6 +719,10 @@ if [ -f /proc/device-tree/compatible ]; then
 		echo "Error: Cannot find suitable devicetree compatible string"
 		return 1
 	fi
+else
+	check_dependencies_usb_default || return 1
+	USB_DISABLE_TESTS=1
+	test_usb_default
 fi
 
 return 0
