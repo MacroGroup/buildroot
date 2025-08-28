@@ -2,6 +2,7 @@
 # shellcheck disable=SC2329
 
 declare -A UART_DT_MAP=(
+	["diasom,ds-rk3568-som-evb"]="ds_rk3568_som_evb_test_uart"
 	["diasom,ds-rk3568-som-smarc-evb"]="ds_rk3568_som_smarc_evb_test_uart"
 )
 
@@ -76,22 +77,41 @@ test_uart() {
 	return 1
 }
 
-ds_rk3568_som_smarc_evb_test_uart4() {
+test_uart3() {
+	test_uart "/dev/ttyS3" 115200
+}
+
+test_uart4() {
 	test_uart "/dev/ttyS4" 115200
 }
 
-ds_rk3568_som_smarc_evb_test_uart5() {
+test_uart5() {
 	test_uart "/dev/ttyS5" 115200
 }
 
-ds_rk3568_som_smarc_evb_test_uart8() {
+test_uart7() {
+	test_uart "/dev/ttyS7" 115200
+}
+
+test_uart8() {
 	test_uart "/dev/ttyS8" 115200
 }
 
+test_uart9() {
+	test_uart "/dev/ttyS9" 115200
+}
+
+ds_rk3568_som_evb_test_uart() {
+	register_test "test_uart3" "UART3"
+	register_test "test_uart7" "UART7"
+	register_test "test_uart8" "UART8"
+	register_test "test_uart9" "UART9"
+}
+
 ds_rk3568_som_smarc_evb_test_uart() {
-	register_test "ds_rk3568_som_smarc_evb_test_uart4" "UART4 (SER0)"
-	register_test "ds_rk3568_som_smarc_evb_test_uart8" "UART8 (SER2)"
-	register_test "ds_rk3568_som_smarc_evb_test_uart5" "UART5 (SER3)"
+	register_test "test_uart4" "UART4 (SER0)"
+	register_test "test_uart8" "UART8 (SER2)"
+	register_test "test_uart5" "UART5 (SER3)"
 }
 
 if ! declare -F check_dependencies &>/dev/null; then

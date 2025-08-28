@@ -2,6 +2,7 @@
 # shellcheck disable=SC2181
 
 declare -A I2C_DT_MAP=(
+	["diasom,ds-rk3568-som-evb"]="ds_rk3568_som_evb_test_i2c"
 	["diasom,ds-rk3568-som-smarc-evb"]="ds_rk3568_som_smarc_evb_test_i2c"
 )
 
@@ -81,6 +82,14 @@ test_i2c_check_bus() {
 	return 0
 }
 
+test_i2c1_0x22() {
+	test_i2c_device 1 0x21
+}
+
+test_i2c4_0x10() {
+	test_i2c_device 4 0x10
+}
+
 test_i2c2_0x23() {
 	test_i2c_device 2 0x23
 }
@@ -108,6 +117,34 @@ test_i2c3_0x51() {
 
 test_i2c3_0x68() {
 	test_i2c_device 3 0x68
+}
+
+ds_rk3568_som_evb_test_i2c1() {
+	if [ -e /dev/i2c-1 ]; then
+		register_test "@test_i2c1_0x22" "I2C1 Device 0x22 (FUSB302)" 1
+
+		echo "OK"
+
+		return 0
+	fi
+
+	echo "Missing"
+
+	return 1
+}
+
+ds_rk3568_som_evb_test_i2c4() {
+	if [ -e /dev/i2c-4 ]; then
+		register_test "@test_i2c4_0x10" "I2C4 Device 0x10 (ES8388)" 1
+
+		echo "OK"
+
+		return 0
+	fi
+
+	echo "Missing"
+
+	return 1
 }
 
 ds_rk3568_som_smarc_evb_test_i2c2() {
@@ -161,6 +198,11 @@ ds_rk3568_som_smarc_evb_test_i2c() {
 	register_test "ds_rk3568_som_smarc_evb_test_i2c2" "I2C2 Bus (Internal)"
 	register_test "ds_rk3568_som_smarc_evb_test_i2c3" "I2C3 Bus (I2C_GP)"
 	register_test "ds_rk3568_som_smarc_evb_test_i2c4" "I2C4 Bus (I2C_PM)"
+}
+
+ds_rk3568_som_evb_test_i2c() {
+	register_test "ds_rk3568_som_evb_test_i2c1" "I2C1 Bus"
+	register_test "ds_rk3568_som_evb_test_i2c4" "I2C4 Bus"
 }
 
 test_i2c_default() {
