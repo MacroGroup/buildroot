@@ -154,11 +154,11 @@ test_gpio_unbind_driver() {
 	fi
 }
 
-#test_i2s_busy() {
-#	echo "Busy"
-#
-#	return 2
-#}
+test_i2s_busy() {
+	echo "Busy"
+
+	return 2
+}
 
 register_gpio_tests() {
 	local gpio_tests=("$@")
@@ -175,6 +175,7 @@ register_gpio_tests() {
 ds_imx8m_som_evb_test_gpio() {
 	local gpio_tests=(
 		"gpio5	29	gpio5	28	UART4_TXD-GPIO5.29"
+		# TODO
 	)
 
 	register_gpio_tests "${gpio_tests[@]}"
@@ -202,14 +203,14 @@ ds_rk3568_som_smarc_evb_test_gpio() {
 		"2-0023	4	2-0023	5	GPIO12-GPIO13"
 	)
 
-#	if test_gpio_unbind_driver "fe410000.i2s" "rockchip-i2s-tdm"; then
-#		gpio_tests+=(
-#			"gpio3	23	gpio3	25	I2S1_CK-I2S1_SDOUT"
-#			"gpio3	24	gpio3	26	I2S1_LRCK-I2S1_SDIN"
-#		)
-#	else
-#		register_test "test_i2s_busy" "I2S0"
-#	fi
+	if test_gpio_unbind_driver "fe410000.i2s" "rockchip-i2s-tdm"; then
+		gpio_tests+=(
+			"gpio3	23	gpio3	25	I2S1_CK-I2S1_SDOUT"
+			"gpio3	24	gpio3	26	I2S1_LRCK-I2S1_SDIN"
+		)
+	else
+		register_test "test_i2s_busy" "I2S0"
+	fi
 
 	register_gpio_tests "${gpio_tests[@]}"
 }
