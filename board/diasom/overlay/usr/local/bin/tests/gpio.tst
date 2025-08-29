@@ -2,6 +2,7 @@
 
 declare -A GPIO_DT_MAP=(
 	["diasom,ds-imx8m-som-evb"]="ds_imx8m_som_evb_test_gpio"
+	["diasom,ds-rk3568-som-evb"]="ds_rk3568_som_evb_test_gpio"
 	["diasom,ds-rk3568-som-smarc-evb"]="ds_rk3568_som_smarc_evb_test_gpio"
 )
 
@@ -153,29 +154,42 @@ test_gpio_unbind_driver() {
 	fi
 }
 
-ds_imx8m_som_evb_test_gpio() {
-	local gpio_tests=(
-		"gpio5	29	gpio5	28	UART4_TXD-GPIO5.29"
-	)
+#test_i2s_busy() {
+#	echo "Busy"
+#
+#	return 2
+#}
+
+register_gpio_tests() {
+	local gpio_tests=("$@")
 
 	for test_spec in "${gpio_tests[@]}"; do
 		read -r label1 idx1 label2 idx2 test_name <<< "$test_spec"
 
 		local func_name="test_gpio_pair_${test_name//-/_}"
-
 		eval "$func_name() { test_gpio_pair \"$label1\" \"$idx1\" \"$label2\" \"$idx2\"; }"
-
 		register_test "$func_name" "$test_name"
 	done
+}
+
+ds_imx8m_som_evb_test_gpio() {
+	local gpio_tests=(
+		"gpio5	29	gpio5	28	UART4_TXD-GPIO5.29"
+	)
+
+	register_gpio_tests "${gpio_tests[@]}"
 
 	return 0
 }
 
-#ds_rk3568_som_smarc_evb_test_i2s_busy() {
-#	echo "Busy"
-#
-#	return 2
-#}
+ds_rk3568_som_evb_test_gpio() {
+	local gpio_tests=(
+		"gpio1	4	gpio1	6	GPIO1-GPIO2"
+		"gpio1	7	gpio1	8	GPIO3-GPIO4"
+	)
+
+	register_gpio_tests "${gpio_tests[@]}"
+}
 
 ds_rk3568_som_smarc_evb_test_gpio() {
 	local gpio_tests=(
@@ -194,18 +208,10 @@ ds_rk3568_som_smarc_evb_test_gpio() {
 #			"gpio3	24	gpio3	26	I2S1_LRCK-I2S1_SDIN"
 #		)
 #	else
-#		register_test "ds_rk3568_som_smarc_evb_test_i2s_busy" "I2S0"
+#		register_test "test_i2s_busy" "I2S0"
 #	fi
 
-	for test_spec in "${gpio_tests[@]}"; do
-		read -r label1 idx1 label2 idx2 test_name <<< "$test_spec"
-
-		local func_name="test_gpio_pair_${test_name//-/_}"
-
-		eval "$func_name() { test_gpio_pair \"$label1\" \"$idx1\" \"$label2\" \"$idx2\"; }"
-
-		register_test "$func_name" "$test_name"
-	done
+	register_gpio_tests "${gpio_tests[@]}"
 }
 
 if ! declare -F check_dependencies &>/dev/null; then
