@@ -19,7 +19,6 @@ check_dependencies_i2c_default() {
 test_i2c_device() {
 	local bus="$1"
 	local addr="$2"
-	local optional="${3:-0}"
 
 	local output
 	output=$(i2cdetect -y "$bus" 2>/dev/null)
@@ -60,38 +59,49 @@ test_i2c_device() {
 		return 0
 	else
 		echo "Missing"
-		if [ "$optional" -eq 1 ]; then
-			return 2
-		else
-			return 1
-		fi
-	fi
-}
-
-test_i2c_check_bus() {
-	local bus="$1"
-	local bus_path="/sys/bus/i2c/devices/i2c-${bus}"
-
-	if [ ! -d "$bus_path" ]; then
-		echo "Missing"
 		return 1
 	fi
-
-	echo "OK"
-
-	return 0
 }
 
-test_i2c1_0x22() {
-	test_i2c_device 1 0x21
+generate_i2c_device_test() {
+	local bus=$1
+	local addr=$2
+	local desc=$3
+	local level=$4
+
+	local func_name="test_i2c${bus}_${addr}"
+	eval "${func_name}() { test_i2c_device ${bus} ${addr}; }"
+	register_test "@${func_name}" "I2C${bus} Device ${addr} (${desc})" "${level}"
 }
 
-test_i2c4_0x10() {
-	test_i2c_device 4 0x10
-}
+generate_i2c_bus_test() {
+	local bus=$1
+	local desc=$2
+	local level=$3
+	local devices=${4:-""}
 
-test_i2c2_0x23() {
-	test_i2c_device 2 0x23
+	local func_name="test_i2c${bus}"
+	eval "${func_name}() {
+		local bus_path=\"/sys/bus/i2c/devices/i2c-${bus}\"
+		if [ ! -d \"\$bus_path\" ]; then
+			echo \"Missing\"
+			return 1
+		fi
+
+		if [ -n \"${devices}\" ]; then
+			IFS=',' read -ra dev_list <<< \"${devices}\"
+			for device in \"\${dev_list[@]}\"; do
+				IFS=':' read -r addr dev_desc <<< \"\$device\"
+				generate_i2c_device_test \"${bus}\" \"\$addr\" \"\$dev_desc\" \"$((level + 1))\"
+			done
+		fi
+
+		echo \"OK\"
+
+		return 0
+	}"
+
+	register_test "@${func_name}" "${desc}" "${level}"
 }
 
 test_i2c2_0x70() {
@@ -99,58 +109,18 @@ test_i2c2_0x70() {
 	local ret=$?
 
 	if [ $ret -eq 0 ]; then
-		register_test "@ds_rk3568_som_smarc_evb_test_i2c8" "I2C8 Bus (I2C_LCD)" 2
-		register_test "@ds_rk3568_som_smarc_evb_test_i2c7" "I2C7 Bus (I2C_CAM1)" 2
-		register_test "@ds_rk3568_som_smarc_evb_test_i2c6" "I2C6 Bus (I2C_CAM0)" 2
+		generate_i2c_bus_test 8 "I2C8 Bus (I2C_LCD)" 2
+		generate_i2c_bus_test 7 "I2C7 Bus (I2C_CAM1)" 2
+		generate_i2c_bus_test 6 "I2C6 Bus (I2C_CAM0)" 2
 	fi
 
 	return $ret
 }
 
-test_i2c3_0x50() {
-	test_i2c_device 3 0x50
-}
-
-test_i2c3_0x51() {
-	test_i2c_device 3 0x51
-}
-
-test_i2c3_0x68() {
-	test_i2c_device 3 0x68
-}
-
-ds_rk3568_som_evb_test_i2c1() {
-	if [ -e /dev/i2c-1 ]; then
-		register_test "@test_i2c1_0x22" "I2C1 Device 0x22 (FUSB302)" 1
-
-		echo "OK"
-
-		return 0
-	fi
-
-	echo "Missing"
-
-	return 1
-}
-
-ds_rk3568_som_evb_test_i2c4() {
-	if [ -e /dev/i2c-4 ]; then
-		register_test "@test_i2c4_0x10" "I2C4 Device 0x10 (ES8388)" 1
-
-		echo "OK"
-
-		return 0
-	fi
-
-	echo "Missing"
-
-	return 1
-}
-
 ds_rk3568_som_smarc_evb_test_i2c2() {
 	if [ -e /dev/i2c-2 ]; then
 		register_test "@test_i2c2_0x70" "I2C2 Device 0x70 (I2C MUX)" 1
-		register_test "@test_i2c2_0x23" "I2C2 Device 0x23 (I2C GPIO)" 1
+		generate_i2c_device_test 2 0x23 "I2C GPIO" 1
 
 		echo "OK"
 
@@ -160,49 +130,17 @@ ds_rk3568_som_smarc_evb_test_i2c2() {
 	echo "Missing"
 
 	return 1
-}
-
-ds_rk3568_som_smarc_evb_test_i2c3() {
-	if [ -e /dev/i2c-3 ]; then
-		register_test "@test_i2c3_0x68" "I2C3 Device 0x68 (RTC)" 1
-		register_test "@test_i2c3_0x51" "I2C3 Device 0x51 (EEPROM)" 1
-		register_test "@test_i2c3_0x50" "I2C3 Device 0x50 (EEPROM)" 1
-
-		echo "OK"
-
-		return 0
-	fi
-
-	echo "Missing"
-
-	return 1
-}
-
-ds_rk3568_som_smarc_evb_test_i2c4() {
-	test_i2c_check_bus 4
-}
-
-ds_rk3568_som_smarc_evb_test_i2c6() {
-	test_i2c_check_bus 6
-}
-
-ds_rk3568_som_smarc_evb_test_i2c7() {
-	test_i2c_check_bus 7
-}
-
-ds_rk3568_som_smarc_evb_test_i2c8() {
-	test_i2c_check_bus 8
 }
 
 ds_rk3568_som_smarc_evb_test_i2c() {
 	register_test "ds_rk3568_som_smarc_evb_test_i2c2" "I2C2 Bus (Internal)"
-	register_test "ds_rk3568_som_smarc_evb_test_i2c3" "I2C3 Bus (I2C_GP)"
-	register_test "ds_rk3568_som_smarc_evb_test_i2c4" "I2C4 Bus (I2C_PM)"
+	generate_i2c_bus_test 3 "I2C3 Bus (I2C_GP)" 0 "0x68:RTC,0x51:EEPROM,0x50:EEPROM"
+	generate_i2c_bus_test 4 "I2C4 Bus (I2C_PM)" 0
 }
 
 ds_rk3568_som_evb_test_i2c() {
-	register_test "ds_rk3568_som_evb_test_i2c1" "I2C1 Bus"
-	register_test "ds_rk3568_som_evb_test_i2c4" "I2C4 Bus"
+	generate_i2c_bus_test 1 "I2C1 Bus" 0 "0x22:FUSB302"
+	generate_i2c_bus_test 4 "I2C4 Bus" 0 "0x10:ES8388"
 }
 
 test_i2c_default() {
@@ -219,13 +157,11 @@ test_i2c_default() {
 	done < <(find /sys/bus/i2c/devices -name "i2c-*" -type l -print0 2>/dev/null)
 
 	local sorted_buses
-	IFS=$'\n' read -r -d '' -a sorted_buses < <(printf '%s\n' "${i2c_buses[@]}" | sort -n && printf '\0')
+	IFS=$'\n' read -r -d '' -a sorted_buses < <(printf '%s\n' "${i2c_buses[@]}" | sort -nr && printf '\0')
 	unset IFS
 
 	for bus_num in "${sorted_buses[@]}"; do
-		local test_bus_func="test_i2c_bus_${bus_num}"
-		eval "${test_bus_func}() { test_i2c_check_bus \"${bus_num}\"; }"
-		register_test "${test_bus_func}" "I2C${bus_num} Bus"
+		generate_i2c_bus_test "$bus_num" "I2C${bus_num} Bus" 0
 	 done
 }
 
