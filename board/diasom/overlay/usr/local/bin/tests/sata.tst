@@ -2,8 +2,8 @@
 # shellcheck disable=SC2181
 
 declare -A SATA_DT_MAP=(
-	["diasom,ds-imx8m-som-evb"]="test_sata_dummy"
-	["diasom,ds-rk3568-som-evb"]="test_sata_dummy"
+	["diasom,ds-imx8m-som-evb"]=""
+	["diasom,ds-rk3568-som-evb"]=""
 	["diasom,ds-rk3568-som-smarc-evb"]="test_sata"
 )
 
@@ -160,10 +160,6 @@ test_sata() {
 	register_test "test_sata_read" "SATA Read"
 }
 
-test_sata_dummy() {
-	:
-}
-
 if ! declare -F check_dependencies &>/dev/null; then
 	echo "Script cannot be executed alone"
 
@@ -179,7 +175,7 @@ if [ -f /proc/device-tree/compatible ]; then
 
 		for pattern in "${!SATA_DT_MAP[@]}"; do
 			if [[ $compat_str == "$pattern" ]]; then
-				${SATA_DT_MAP[$pattern]}
+				[[ -n "${SATA_DT_MAP[$pattern]}" ]] && ${SATA_DT_MAP[$pattern]}
 				found_compatible=1
 			fi
 		done

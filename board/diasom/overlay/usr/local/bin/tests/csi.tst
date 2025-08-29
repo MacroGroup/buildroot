@@ -116,7 +116,7 @@ if [ -f /proc/device-tree/compatible ]; then
 
 		for pattern in "${!CSI_DT_MAP[@]}"; do
 			if [[ $compat_str == "$pattern" ]]; then
-				${CSI_DT_MAP[$pattern]}
+				[[ -n "${CSI_DT_MAP[$pattern]}" ]] && ${CSI_DT_MAP[$pattern]}
 				found_compatible=1
 			fi
 		done

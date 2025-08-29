@@ -230,7 +230,7 @@ if [ -f /proc/device-tree/compatible ]; then
 
 		for pattern in "${!GPIO_DT_MAP[@]}"; do
 			if [[ $compat_str == "$pattern" ]]; then
-				${GPIO_DT_MAP[$pattern]}
+				[[ -n "${GPIO_DT_MAP[$pattern]}" ]] &&  ${GPIO_DT_MAP[$pattern]}
 				found_compatible=1
 			fi
 		done

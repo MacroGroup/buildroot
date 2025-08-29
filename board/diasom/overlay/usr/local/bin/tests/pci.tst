@@ -485,7 +485,7 @@ if [ -f /proc/device-tree/compatible ]; then
 
 		for pattern in "${!PCI_DT_MAP[@]}"; do
 			if [[ $compat_str == "$pattern" ]]; then
-				${PCI_DT_MAP[$pattern]}
+				[[ -n "${PCI_DT_MAP[$pattern]}" ]] && ${PCI_DT_MAP[$pattern]}
 				found_compatible=1
 			fi
 		done

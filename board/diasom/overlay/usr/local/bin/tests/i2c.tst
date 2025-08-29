@@ -180,7 +180,7 @@ if [ -f /proc/device-tree/compatible ]; then
 
 		for pattern in "${!I2C_DT_MAP[@]}"; do
 			if [[ $compat_str == "$pattern" ]]; then
-				${I2C_DT_MAP[$pattern]}
+				[[ -n "${I2C_DT_MAP[$pattern]}" ]] && ${I2C_DT_MAP[$pattern]}
 				found_compatible=1
 			fi
 		done

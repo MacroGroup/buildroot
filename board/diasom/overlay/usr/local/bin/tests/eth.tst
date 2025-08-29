@@ -215,7 +215,7 @@ test_eth_end0() {
 	test_eth "end0"
 }
 
-test_eth_end1() {
+test_eth_end1_with_loop() {
 	test_eth "end1"
 	local ret=$?
 
@@ -229,13 +229,13 @@ test_eth_end1() {
 ds_rk3568_som_evb_test_eth()
 {
 	register_test "test_eth_end0" "Ethernet 0 (GMAC0)"
-	register_test "test_eth_end1" "Ethernet 1 (GMAC1)"
+	register_test "test_eth_end1_with_loop" "Ethernet 1 (GMAC1)"
 }
 
 ds_rk3568_som_smarc_evb_test_eth()
 {
 	register_test "test_eth_end0" "Ethernet 0 (GBE0)"
-	register_test "test_eth_end1" "Ethernet 1 (GBE1)"
+	register_test "test_eth_end1_with_loop" "Ethernet 1 (GBE1)"
 }
 
 test_eth_default() {
@@ -279,7 +279,7 @@ if [ -f /proc/device-tree/compatible ]; then
 
 		for pattern in "${!ETH_DT_MAP[@]}"; do
 			if [[ $compat_str == "$pattern" ]]; then
-				${ETH_DT_MAP[$pattern]}
+				[[ -n "${ETH_DT_MAP[$pattern]}" ]] && ${ETH_DT_MAP[$pattern]}
 				found_compatible=1
 			fi
 		done

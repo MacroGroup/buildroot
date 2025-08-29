@@ -38,7 +38,7 @@ test_can_can0() {
 	test_can can0
 }
 
-test_can_can1() {
+test_can_can1_with_loop() {
 	test_can can1
 	local ret=$?
 
@@ -51,12 +51,12 @@ test_can_can1() {
 
 ds_rk3568_som_evb_test_can() {
 	register_test "test_can_can0" "CAN1"
-	register_test "test_can_can1" "CAN2"
+	register_test "test_can_can1_with_loop" "CAN2"
 }
 
 ds_rk3568_som_smarc_evb_test_can() {
 	register_test "test_can_can0" "CAN0"
-	register_test "test_can_can1" "CAN1"
+	register_test "test_can_can1_with_loop" "CAN1"
 }
 
 if ! declare -F check_dependencies &>/dev/null; then
@@ -74,7 +74,7 @@ if [ -f /proc/device-tree/compatible ]; then
 
 		for pattern in "${!CAN_DT_MAP[@]}"; do
 			if [[ $compat_str == "$pattern" ]]; then
-				${CAN_DT_MAP[$pattern]}
+				[[ -n "${CAN_DT_MAP[$pattern]}" ]] && ${CAN_DT_MAP[$pattern]}
 				found_compatible=1
 			fi
 		done

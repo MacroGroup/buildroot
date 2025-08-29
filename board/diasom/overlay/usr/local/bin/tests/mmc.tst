@@ -113,7 +113,7 @@ if [ -f /proc/device-tree/compatible ]; then
 
 		for pattern in "${!MMC_DT_MAP[@]}"; do
 			if [[ $compat_str == "$pattern" ]]; then
-				${MMC_DT_MAP[$pattern]}
+				[[ -n "${MMC_DT_MAP[$pattern]}" ]] && ${MMC_DT_MAP[$pattern]}
 				found_compatible=1
 			fi
 		done
