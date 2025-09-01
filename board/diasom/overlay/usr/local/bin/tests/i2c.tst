@@ -7,60 +7,14 @@ declare -A I2C_DT_MAP=(
 )
 
 check_dependencies_i2c() {
-	local deps=(i2cdetect)
+	local deps=("${I2C_DEPS[@]}")
+	deps+=(@i2c_device_test)
 	check_dependencies "I2C" "${deps[@]}"
 }
 
 check_dependencies_i2c_default() {
 	local deps=()
 	check_dependencies "I2C" "${deps[@]}"
-}
-
-test_i2c_device() {
-	local bus="$1"
-	local addr="$2"
-
-	local output
-	output=$(i2cdetect -y "$bus" 2>/dev/null)
-	if [ $? -ne 0 ]; then
-		echo "Error"
-		return 1
-	fi
-
-	local addr_hex
-	local status
-	addr_hex=$(printf "%02x" $((addr)))
-	status=$(echo "$output" | awk -v addr="$addr_hex" '
-		BEGIN { found=0 }
-		{
-			if ($0 ~ /^[0-9a-f]{2}:/) {
-				split($0, parts, " ")
-
-				for (i = 2; i <= length(parts); i++) {
-					if (parts[i] == addr || parts[i] == "UU") {
-						found = 1
-						status = parts[i]
-						exit 0
-					}
-				}
-			}
-		}
-		END {
-			if (found) print status
-			else print "not_found"
-		}
-	')
-
-	if [ "$status" == "UU" ]; then
-		echo "OK"
-		return 0
-	elif [ "$status" == "$addr_hex" ]; then
-		echo "OK"
-		return 0
-	else
-		echo "Missing"
-		return 1
-	fi
 }
 
 generate_i2c_device_test() {
@@ -70,7 +24,7 @@ generate_i2c_device_test() {
 	local level=$4
 
 	local func_name="test_i2c${bus}_${addr}"
-	eval "${func_name}() { test_i2c_device ${bus} ${addr}; }"
+	eval "${func_name}() { i2c_device_test ${bus} ${addr}; }"
 	register_test "@${func_name}" "I2C${bus} Device ${addr} (${desc})" "${level}"
 }
 
@@ -105,7 +59,7 @@ generate_i2c_bus_test() {
 }
 
 test_i2c2_0x70() {
-	test_i2c_device 2 0x70
+	i2c_device_test 2 0x70
 	local ret=$?
 
 	if [ $ret -eq 0 ]; then
