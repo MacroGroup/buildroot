@@ -2,7 +2,7 @@
 
 declare -g WLAN_DEPS=(iw iperf3 ip jq timeout)
 
-test_speed_wlan() {
+wlan_speed_test() {
 	local device="$1"
 	local min_speed="$2"
 	local writetest="$3"

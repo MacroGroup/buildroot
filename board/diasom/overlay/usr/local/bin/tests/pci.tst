@@ -10,7 +10,7 @@ readonly PCIE_MIN_SPEED=100
 
 check_dependencies_pci() {
 	local deps=("${WLAN_DEPS[@]}")
-	deps+=(@test_speed_wlan)
+	deps+=(@wlan_speed_test)
 	deps+=(dd fio hexdump jq lspci nvme sed timeout)
 	check_dependencies "PCI" "${deps[@]}"
 }
@@ -212,7 +212,7 @@ test_pci_speed_wlan() {
 	local min_speed
 	min_speed=$(test_pci_get_speed "$device" "$writetest")
 
-	test_speed_wlan "$device" "$min_speed" "$writetest"
+	wlan_speed_test "$device" "$min_speed" "$writetest"
 }
 
 test_pci_read_speed_unknown() {
