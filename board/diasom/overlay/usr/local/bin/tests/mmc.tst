@@ -1,6 +1,8 @@
 #!/bin/bash
 
 declare -A MMC_DT_MAP=(
+	["diasom,ds-imx8m-som"]="test_mmc"
+	["diasom,ds-imx8m-som-evb"]="test_sd"
 	["diasom,ds-rk3568-som"]="test_mmc"
 	["diasom,ds-rk3568-som-evb"]="test_sd"
 	["diasom,ds-rk3568-som-smarc-evb"]="test_sd"
