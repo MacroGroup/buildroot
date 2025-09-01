@@ -1,7 +1,9 @@
 #!/bin/bash
 
 declare -A HDMI_DT_MAP=(
+	["diasom,ds-imx8m-som"]=""
 	["diasom,ds-imx8m-som-evb"]="test_hdmi0"
+	["diasom,ds-rk3568-som"]=""
 	["diasom,ds-rk3568-som-evb"]="test_hdmi0"
 	["diasom,ds-rk3568-som-smarc-evb"]="test_hdmi0"
 )

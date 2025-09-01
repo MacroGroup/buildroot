@@ -1,7 +1,8 @@
 #!/bin/bash
 
 declare -A CAN_DT_MAP=(
-	["diasom,ds-imx8m-som-evb"]=""
+	["diasom,ds-imx8m-som"]=""
+	["diasom,ds-rk3568-som"]=""
 	["diasom,ds-rk3568-som-evb"]="ds_rk3568_som_evb_test_can"
 	["diasom,ds-rk3568-som-smarc-evb"]="ds_rk3568_som_smarc_evb_test_can"
 )

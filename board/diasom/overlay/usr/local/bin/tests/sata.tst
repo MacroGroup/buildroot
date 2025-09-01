@@ -2,8 +2,8 @@
 # shellcheck disable=SC2181
 
 declare -A SATA_DT_MAP=(
-	["diasom,ds-imx8m-som-evb"]=""
-	["diasom,ds-rk3568-som-evb"]=""
+	["diasom,ds-imx8m-som"]=""
+	["diasom,ds-rk3568-som"]=""
 	["diasom,ds-rk3568-som-smarc-evb"]="test_sata"
 )
 

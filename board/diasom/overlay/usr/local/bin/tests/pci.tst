@@ -2,6 +2,7 @@
 # shellcheck disable=SC2181
 
 declare -A PCI_DT_MAP=(
+	["diasom,ds-rk3568-som"]=""
 	["diasom,ds-rk3568-som-evb"]="ds_rk3568_som_evb_test_pci"
 	["diasom,ds-rk3568-som-smarc-evb"]="ds_rk3568_som_smarc_evb_test_pci"
 )
