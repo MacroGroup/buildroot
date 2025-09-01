@@ -1,0 +1,82 @@
+#!/bin/bash
+# shellcheck disable=SC2034
+
+declare -A EVB_DT_MAP=(
+	["diasom,ds-rk3568-som"]="ds_rk3568_som_test_version"
+	["diasom,ds-rk3568-som-evb"]="ds_rk3568_som_evb_test_version"
+)
+
+SOM_VERSION=0
+EVB_VERSION=0
+
+check_dependencies_evb() {
+	local deps=("${I2C_DEPS[@]}")
+	deps+=(@i2c_device_test)
+	check_dependencies "EVB" "${deps[@]}"
+}
+
+ds_rk3568_get_som_version() {
+	if i2c_device_test 0 0x1c >/dev/null; then
+		SOM_VERSION=0x200
+		echo "Ver. 2+"
+	else
+		SOM_VERSION=0x100
+		echo "Ver. 1"
+	fi
+
+	return 0
+}
+
+ds_rk3568_get_som_evb_version() {
+	if i2c_device_test 4 0x70 >/dev/null; then
+		EVB_VERSION=0x130
+		echo "Ver. 1.3.0+"
+	else
+		if i2c_device_test 4 0x50 >/dev/null; then
+			EVB_VERSION=0x121
+			echo "Ver. 1.2.1+"
+		else
+			EVB_VERSION=0x120
+			echo "Ver. 1.2.0"
+		fi
+	fi
+
+	return 0
+}
+
+ds_rk3568_som_test_version() {
+	register_test "ds_rk3568_get_som_version" "SOM Version"
+}
+
+ds_rk3568_som_evb_test_version() {
+	register_test "ds_rk3568_get_som_evb_version" "EVB Version"
+}
+
+if ! declare -F check_dependencies &>/dev/null; then
+	echo "Script cannot be executed alone"
+
+	return 1
+fi
+
+if [ -f /proc/device-tree/compatible ]; then
+	check_dependencies_evb || return 1
+
+	found_compatible=0
+	while IFS= read -r -d '' compatible; do
+		compat_str=$(echo -n "$compatible" | tr -d '\0')
+
+		for pattern in "${!EVB_DT_MAP[@]}"; do
+			if [[ $compat_str == "$pattern" ]]; then
+				[[ -n "${EVB_DT_MAP[$pattern]}" ]] && ${EVB_DT_MAP[$pattern]}
+				found_compatible=1
+			fi
+		done
+	done < /proc/device-tree/compatible
+
+	if [ $found_compatible -eq 0 ]; then
+		echo "Error: Cannot find suitable devicetree compatible string"
+		return 1
+	fi
+fi
+
+return 0
