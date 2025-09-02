@@ -1,7 +1,7 @@
 #!/bin/bash
 # shellcheck disable=SC2034
 
-declare -A EVB_DT_MAP=(
+declare -A VER_DT_MAP=(
 	["diasom,ds-rk3568-som"]="ds_rk3568_som_test_version"
 	["diasom,ds-rk3568-som-evb"]="ds_rk3568_som_evb_test_version"
 )
@@ -9,10 +9,10 @@ declare -A EVB_DT_MAP=(
 SOM_VERSION=0
 EVB_VERSION=0
 
-check_dependencies_evb() {
+check_dependencies_ver() {
 	local deps=("${I2C_DEPS[@]}")
 	deps+=(@i2c_device_test)
-	check_dependencies "EVB" "${deps[@]}"
+	check_dependencies "VER" "${deps[@]}"
 }
 
 ds_rk3568_get_som_version() {
@@ -45,11 +45,11 @@ ds_rk3568_get_som_evb_version() {
 }
 
 ds_rk3568_som_test_version() {
-	register_test "ds_rk3568_get_som_version" "SOM Version"
+	register_test "@ds_rk3568_get_som_version" "SOM Version"
 }
 
 ds_rk3568_som_evb_test_version() {
-	register_test "ds_rk3568_get_som_evb_version" "EVB Version"
+	register_test "@ds_rk3568_get_som_evb_version" "EVB Version"
 }
 
 if ! declare -F check_dependencies &>/dev/null; then
@@ -59,15 +59,15 @@ if ! declare -F check_dependencies &>/dev/null; then
 fi
 
 if [ -f /proc/device-tree/compatible ]; then
-	check_dependencies_evb || return 1
+	check_dependencies_ver || return 1
 
 	found_compatible=0
 	while IFS= read -r -d '' compatible; do
 		compat_str=$(echo -n "$compatible" | tr -d '\0')
 
-		for pattern in "${!EVB_DT_MAP[@]}"; do
+		for pattern in "${!VER_DT_MAP[@]}"; do
 			if [[ $compat_str == "$pattern" ]]; then
-				[[ -n "${EVB_DT_MAP[$pattern]}" ]] && ${EVB_DT_MAP[$pattern]}
+				[[ -n "${VER_DT_MAP[$pattern]}" ]] && ${VER_DT_MAP[$pattern]}
 				found_compatible=1
 			fi
 		done
