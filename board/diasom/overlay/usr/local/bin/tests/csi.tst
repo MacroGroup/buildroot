@@ -44,7 +44,7 @@ test_csi() {
 			echo "$CSI_CONSOLE_LEVEL" > /proc/sys/kernel/printk 2>/dev/null
 		fi
 	}
-	trap cleanup EXIT RETURN INT TERM
+	trap cleanup EXIT RETURN INT TERM HUP
 
 	local video_dev
 	video_dev=$(find_csi_video_device "$csi_name")

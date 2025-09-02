@@ -15,7 +15,7 @@ check_dependencies_uart() {
 
 test_uart() {
 	local device="$1"
-	local baud_rate="${2:-115200}"
+	local baud_rate="$2"
 
 	if [ ! -c "$device" ]; then
 		echo "Missing"
@@ -38,7 +38,7 @@ test_uart() {
 			echo "$UART_CONSOLE_LEVEL" > /proc/sys/kernel/printk 2>/dev/null
 		fi
 	}
-	trap cleanup EXIT RETURN INT TERM
+	trap cleanup EXIT RETURN INT TERM HUP
 
 	if [ -r /proc/sys/kernel/printk ]; then
 		UART_CONSOLE_LEVEL=$(awk '{print $1}' /proc/sys/kernel/printk 2>/dev/null)
@@ -79,41 +79,27 @@ test_uart() {
 	return 1
 }
 
-test_uart3() {
-	test_uart "/dev/ttyS3" 115200
-}
+generate_uart_test() {
+	local port_suff=$1
+	local port_name=$2
+	local baud_rate="${3:-115200}"
 
-test_uart4() {
-	test_uart "/dev/ttyS4" 115200
-}
-
-test_uart5() {
-	test_uart "/dev/ttyS5" 115200
-}
-
-test_uart7() {
-	test_uart "/dev/ttyS7" 115200
-}
-
-test_uart8() {
-	test_uart "/dev/ttyS8" 115200
-}
-
-test_uart9() {
-	test_uart "/dev/ttyS9" 115200
+	local func_name="test_uart${port_suff}"
+	eval "${func_name}() { test_uart \"/dev/tty${port_suff}\" \"${baud_rate}\"; }"
+	register_test "${func_name}" "${port_name}"
 }
 
 ds_rk3568_som_evb_test_uart() {
-	register_test "test_uart3" "UART3"
-	register_test "test_uart7" "UART7"
-	register_test "test_uart8" "UART8"
-	register_test "test_uart9" "UART9"
+	generate_uart_test "S3" "UART3"
+	generate_uart_test "S7" "UART7"
+	generate_uart_test "S8" "UART8"
+	generate_uart_test "S9" "UART9"
 }
 
 ds_rk3568_som_smarc_evb_test_uart() {
-	register_test "test_uart4" "UART4 (SER0)"
-	register_test "test_uart8" "UART8 (SER2)"
-	register_test "test_uart5" "UART5 (SER3)"
+	generate_uart_test "S4" "UART4 (SER0)"
+	generate_uart_test "S8" "UART8 (SER2)"
+	generate_uart_test "S5" "UART5 (SER3)"
 }
 
 if ! declare -F check_dependencies &>/dev/null; then

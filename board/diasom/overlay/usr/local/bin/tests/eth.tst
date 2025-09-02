@@ -98,7 +98,7 @@ test_eth_speed() {
 			echo "$ETH_CONSOLE_LEVEL" > /proc/sys/kernel/printk 2>/dev/null
 		fi
 	}
-	trap cleanup EXIT RETURN INT TERM
+	trap cleanup EXIT RETURN INT TERM HUP
 
 	if [ -r /proc/sys/kernel/printk ]; then
 		ETH_CONSOLE_LEVEL=$(awk '{print $1}' /proc/sys/kernel/printk 2>/dev/null)

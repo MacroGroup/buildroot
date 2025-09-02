@@ -255,7 +255,7 @@ test_usb_read_speed_bt() {
 			powered_by_us=0
 		fi
 	}
-	trap cleanup EXIT RETURN INT TERM
+	trap cleanup EXIT RETURN INT TERM HUP
 
 	if [[ ! -f "$device_path/busnum" || ! -f "$device_path/devnum" ]]; then
 		echo "BT: Error getting bus/dev numbers"
