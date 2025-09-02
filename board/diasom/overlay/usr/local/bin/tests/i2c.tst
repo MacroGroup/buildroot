@@ -1,7 +1,8 @@
 #!/bin/bash
 
 declare -A I2C_DT_MAP=(
-	["diasom,ds-rk3568-som"]=""
+	["diasom,ds-imx8m-som"]="ds_imx8m_som_test_i2c"
+	["diasom,ds-rk3568-som"]="ds_rk3568_som_test_i2c"
 	["diasom,ds-rk3568-som-evb"]="ds_rk3568_som_evb_test_i2c"
 	["diasom,ds-rk3568-som-smarc-evb"]="ds_rk3568_som_smarc_evb_test_i2c"
 )
@@ -86,15 +87,23 @@ ds_rk3568_som_smarc_evb_test_i2c2() {
 	return 1
 }
 
-ds_rk3568_som_smarc_evb_test_i2c() {
-	register_test "ds_rk3568_som_smarc_evb_test_i2c2" "I2C2 Bus (Internal)"
-	generate_i2c_bus_test 3 "I2C3 Bus (I2C_GP)" 0 "0x68:RTC,0x51:EEPROM,0x50:EEPROM"
-	generate_i2c_bus_test 4 "I2C4 Bus (I2C_PM)" 0
+ds_imx8m_som_test_i2c() {
+	generate_i2c_bus_test 1 "I2C1 Bus (SOM)" 0 "0x4b:PMIC"
+}
+
+ds_rk3568_som_test_i2c() {
+	generate_i2c_bus_test 0 "I2C0 Bus (SOM)" 0 "0x20:PMIC"
 }
 
 ds_rk3568_som_evb_test_i2c() {
 	generate_i2c_bus_test 1 "I2C1 Bus" 0 "0x22:FUSB302"
 	generate_i2c_bus_test 4 "I2C4 Bus" 0 "0x10:ES8388"
+}
+
+ds_rk3568_som_smarc_evb_test_i2c() {
+	register_test "ds_rk3568_som_smarc_evb_test_i2c2" "I2C2 Bus (Internal)"
+	generate_i2c_bus_test 3 "I2C3 Bus (I2C_GP)" 0 "0x68:RTC,0x51:EEPROM,0x50:EEPROM"
+	generate_i2c_bus_test 4 "I2C4 Bus (I2C_PM)" 0
 }
 
 test_i2c_default() {
