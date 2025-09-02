@@ -1,17 +1,20 @@
 #!/bin/bash
-# shellcheck disable=SC2034
+# shellcheck disable=SC2034,SC2181
 
 declare -A VER_DT_MAP=(
+	["diasom,ds-imx8m-som"]=""
 	["diasom,ds-rk3568-som"]="ds_rk3568_som_test_version"
 	["diasom,ds-rk3568-som-evb"]="ds_rk3568_som_evb_test_version"
+	["diasom,ds-rk3568-som-smarc-evb"]="ds_rk3568_som_smarc_evb_test_version"
 )
 
 SOM_VERSION=0
 EVB_VERSION=0
+SMARC_VERSION=0
 
 check_dependencies_ver() {
-	local deps=("${I2C_DEPS[@]}")
-	deps+=(@i2c_device_test)
+	local deps=("${I2C_DEPS[@]}" "${IIO_DEPS[@]}")
+	deps+=(@i2c_device_test @iio_get_value)
 	check_dependencies "VER" "${deps[@]}"
 }
 
@@ -44,12 +47,36 @@ ds_rk3568_get_som_evb_version() {
 	return 0
 }
 
+ds_rk3568_get_som_smarc_evb_version() {
+	local voltage
+	voltage=$(iio_get_value "fe720000.saradc" 1)
+
+	if [ $? -ne 0 ]; then
+		echo "$voltage"
+		return 1
+	fi
+
+	if [ "$voltage" -lt 100 ]; then
+		SMARC_VERSION=0x111
+		echo "Ver. 1.1.1"
+		return 0
+	fi
+
+	echo "Unhandled value ($voltage mV)"
+
+	return 2
+}
+
 ds_rk3568_som_test_version() {
 	register_test "@ds_rk3568_get_som_version" "SOM Version"
 }
 
 ds_rk3568_som_evb_test_version() {
 	register_test "@ds_rk3568_get_som_evb_version" "EVB Version"
+}
+
+ds_rk3568_som_smarc_evb_test_version() {
+	register_test "@ds_rk3568_get_som_smarc_evb_version" "SMARC Version"
 }
 
 if ! declare -F check_dependencies &>/dev/null; then

@@ -1,5 +1,4 @@
 #!/bin/bash
-# shellcheck disable=SC2181
 
 declare -A I2C_DT_MAP=(
 	["diasom,ds-rk3568-som"]=""

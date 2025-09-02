@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=SC2181,SC2034
 
 declare -g I2C_DEPS=(i2cdetect)
 
