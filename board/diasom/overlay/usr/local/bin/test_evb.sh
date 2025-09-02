@@ -23,6 +23,9 @@ DIR=$(dirname -- "$SOURCE")
 SCRIPT_DIR=$(cd -- "$DIR" && pwd)
 TEST_DIR="${SCRIPT_DIR}/tests"
 
+declare -a SYS_QUEUE
+declare -a SYS_NAMES
+declare -a SYS_LEVELS
 declare -a TEST_QUEUE
 declare -a TEST_NAMES
 declare -a TEST_LEVELS
@@ -69,9 +72,16 @@ register_test() {
 
 	if [[ "$test_function" == @* ]]; then
 		test_function="${test_function#@}"
-		TEST_QUEUE=("$test_function" "${TEST_QUEUE[@]}")
-		TEST_NAMES=("$test_name" "${TEST_NAMES[@]}")
-		TEST_LEVELS=("$test_level" "${TEST_LEVELS[@]}")
+		if [[ "$test_function" == @* ]]; then
+			test_function="${test_function#@}"
+			SYS_QUEUE=("$test_function" "${SYS_QUEUE[@]}")
+			SYS_NAMES=("$test_name" "${SYS_NAMES[@]}")
+			SYS_LEVELS=("$test_level" "${SYS_LEVELS[@]}")
+		else
+			TEST_QUEUE=("$test_function" "${TEST_QUEUE[@]}")
+			TEST_NAMES=("$test_name" "${TEST_NAMES[@]}")
+			TEST_LEVELS=("$test_level" "${TEST_LEVELS[@]}")
+		fi
 	else
 		TEST_QUEUE+=("$test_function")
 		TEST_NAMES+=("$test_name")
@@ -100,6 +110,10 @@ run_tests() {
 		echo -e "${COLOR_FAIL}Failed to create temporary file${COLOR_RESET}"
 		return 1
 	}
+
+	TEST_QUEUE=("${SYS_QUEUE[@]}" "${TEST_QUEUE[@]}")
+	TEST_NAMES=("${SYS_QUEUE[@]}" "${TEST_NAMES[@]}")
+	TEST_LEVELS=("${SYS_QUEUE[@]}" "${TEST_LEVELS[@]}")
 
 	while [ ${#TEST_QUEUE[@]} -gt 0 ]; do
 		local test_function="${TEST_QUEUE[0]}"

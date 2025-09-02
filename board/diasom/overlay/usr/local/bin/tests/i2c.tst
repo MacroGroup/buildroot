@@ -96,14 +96,14 @@ ds_rk3568_som_test_i2c() {
 }
 
 ds_rk3568_som_evb_test_i2c() {
-	generate_i2c_bus_test 1 "I2C1 Bus" 0 "0x22:FUSB302"
 	generate_i2c_bus_test 4 "I2C4 Bus" 0 "0x10:ES8388"
+	generate_i2c_bus_test 1 "I2C1 Bus" 0 "0x22:FUSB302"
 }
 
 ds_rk3568_som_smarc_evb_test_i2c() {
-	register_test "ds_rk3568_som_smarc_evb_test_i2c2" "I2C2 Bus (Internal)"
-	generate_i2c_bus_test 3 "I2C3 Bus (I2C_GP)" 0 "0x68:RTC,0x51:EEPROM,0x50:EEPROM"
 	generate_i2c_bus_test 4 "I2C4 Bus (I2C_PM)" 0
+	generate_i2c_bus_test 3 "I2C3 Bus (I2C_GP)" 0 "0x68:RTC,0x51:EEPROM,0x50:EEPROM"
+	register_test "@ds_rk3568_som_smarc_evb_test_i2c2" "I2C2 Bus (Internal)"
 }
 
 test_i2c_default() {
