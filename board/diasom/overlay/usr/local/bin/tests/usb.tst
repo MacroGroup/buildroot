@@ -266,14 +266,14 @@ test_usb_read_speed_bt() {
 	bus=$(<"$device_path/busnum")
 	devnum=$(<"$device_path/devnum")
 
-	if ! grep -q '^usbmon' /proc/modules; then
-		modprobe usbmon || {
+	local usbmon_path="/sys/kernel/debug/usb/usbmon/${bus}u"
+	if [ ! -e "$usbmon_path" ]; then
+		if ! modprobe usbmon; then
 			echo "BT: Failed to load usbmon"
 			return 2
-		}
+		fi
+		sleep 0.5
 	fi
-
-	local usbmon_path="/sys/kernel/debug/usb/usbmon/${bus}u"
 	[[ ! -e "$usbmon_path" ]] && {
 		echo "BT: usbmon interface missing"
 		return 2
@@ -356,6 +356,15 @@ test_usb_read_speed_bt() {
 	fi
 }
 
+test_usb_read_speed_wlan() {
+	local device="$1"
+	local class_info="$2"
+
+	echo "Unsupported: WLAN: $device:$class_info"
+
+	return 2
+}
+
 test_usb_read_speed_unknown() {
 	local device="$1"
 	local class_info="$2"
@@ -389,8 +398,11 @@ test_usb_read_speed() {
 		if [ "$subclass" = "01" ] && [ "$protocol" = "01" ]; then
 			test_usb_read_speed_bt "$device"
 		else
-			test_usb_read_speed_unknown "$device" "$class_info"
+			test_usb_read_speed_wlan "$device" "$class_info"
 		fi
+		;;
+	"ff")
+		test_usb_read_speed_wlan "$device" "$class_info"
 		;;
 	*)
 		test_usb_read_speed_unknown "$device" "$class_info"

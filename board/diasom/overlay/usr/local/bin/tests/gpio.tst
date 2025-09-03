@@ -9,7 +9,8 @@ declare -A GPIO_DT_MAP=(
 )
 
 check_dependencies_gpio() {
-	local deps=()
+	local deps=("${I2C_DEPS[@]}")
+	deps+=(@i2c_device_test)
 	check_dependencies "GPIO" "${deps[@]}"
 }
 
@@ -162,9 +163,10 @@ test_i2s_busy() {
 	return 2
 }
 
-register_gpio_tests() {
+register_gpio_pair_tests() {
 	local gpio_tests=("$@")
 
+	local test_spec
 	for test_spec in "${gpio_tests[@]}"; do
 		read -r label1 idx1 label2 idx2 test_name <<< "$test_spec"
 
@@ -180,7 +182,7 @@ ds_imx8m_som_evb_test_gpio() {
 		# TODO
 	)
 
-	register_gpio_tests "${gpio_tests[@]}"
+	register_gpio_pair_tests "${gpio_tests[@]}"
 
 	return 0
 }
@@ -191,7 +193,7 @@ ds_rk3568_som_evb_test_gpio() {
 		"gpio1	7	gpio1	8	GPIO3-GPIO4"
 	)
 
-	register_gpio_tests "${gpio_tests[@]}"
+	register_gpio_pair_tests "${gpio_tests[@]}"
 }
 
 ds_rk3568_som_smarc_evb_test_gpio() {
@@ -200,10 +202,15 @@ ds_rk3568_som_smarc_evb_test_gpio() {
 		"gpio3	14	gpio1	11	GPIO2-GPIO3"
 		"gpio2	30	gpio3	16	GPIO4-GPIO5"
 		"gpio3	15	gpio4	17	GPIO6-GPIO7"
-		"2-0023	0	2-0023	1	GPIO8-GPIO9"
-		"2-0023	2	2-0023	3	GPIO10-GPIO11"
-		"2-0023	4	2-0023	5	GPIO12-GPIO13"
 	)
+
+	if i2c_device_test 2 0x23 >/dev/null; then
+		gpio_tests+=(
+			"2-0023	0	2-0023	1	GPIO8-GPIO9"
+			"2-0023	2	2-0023	3	GPIO10-GPIO11"
+			"2-0023	4	2-0023	5	GPIO12-GPIO13"
+		)
+	fi
 
 	if test_gpio_unbind_driver "fe410000.i2s" "rockchip-i2s-tdm"; then
 		gpio_tests+=(
@@ -214,7 +221,7 @@ ds_rk3568_som_smarc_evb_test_gpio() {
 		register_test "test_i2s_busy" "I2S0"
 	fi
 
-	register_gpio_tests "${gpio_tests[@]}"
+	register_gpio_pair_tests "${gpio_tests[@]}"
 }
 
 if ! declare -F check_dependencies &>/dev/null; then

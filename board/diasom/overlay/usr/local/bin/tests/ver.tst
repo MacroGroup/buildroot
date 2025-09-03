@@ -8,9 +8,9 @@ declare -A VER_DT_MAP=(
 	["diasom,ds-rk3568-som-smarc-evb"]="ds_rk3568_som_smarc_evb_test_version"
 )
 
-SOM_VERSION=0
-EVB_VERSION=0
-SMARC_VERSION=0
+declare -gx SOM_VERSION=0
+declare -gx EVB_VERSION=0
+declare -gx SMARC_VERSION=0
 
 check_dependencies_ver() {
 	local deps=("${I2C_DEPS[@]}" "${IIO_DEPS[@]}")
