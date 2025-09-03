@@ -112,8 +112,8 @@ run_tests() {
 	}
 
 	TEST_QUEUE=("${SYS_QUEUE[@]}" "${TEST_QUEUE[@]}")
-	TEST_NAMES=("${SYS_QUEUE[@]}" "${TEST_NAMES[@]}")
-	TEST_LEVELS=("${SYS_QUEUE[@]}" "${TEST_LEVELS[@]}")
+	TEST_NAMES=("${SYS_NAMES[@]}" "${TEST_NAMES[@]}")
+	TEST_LEVELS=("${SYS_LEVELS[@]}" "${TEST_LEVELS[@]}")
 
 	while [ ${#TEST_QUEUE[@]} -gt 0 ]; do
 		local test_function="${TEST_QUEUE[0]}"
