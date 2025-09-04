@@ -59,7 +59,7 @@ generate_i2c_bus_test() {
 	register_test "@${func_name}" "${desc}" "${level}"
 }
 
-test_i2c2_0x70() {
+ds_rk3568_som_smarc_evb_test_i2c2_0x70() {
 	i2c_device_test 2 0x70
 	local ret=$?
 
@@ -74,7 +74,7 @@ test_i2c2_0x70() {
 
 ds_rk3568_som_smarc_evb_test_i2c2() {
 	if [ -e /dev/i2c-2 ]; then
-		register_test "@test_i2c2_0x70" "I2C2 Device 0x70 (I2C MUX)" 1
+		register_test "@ds_rk3568_som_smarc_evb_test_i2c2_0x70" "I2C2 Device 0x70 (I2C MUX)" 1
 		generate_i2c_device_test 2 0x23 "I2C GPIO" 1
 
 		echo "OK"
