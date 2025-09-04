@@ -5,7 +5,7 @@ declare -g VER_DEPS=("${I2C_DEPS[@]}" "${IIO_DEPS[@]}" @i2c_device_test @iio_get
 
 declare -gx SOM_VERSION=0
 declare -gx EVB_VERSION=0
-declare -gx SMARC_VERSION=0
+declare -gx MOD_VERSION=0
 
 ver_get_ds_rk3568_som_version() {
 	if i2c_device_test 0 0x1c &>/dev/null; then
@@ -36,7 +36,7 @@ ver_get_ds_rk3568_som_evb_version() {
 	return 0
 }
 
-ver_get_ds_rk3568_som_smarc_evb_version() {
+ver_get_ds_rk3568_som_smarc_version() {
 	local voltage
 	voltage=$(iio_get_value "fe720000.saradc" 1)
 
@@ -46,7 +46,7 @@ ver_get_ds_rk3568_som_smarc_evb_version() {
 	fi
 
 	if [ "$voltage" -lt 100 ]; then
-		SMARC_VERSION=0x111
+		MOD_VERSION=0x111
 		echo "Ver. 1.1.1"
 		return 0
 	fi

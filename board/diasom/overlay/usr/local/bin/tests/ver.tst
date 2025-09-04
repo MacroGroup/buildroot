@@ -23,7 +23,7 @@ ds_rk3568_som_evb_test_version() {
 }
 
 ds_rk3568_som_smarc_evb_test_version() {
-	register_test "@@ver_get_ds_rk3568_som_smarc_evb_version" "SMARC Version"
+	register_test "@@ver_get_ds_rk3568_som_smarc_version" "SMARC Version"
 }
 
 if ! declare -F check_dependencies &>/dev/null; then
