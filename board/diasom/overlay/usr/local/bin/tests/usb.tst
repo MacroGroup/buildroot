@@ -10,7 +10,8 @@ declare -A USB_DT_MAP=(
 declare -A USB_DISABLE_TESTS
 
 check_dependencies_usb() {
-	local deps=(bt-adapter fio jq mkfifo modprobe xargs)
+	local deps=("${DEV_DEPS[@]}")
+	deps+=(@dev_modprobe bt-adapter fio jq mkfifo xargs)
 	check_dependencies "USB" "${deps[@]}"
 }
 
@@ -267,17 +268,11 @@ test_usb_read_speed_bt() {
 	devnum=$(<"$device_path/devnum")
 
 	local usbmon_path="/sys/kernel/debug/usb/usbmon/${bus}u"
-	if [ ! -e "$usbmon_path" ]; then
-		if ! modprobe usbmon; then
-			echo "BT: Failed to load usbmon"
-			return 2
-		fi
-		sleep 0.5
-	fi
-	[[ ! -e "$usbmon_path" ]] && {
+	dev_modprobe "usbmon" "$usbmon_path" &>/dev/null
+	if [[ $? -ne 0 ]]; then
 		echo "BT: usbmon interface missing"
 		return 2
-	}
+	fi
 
 	fifo=$(mktemp -u)
 	if ! mkfifo "$fifo"; then

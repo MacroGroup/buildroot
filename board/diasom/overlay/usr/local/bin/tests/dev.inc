@@ -1,8 +1,25 @@
 #!/bin/bash
 
-declare -g DEV_DEPS=()
+declare -g DEV_DEPS=(modprobe)
 
-dev_unbind_drivers() {
+dev_modprobe() {
+	local module="$1"
+	local check="$2"
+
+	if [ ! -e "$check" ]; then
+		if modprobe "$module" &>/dev/null; then
+			sleep 0.5
+		fi
+	fi
+
+	if [ ! -e "$check" ]; then
+		return 1
+	fi
+
+	return 0
+}
+
+dev_unbind_driver() {
 	local device="$1"
 	local driver="$2"
 
