@@ -49,7 +49,7 @@ test_csi() {
 	local video_dev
 	video_dev=$(find_csi_video_device "$csi_name")
 	if [ -z "$video_dev" ] || [ ! -c "$video_dev" ]; then
-		echo "Camera not found (Unsupported camera?)"
+		echo "Camera not found (Unsupported?)"
 		return 1
 	fi
 
