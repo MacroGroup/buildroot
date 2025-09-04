@@ -683,8 +683,8 @@ ds_rk3568_som_smarc_evb_test_usb() {
 	local names=(
 		"HOST0 (USB0)"
 		"HOST0 (USB0)"
-		"HOST1 (Internal)"
-		"HOST1 (Internal)"
+		"HOST1 (SMARC Internal)"
+		"HOST1 (SMARC Internal)"
 	)
 
 	local i
