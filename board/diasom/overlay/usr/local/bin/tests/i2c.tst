@@ -59,6 +59,41 @@ generate_i2c_bus_test() {
 	register_test "@${func_name}" "${desc}" "${level}"
 }
 
+ds_rk3568_som_evb_test_i2c4_0x70() {
+	i2c_device_test 4 0x70
+	local ret=$?
+
+	if [ $ret -eq 0 ]; then
+		generate_i2c_bus_test 7 "I2C7 Bus" 2
+		generate_i2c_bus_test 6 "I2C6 Bus" 2
+	fi
+
+	return $ret
+}
+
+ds_rk3568_som_evb_test_i2c4() {
+	if [ -e /dev/i2c-4 ]; then
+		ver_get_ds_rk3568_som_evb_version &>/dev/null
+		if [[ "$EVB_VERSION" -ge 0x130 ]]; then
+			register_test "@ds_rk3568_som_evb_test_i2c4_0x70" "I2C4 Device 0x70 (PCA9546)" 1
+		fi
+		if [[ "$EVB_VERSION" -ge 0x121 && "$EVB_VERSION" -lt 0x130 ]]; then
+			generate_i2c_device_test 4 0x51 "EEPROM" 1
+			generate_i2c_device_test 4 0x50 "EEPROM" 1
+		fi
+
+		generate_i2c_device_test 4 0x10 "ES8388" 1
+
+		echo "OK"
+
+		return 0
+	fi
+
+	echo "Missing"
+
+	return 1
+}
+
 ds_rk3568_som_smarc_evb_test_i2c2_0x70() {
 	i2c_device_test 2 0x70
 	local ret=$?
@@ -103,10 +138,7 @@ ds_rk3568_som_test_i2c() {
 }
 
 ds_rk3568_som_evb_test_i2c() {
-	local i2c4devs="0x10:ES8388"
-	ver_get_ds_rk3568_som_evb_version &>/dev/null
-	#TODO check 1.3.0 < ver >= 1.2.1
-	generate_i2c_bus_test 4 "I2C4 Bus" 0 "$i2c4devs"
+	register_test "@ds_rk3568_som_evb_test_i2c4" "I2C4 Bus"
 	generate_i2c_bus_test 1 "I2C1 Bus" 0 "0x22:FUSB302"
 }
 
