@@ -9,14 +9,15 @@ dev_modprobe() {
 	if [ ! -e "$check" ]; then
 		if modprobe "$module" &>/dev/null; then
 			sleep 0.5
+			if [ -e "$check" ]; then
+				return 0
+			fi
 		fi
+	else
+		return 0
 	fi
 
-	if [ ! -e "$check" ]; then
-		return 1
-	fi
-
-	return 0
+	return 1
 }
 
 dev_unbind_driver() {
