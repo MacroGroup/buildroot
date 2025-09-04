@@ -8,8 +8,8 @@ declare -A I2C_DT_MAP=(
 )
 
 check_dependencies_i2c() {
-	local deps=("${I2C_DEPS[@]}")
-	deps+=(@i2c_device_test)
+	local deps=("${I2C_DEPS[@]}" "${VER_DEPS[@]}")
+	deps+=(@i2c_device_test @ver_get_ds_rk3568_som_version)
 	check_dependencies "I2C" "${deps[@]}"
 }
 
@@ -92,7 +92,14 @@ ds_imx8m_som_test_i2c() {
 }
 
 ds_rk3568_som_test_i2c() {
-	generate_i2c_bus_test 0 "I2C0 Bus (SOM)" 0 "0x20:PMIC"
+	local devs="0x20:PMIC"
+
+	ver_get_ds_rk3568_som_version &>/dev/null
+	if [[ "$SOM_VERSION" -ge 0x200 ]]; then
+		devs+=",0x1c:TCS4525"
+	fi
+
+	generate_i2c_bus_test 0 "I2C0 Bus (SOM)" 0 "$devs"
 }
 
 ds_rk3568_som_evb_test_i2c() {

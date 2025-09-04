@@ -9,8 +9,8 @@ declare -A GPIO_DT_MAP=(
 )
 
 check_dependencies_gpio() {
-	local deps=("${I2C_DEPS[@]}")
-	deps+=(@i2c_device_test)
+	local deps=("${DEV_DEPS[@]}" "${I2C_DEPS[@]}")
+	deps+=(@dev_unbind_drivers @i2c_device_test)
 	check_dependencies "GPIO" "${deps[@]}"
 }
 
@@ -144,19 +144,6 @@ test_gpio_pair() {
 	return 0
 }
 
-test_gpio_unbind_driver() {
-	local device="$1"
-	local driver="$2"
-
-	echo "$device" | tee "/sys/bus/platform/drivers/$driver/unbind" >/dev/null 2>&1
-
-	if [ ! -e "/sys/bus/platform/drivers/$driver/$device" ]; then
-		return 0
-	else
-		return 1
-	fi
-}
-
 test_i2s_busy() {
 	echo "Busy"
 
@@ -204,7 +191,7 @@ ds_rk3568_som_smarc_evb_test_gpio() {
 		"gpio3	15	gpio4	17	GPIO6-GPIO7"
 	)
 
-	if i2c_device_test 2 0x23 >/dev/null; then
+	if i2c_device_test 2 0x23 &>/dev/null; then
 		gpio_tests+=(
 			"2-0023	0	2-0023	1	GPIO8-GPIO9"
 			"2-0023	2	2-0023	3	GPIO10-GPIO11"
@@ -212,7 +199,7 @@ ds_rk3568_som_smarc_evb_test_gpio() {
 		)
 	fi
 
-	if test_gpio_unbind_driver "fe410000.i2s" "rockchip-i2s-tdm"; then
+	if dev_unbind_drivers "fe410000.i2s" "rockchip-i2s-tdm"; then
 		gpio_tests+=(
 			"gpio3	23	gpio3	25	I2S1_CK-I2S1_SDOUT"
 			"gpio3	24	gpio3	26	I2S1_LRCK-I2S1_SDIN"
