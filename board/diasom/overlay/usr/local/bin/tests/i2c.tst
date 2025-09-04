@@ -9,7 +9,7 @@ declare -A I2C_DT_MAP=(
 
 check_dependencies_i2c() {
 	local deps=("${I2C_DEPS[@]}" "${VER_DEPS[@]}")
-	deps+=(@i2c_device_test @ver_get_ds_rk3568_som_version)
+	deps+=(@i2c_device_test @ver_get_ds_rk3568_som_version @ver_get_ds_rk3568_som_evb_version)
 	check_dependencies "I2C" "${deps[@]}"
 }
 
@@ -103,7 +103,10 @@ ds_rk3568_som_test_i2c() {
 }
 
 ds_rk3568_som_evb_test_i2c() {
-	generate_i2c_bus_test 4 "I2C4 Bus" 0 "0x10:ES8388"
+	local i2c4devs="0x10:ES8388"
+	ver_get_ds_rk3568_som_evb_version &>/dev/null
+	#TODO check 1.3.0 < ver >= 1.2.1
+	generate_i2c_bus_test 4 "I2C4 Bus" 0 "$i2c4devs"
 	generate_i2c_bus_test 1 "I2C1 Bus" 0 "0x22:FUSB302"
 }
 
