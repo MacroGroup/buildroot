@@ -57,8 +57,8 @@ ds_rk3568_som_evb_test_can() {
 }
 
 ds_rk3568_som_smarc_evb_test_can() {
-	register_test "test_can_can0" "CAN0"
-	register_test "test_can_can1_with_loop" "CAN1"
+	register_test "test_can_can0" "CAN0 (CAN0)"
+	register_test "test_can_can1_with_loop" "CAN2 (CAN1)"
 }
 
 if ! declare -F check_dependencies &>/dev/null; then
