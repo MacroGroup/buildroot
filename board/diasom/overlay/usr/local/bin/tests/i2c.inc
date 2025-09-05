@@ -8,7 +8,7 @@ i2c_device_test() {
 	local addr="$2"
 
 	local output
-	output=$(i2cdetect -y "$bus" 2>/dev/null)
+	output=$(i2cdetect -y "$bus" "$addr" "$addr" 2>/dev/null)
 	if [ $? -ne 0 ]; then
 		echo "Error"
 		return 1
