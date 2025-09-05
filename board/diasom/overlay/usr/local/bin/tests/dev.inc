@@ -22,13 +22,19 @@ dev_modprobe() {
 
 dev_unbind_driver() {
 	local device="$1"
-	local driver="$2"
 
-	echo "$device" | tee "/sys/bus/platform/drivers/$driver/unbind" >/dev/null 2>&1
+	local device_path
+	while IFS= read -r -d '' device_path; do
+		local driver_path
+		driver_path=$(dirname "$device_path")
 
-	if [ -e "/sys/bus/platform/drivers/$driver/$device" ]; then
-		return 1
-	fi
+		if echo "$device" > "$driver_path/unbind" 2>/dev/null; then
+			sleep 0.1
+			if [ -e "$device_path" ]; then
+				return 1
+			fi
+		fi
+	done < <(find /sys/bus/*/drivers/ -name "$device" -print0 2>/dev/null)
 
 	return 0
 }

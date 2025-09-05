@@ -199,7 +199,7 @@ ds_rk3568_som_smarc_evb_test_gpio() {
 		)
 	fi
 
-	if dev_unbind_driver "fe410000.i2s" "rockchip-i2s-tdm"; then
+	if dev_unbind_driver "fe410000.i2s"; then
 		gpio_tests+=(
 			"gpio3	23	gpio3	25	I2S1_CK-I2S1_SDOUT"
 			"gpio3	24	gpio3	26	I2S1_LRCK-I2S1_SDIN"
