@@ -10,7 +10,7 @@ declare -A VER_DT_MAP=(
 check_dependencies_ver() {
 	local deps=("${VER_DEPS[@]}")
 	deps+=(@ver_get_ds_rk3568_som_version @ver_get_ds_rk3568_som_evb_version)
-	deps+=(@ver_get_ds_rk3568_som_smarc_evb_version)
+	deps+=(@ver_get_ds_rk3568_som_smarc_version)
 	check_dependencies "VER" "${deps[@]}"
 }
 
