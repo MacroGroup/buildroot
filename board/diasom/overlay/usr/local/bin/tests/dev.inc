@@ -38,9 +38,9 @@ dev_bind_driver() {
 
 	echo "$driver" > "$device_path/driver_override" 2>/dev/null
 
-	local device=$(basename "$device_path")
 	local driver_path
 	while IFS= read -r -d '' driver_path; do
+		local device=$(basename "$device_path")
 		echo "$device" > "$driver_path/bind" 2>/dev/null
 		if [ -e "$driver_path/$device" ]; then
 			return 0
