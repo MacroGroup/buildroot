@@ -87,6 +87,10 @@ test_csi() {
 
 	echo "${avg_fps} fps"
 
+	if (( $(echo "$avg_fps < 5.0" | bc -l) )); then
+		return 2
+	fi
+
 	return 0
 }
 
