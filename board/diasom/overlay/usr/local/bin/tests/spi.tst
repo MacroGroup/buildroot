@@ -10,7 +10,7 @@ declare -A SPI_DT_MAP=(
 
 check_dependencies_spi() {
 	local deps=("${DEV_DEPS[@]}")
-	local deps=(@dev_unbind_driver)
+	local deps=(@dev_modprobe @dev_unbind_driver)
 	check_dependencies "SPI" "${deps[@]}"
 }
 
@@ -27,6 +27,13 @@ test_spi() {
 
 	if ! dev_unbind_driver "$device"; then
 		echo "Busy"
+		return 2
+	fi
+
+	local driver="spi-nor"
+	dev_modprobe "$driver" "/sys/bus/spi/drivers/$driver" &>/dev/null
+	if [[ $? -ne 0 ]]; then
+		echo "$driver driver missing"
 		return 2
 	fi
 
