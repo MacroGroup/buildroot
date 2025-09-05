@@ -46,17 +46,16 @@ test_csi() {
 	}
 	trap cleanup EXIT RETURN INT TERM HUP
 
+	if [ -r /proc/sys/kernel/printk ]; then
+		CSI_CONSOLE_LEVEL=$(awk '{print $1}' /proc/sys/kernel/printk 2>/dev/null)
+		echo 1 > /proc/sys/kernel/printk 2>/dev/null
+	fi
+
 	local video_dev
 	video_dev=$(find_csi_video_device "$csi_name")
 	if [ -z "$video_dev" ] || [ ! -c "$video_dev" ]; then
 		echo "Camera not found (Unsupported?)"
 		return 1
-	fi
-
-
-	if [ -r /proc/sys/kernel/printk ]; then
-		CSI_CONSOLE_LEVEL=$(awk '{print $1}' /proc/sys/kernel/printk 2>/dev/null)
-		echo 1 > /proc/sys/kernel/printk 2>/dev/null
 	fi
 
 	local output
