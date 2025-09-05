@@ -10,7 +10,7 @@ declare -A SPI_DT_MAP=(
 
 check_dependencies_spi() {
 	local deps=("${DEV_DEPS[@]}")
-	local deps=(@dev_modprobe @dev_unbind_driver)
+	local deps=(@dev_modprobe @dev_bind_driver @dev_unbind_driver)
 	check_dependencies "SPI" "${deps[@]}"
 }
 
@@ -37,9 +37,14 @@ test_spi() {
 		return 2
 	fi
 
-	echo "Not implemented"
+	if ! dev_bind_driver "$device_path" "$driver"; then
+		echo "Missing"
+		return 1
+	fi
 
-	return 2
+	echo "OK"
+
+	return 0
 }
 
 generate_spi_test() {
