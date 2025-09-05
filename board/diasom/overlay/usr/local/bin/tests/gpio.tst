@@ -144,7 +144,7 @@ test_gpio_pair() {
 	return 0
 }
 
-test_i2s_busy() {
+test_gpio_busy() {
 	echo "Busy"
 
 	return 2
@@ -204,7 +204,7 @@ ds_rk3568_som_smarc_evb_test_gpio() {
 			"gpio3	24	gpio3	26	I2S1_LRCK-I2S1_SDIN"
 		)
 	else
-		register_test "test_i2s_busy" "I2S0"
+		register_test "test_gpio_busy" "I2S0"
 	fi
 
 	register_gpio_pair_tests "${gpio_tests[@]}"
