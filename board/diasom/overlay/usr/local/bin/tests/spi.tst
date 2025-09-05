@@ -38,7 +38,7 @@ test_spi() {
 	fi
 
 	if ! dev_bind_driver "$device_path" "$driver"; then
-		echo "Missing"
+		echo "MTD: Missing"
 		return 1
 	fi
 
