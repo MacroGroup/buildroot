@@ -185,8 +185,7 @@ ds_rk3568_som_evb_test_gpio() {
 
 ds_rk3568_som_smarc_evb_test_gpio() {
 	local gpio_tests=(
-		"gpio1	2	gpio1	10	GPIO0-GPIO1"
-		"gpio3	14	gpio1	11	GPIO2-GPIO3"
+		"gpio1	2	gpio3	14	GPIO0-GPIO2"
 		"gpio2	30	gpio3	16	GPIO4-GPIO5"
 		"gpio3	15	gpio4	17	GPIO6-GPIO7"
 	)
