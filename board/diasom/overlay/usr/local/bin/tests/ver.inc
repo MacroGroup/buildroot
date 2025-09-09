@@ -31,8 +31,8 @@ ver_get_ds_rk3568_som_evb_version() {
 			EVB_VERSION=0x121
 			echo "Ver. 1.2.1+"
 		else
-			EVB_VERSION=0x120
-			echo "Ver. 1.2.0"
+			EVB_VERSION=0x110
+			echo "Ver. 1.1.0+"
 		fi
 	fi
 
