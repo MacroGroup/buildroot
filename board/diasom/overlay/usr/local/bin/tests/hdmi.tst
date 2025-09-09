@@ -4,7 +4,7 @@ declare -A HDMI_DT_MAP=(
 	["diasom,ds-imx8m-som"]=""
 	["diasom,ds-imx8m-som-evb"]="test_hdmi0"
 	["diasom,ds-rk3568-som"]=""
-	["diasom,ds-rk3568-som-evb"]="test_hdmi0"
+	["diasom,ds-rk3568-som-evb"]="test_hdmi0_dsi1"
 	["diasom,ds-rk3568-som-smarc-evb"]="test_hdmi0"
 )
 
@@ -28,12 +28,21 @@ test_hdmi_card() {
 	return 1
 }
 
+test_hdmi_dsi1() {
+	test_hdmi_card "DSI-1"
+}
+
 test_hdmi_hdmi0() {
 	test_hdmi_card "HDMI-A-1"
 }
 
 test_hdmi0() {
 	register_test "test_hdmi_hdmi0" "HDMI0"
+}
+
+test_hdmi0_dsi1() {
+	test_hdmi0
+	register_test "test_hdmi_dsi1" "DSI1"
 }
 
 if ! declare -F check_dependencies &>/dev/null; then
