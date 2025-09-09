@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 declare -A I2C_DT_MAP=(
 	["diasom,ds-imx8m-som"]="ds_imx8m_som_test_i2c"

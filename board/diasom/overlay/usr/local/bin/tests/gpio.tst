@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 declare -A GPIO_DT_MAP=(
 	["diasom,ds-imx8m-som"]=""
@@ -190,7 +190,8 @@ ds_rk3568_som_smarc_evb_test_gpio() {
 		"gpio3	15	gpio4	17	GPIO6-GPIO7"
 	)
 
-	if i2c_device_test 2 0x23 &>/dev/null; then
+	i2c_device_test 2 0x23 &>/dev/null
+	if [ $? -eq 0 ]; then
 		gpio_tests+=(
 			"2-0023	0	2-0023	1	GPIO8-GPIO9"
 			"2-0023	2	2-0023	3	GPIO10-GPIO11"

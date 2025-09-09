@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # shellcheck disable=SC2329,SC2181
 
 declare -A ETH_DT_MAP=(

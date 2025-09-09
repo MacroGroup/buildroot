@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # shellcheck disable=SC1090,SC2329
 
 if [ -t 1 ] && [ -z "${NO_COLOR}" ]; then
@@ -140,6 +140,7 @@ run_tests() {
 		local displayed_name="${padding_spaces}${original_test_name}"
 
 		local temp_padding="$MAX_NAME_LEN"
+		[ -z "$temp_padding" ] && temp_padding=20
 		printf "%-${temp_padding}s : " "$displayed_name"
 
 		if [ $exit_code -eq 0 ]; then
@@ -191,6 +192,8 @@ register_self_tests() {
 	register_test "test_color_warning" "Test Color \"Warning\""
 	register_test "test_color_error" "Test Color \"Error\""
 }
+
+[ "${BASH_VERSINFO[0]}" -lt 4 ] && echo "Need Bash 4.0+" && exit 1
 
 check_dependencies "CORE" || exit 1
 

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # shellcheck disable=SC2034,SC2181
 
 declare -g VER_DEPS=("${I2C_DEPS[@]}" "${IIO_DEPS[@]}" @i2c_device_test @iio_get_value)
@@ -8,7 +8,8 @@ declare -gx EVB_VERSION=0
 declare -gx MOD_VERSION=0
 
 ver_get_ds_rk3568_som_version() {
-	if i2c_device_test 0 0x1c &>/dev/null; then
+	i2c_device_test 0 0x1c &>/dev/null
+	if [ $? -eq 0 ]; then
 		SOM_VERSION=0x200
 		echo "Ver. 2+"
 	else
@@ -20,11 +21,13 @@ ver_get_ds_rk3568_som_version() {
 }
 
 ver_get_ds_rk3568_som_evb_version() {
-	if i2c_device_test 4 0x70 &>/dev/null; then
+	i2c_device_test 4 0x70 &>/dev/null
+	if [ $? -eq 0 ]; then
 		EVB_VERSION=0x130
 		echo "Ver. 1.3.0+"
 	else
-		if i2c_device_test 4 0x50 >/dev/null; then
+		i2c_device_test 4 0x50 >/dev/null
+		if [ $? -eq 0 ]; then
 			EVB_VERSION=0x121
 			echo "Ver. 1.2.1+"
 		else

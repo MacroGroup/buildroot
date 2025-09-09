@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 declare -g WLAN_DEPS=(iw iperf3 ip jq timeout)
 

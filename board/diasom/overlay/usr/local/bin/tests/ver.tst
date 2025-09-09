@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 declare -A VER_DT_MAP=(
 	["diasom,ds-imx8m-som"]=""

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 declare -g DEV_DEPS=(modprobe)
 
@@ -42,6 +42,7 @@ dev_bind_driver() {
 	while IFS= read -r -d '' driver_path; do
 		local device=$(basename "$device_path")
 		echo "$device" > "$driver_path/bind" 2>/dev/null
+		sleep 0.1
 		if [ -e "$driver_path/$device" ]; then
 			return 0
 		fi

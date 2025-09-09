@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # shellcheck disable=SC2329,SC2181,SC2034
 
 declare -A USB_DT_MAP=(
@@ -245,9 +245,9 @@ test_usb_read_speed_bt() {
 	fi
 
 	cleanup() {
-		[[ -n $capture_pid ]] && kill "$capture_pid" &>/dev/null
-		[[ -n $traffic_pid ]] && kill "$traffic_pid" &>/dev/null
-		[[ -n $killer_pid ]] && kill "$killer_pid" &>/dev/null
+		[[ -n "$capture_pid" ]] && kill "$capture_pid" &>/dev/null
+		[[ -n "$traffic_pid" ]] && kill "$traffic_pid" &>/dev/null
+		[[ -n "$killer_pid" ]] && kill "$killer_pid" &>/dev/null
 
 		[[ -n "$fifo" && -p "$fifo" ]] && rm -f "$fifo"
 

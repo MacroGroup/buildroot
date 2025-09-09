@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 declare -A SPI_DT_MAP=(
 	["diasom,ds-imx8m-som"]=""

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 declare -A CAN_DT_MAP=(
 	["diasom,ds-imx8m-som"]=""
