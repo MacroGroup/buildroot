@@ -73,10 +73,17 @@ test_can() {
 	return 1
 }
 
-test_can_loop_can0_can1() {
+test_can_loop() {
+	local iface1="$1"
+	local iface2="$2"
+
 	echo "Not implemented"
 
 	return 2
+}
+
+test_can_loop_can0_can1() {
+	test_can_loop can0 can1
 }
 
 test_can_can0() {
