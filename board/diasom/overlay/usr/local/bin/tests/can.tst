@@ -10,7 +10,7 @@ declare -A CAN_DT_MAP=(
 declare -a CAN_INTERFACES
 
 check_dependencies_can() {
-	local deps=(ifconfig ip)
+	local deps=(cansend ifconfig ip)
 	check_dependencies "CAN" "${deps[@]}"
 }
 
@@ -22,10 +22,26 @@ test_can() {
 		return 1
 	fi
 
+	cleanup() {
+		if [ -n "$CAN_CONSOLE_LEVEL" ] && [ -w /proc/sys/kernel/printk ]; then
+			echo "$CAN_CONSOLE_LEVEL" > /proc/sys/kernel/printk 2>/dev/null
+		fi
+	}
+	trap cleanup EXIT RETURN INT TERM HUP
+
+	if [ -r /proc/sys/kernel/printk ]; then
+		CAN_CONSOLE_LEVEL=$(awk '{print $1}' /proc/sys/kernel/printk 2>/dev/null)
+		echo 1 > /proc/sys/kernel/printk 2>/dev/null
+	fi
+
 	ip link set "$iface" down &>/dev/null
 	ip link set dev "$iface" up type can bitrate 125000 &>/dev/null
 
-#	cansend can0 123#1122334455667788
+	sleep 0.5
+
+	cansend "$iface" 123#1122334455667788
+
+	sleep 0.5
 
 	if ifconfig "$iface" 2>/dev/null | grep -q "UP" && ifconfig "$iface" 2>/dev/null | grep -q "RUNNING"; then
 		CAN_INTERFACES+=("$iface")
