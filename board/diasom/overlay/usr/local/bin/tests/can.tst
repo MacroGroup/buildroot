@@ -68,7 +68,7 @@ test_can() {
 		return 0
 	fi
 
-	echo "Error"
+	echo "BUS-OFF"
 
 	return 1
 }
