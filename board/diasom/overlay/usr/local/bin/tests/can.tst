@@ -14,6 +14,23 @@ check_dependencies_can() {
 	check_dependencies "CAN" "${deps[@]}"
 }
 
+test_can_generate_msg() {
+	local test_id=$(( RANDOM % 1792 + 256 ))
+	printf -v test_id "%03X" $test_id
+
+	local data_length=$(( RANDOM % 8 + 1 ))
+	local test_data=""
+	local i byte hex_byte
+
+	for ((i=0; i<data_length; i++)); do
+		byte=$(( RANDOM % 256 ))
+		printf -v hex_byte "%02X" $byte
+		test_data="${test_data}${hex_byte}"
+	done
+
+	echo "$test_id#$test_data"
+}
+
 test_can() {
 	local iface="$1"
 
@@ -39,7 +56,9 @@ test_can() {
 
 	sleep 0.5
 
-	cansend "$iface" 123#1122334455667788
+	local msg
+	msg=$(test_can_generate_msg)
+	cansend "$iface" "$msg"
 
 	sleep 0.5
 
