@@ -10,22 +10,30 @@ declare -A CAN_DT_MAP=(
 declare -a CAN_INTERFACES
 
 check_dependencies_can() {
-	local deps=()
+	local deps=(ifconfig ip)
 	check_dependencies "CAN" "${deps[@]}"
 }
 
 test_can() {
 	local iface="$1"
 
-	if [ -d "/sys/class/net/$iface" ]; then
+	if [ ! -d "/sys/class/net/$iface" ]; then
+		echo "Missing"
+		return 1
+	fi
+
+	ip link set "$iface" down &>/dev/null
+	ip link set dev "$iface" up type can bitrate 125000 &>/dev/null
+
+#	cansend can0 123#1122334455667788
+
+	if ifconfig "$iface" 2>/dev/null | grep -q "UP" && ifconfig "$iface" 2>/dev/null | grep -q "RUNNING"; then
 		CAN_INTERFACES+=("$iface")
-
 		echo "OK"
-
 		return 0
 	fi
 
-	echo "Missing"
+	echo "Error"
 
 	return 1
 }
