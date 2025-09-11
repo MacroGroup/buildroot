@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2034,SC2329
 
 declare -g DEV_DEPS=(modprobe)
 
@@ -40,7 +41,8 @@ dev_bind_driver() {
 
 	local driver_path
 	while IFS= read -r -d '' driver_path; do
-		local device=$(basename "$device_path")
+		local device
+		device=$(basename "$device_path")
 		echo "$device" > "$driver_path/bind" 2>/dev/null
 		sleep 0.1
 		if [ -e "$driver_path/$device" ]; then

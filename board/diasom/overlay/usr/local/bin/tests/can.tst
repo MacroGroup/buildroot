@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2329
 
 declare -A CAN_DT_MAP=(
 	["diasom,ds-imx8m-som"]=""
