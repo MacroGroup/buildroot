@@ -63,7 +63,12 @@ test_can() {
 
 	sleep 0.5
 
-	if ifconfig "$iface" 2>/dev/null | grep -q "UP" && ifconfig "$iface" 2>/dev/null | grep -q "RUNNING"; then
+	local ifconfig_output
+	ifconfig_output=$(ifconfig "$iface" 2>/dev/null)
+
+	ip link set "$iface" down &>/dev/null
+
+	if echo "$ifconfig_output" | grep -q "UP" && echo "$ifconfig_output" | grep -q "RUNNING"; then
 		CAN_INTERFACES+=("$iface")
 		echo "OK"
 		return 0
