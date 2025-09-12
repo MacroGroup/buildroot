@@ -99,6 +99,7 @@ test_can_loop() {
 
 	ip link set "$iface1" down &>/dev/null
 	ip link set "$iface2" down &>/dev/null
+
 	sleep 0.2
 
 	ip link set "$iface1" up type can bitrate $CAN_BITRATE &>/dev/null
@@ -148,7 +149,7 @@ test_can_can1_with_loop() {
 	local ret=$?
 
 	if printf '%s\n' "${CAN_INTERFACES[@]}" | grep -q "can0" && printf '%s\n' "${CAN_INTERFACES[@]}" | grep -q "can1"; then
-		register_test "@test_can_loop_can0_can1" "CAN Loopback (CAN0-CAN1)"
+		register_test "@test_can_loop_can0_can1" "CAN Loopback"
 	fi
 
 	return $ret
