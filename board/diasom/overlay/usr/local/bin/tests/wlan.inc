@@ -27,12 +27,12 @@ wlan_speed_test() {
 
 	local mon_iface="mon$RANDOM"
 
-	if ! iw phy "$(cat "/sys/class/net/$iface/phy80211/name")" interface add $mon_iface type monitor 2>/dev/null; then
+	if ! iw phy "$(cat "/sys/class/net/$iface/phy80211/name")" interface add "$mon_iface" type monitor 2>/dev/null; then
 		echo "WLAN: Cannot create monitor interface"
 		return 2
 	fi
 
-	ip link set $mon_iface up
+	ip link set "$mon_iface" up
 	sleep 0.5
 	iperf3 -s -B 127.0.0.1 -p 5201 >/dev/null 2>&1 &
 	local server_pid=$!
@@ -49,10 +49,10 @@ wlan_speed_test() {
 	wait $server_pid 2>/dev/null
 
 	sleep 0.5
-	if ip link show $mon_iface &>/dev/null; then
-		ip link set $mon_iface down 2>/dev/null
+	if ip link show "$mon_iface" &>/dev/null; then
+		ip link set "$mon_iface" down 2>/dev/null
 		sleep 0.1
-		ip link del $mon_iface 2>/dev/null
+		ip link del "$mon_iface" 2>/dev/null
 	fi
 
 	if [ -z "$output" ]; then

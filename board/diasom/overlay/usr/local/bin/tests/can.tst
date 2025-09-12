@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# shellcheck disable=SC2329
+# shellcheck disable=SC2034,SC2329
 
 declare -A CAN_DT_MAP=(
 	["diasom,ds-imx8m-som"]=""
@@ -10,8 +10,10 @@ declare -A CAN_DT_MAP=(
 
 declare -a CAN_INTERFACES
 
+readonly CAN_BITRATE=500000
+
 check_dependencies_can() {
-	local deps=(cansend ifconfig ip)
+	local deps=(candump cansend ifconfig ip)
 	check_dependencies "CAN" "${deps[@]}"
 }
 
@@ -53,7 +55,7 @@ test_can() {
 	fi
 
 	ip link set "$iface" down &>/dev/null
-	ip link set dev "$iface" up type can bitrate 125000 &>/dev/null
+	ip link set "$iface" up type can bitrate $CAN_BITRATE &>/dev/null
 
 	sleep 0.5
 
@@ -83,9 +85,54 @@ test_can_loop() {
 	local iface1="$1"
 	local iface2="$2"
 
-	echo "Not implemented"
+	cleanup() {
+		if [ -n "$CAN_CONSOLE_LEVEL" ] && [ -w /proc/sys/kernel/printk ]; then
+			echo "$CAN_CONSOLE_LEVEL" > /proc/sys/kernel/printk 2>/dev/null
+		fi
+	}
+	trap cleanup EXIT RETURN INT TERM HUP
 
-	return 2
+	if [ -r /proc/sys/kernel/printk ]; then
+		CAN_CONSOLE_LEVEL=$(awk '{print $1}' /proc/sys/kernel/printk 2>/dev/null)
+		echo 1 > /proc/sys/kernel/printk 2>/dev/null
+	fi
+
+	ip link set "$iface1" down &>/dev/null
+	ip link set "$iface2" down &>/dev/null
+	sleep 0.2
+
+	ip link set "$iface1" up type can bitrate $CAN_BITRATE &>/dev/null
+	ip link set "$iface2" up type can bitrate $CAN_BITRATE &>/dev/null
+
+	sleep 1
+
+	local msg
+	msg=$(test_can_generate_msg)
+
+	timeout 0.1 candump "$iface1" &>/dev/null
+	timeout 0.1 candump "$iface2" &>/dev/null
+
+	local attempt result
+	for attempt in {1..3}; do
+		result=$(cansend "$iface1" "$msg" 2>/dev/null & candump -L -n 1 -T 1000 "$iface2" 2>/dev/null | grep -F "$msg")
+
+		if [ -n "$result" ]; then
+			break
+		fi
+		sleep 0.5
+	done
+
+	ip link set "$iface1" down &>/dev/null
+	ip link set "$iface2" down &>/dev/null
+
+	if [ -n "$result" ]; then
+		echo "OK"
+		return 0
+	fi
+
+	echo "Error"
+
+	return 1
 }
 
 test_can_loop_can0_can1() {
