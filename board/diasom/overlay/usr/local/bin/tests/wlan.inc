@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0+
+# SPDX-FileCopyrightText: Alexander Shiyan <shc_work@mail.ru>
 
 declare -g WLAN_DEPS=(iw iperf3 ip jq timeout)
 

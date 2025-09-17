@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2329
+# SPDX-License-Identifier: GPL-2.0+
+# SPDX-FileCopyrightText: Alexander Shiyan <shc_work@mail.ru>
 
 declare -A UART_DT_MAP=(
 	["diasom,ds-imx8m-som"]=""

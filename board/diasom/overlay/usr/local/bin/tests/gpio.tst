@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0+
+# SPDX-FileCopyrightText: Alexander Shiyan <shc_work@mail.ru>
 
 declare -A GPIO_DT_MAP=(
 	["diasom,ds-imx8m-som"]=""

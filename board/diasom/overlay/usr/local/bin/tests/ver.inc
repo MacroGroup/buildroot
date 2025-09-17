@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2034,SC2181
+# SPDX-License-Identifier: GPL-2.0+
+# SPDX-FileCopyrightText: Alexander Shiyan <shc_work@mail.ru>
 
 declare -g VER_DEPS=("${I2C_DEPS[@]}" "${IIO_DEPS[@]}" @i2c_device_test @iio_get_value)
 

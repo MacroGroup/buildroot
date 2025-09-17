@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2034
+# SPDX-License-Identifier: GPL-2.0+
+# SPDX-FileCopyrightText: Alexander Shiyan <shc_work@mail.ru>
 
 declare -g IIO_DEPS=()
 

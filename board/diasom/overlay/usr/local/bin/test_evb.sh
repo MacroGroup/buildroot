@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC1090,SC2329
+# SPDX-License-Identifier: GPL-2.0+
+# SPDX-FileCopyrightText: Alexander Shiyan <shc_work@mail.ru>
 
 if [ -t 1 ] && [ -z "${NO_COLOR}" ]; then
 	COLOR_RESET="\e[0m"

@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2329,SC2181
+# SPDX-License-Identifier: GPL-2.0+
+# SPDX-FileCopyrightText: Alexander Shiyan <shc_work@mail.ru>
 
 declare -A ETH_DT_MAP=(
 	["diasom,ds-rk3568-som"]=""
