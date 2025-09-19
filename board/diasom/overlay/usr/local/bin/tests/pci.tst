@@ -8,6 +8,7 @@ declare -A PCI_DT_MAP=(
 	["diasom,ds-rk3568-som-evb"]="ds_rk3568_som_evb_test_pci"
 	["diasom,ds-rk3568-som-smarc-evb"]="ds_rk3568_som_smarc_evb_test_pci"
 	["diasom,ds-rk3588-btb"]=""
+	["diasom,ds-rk3588-btb-evb"]="ds_rk3588_btb_evb_test_pci"
 )
 
 readonly PCIE_MIN_SPEED=100
@@ -425,6 +426,24 @@ ds_rk3568_som_smarc_evb_test_pci() {
 		"3x2 (PCIE_A)"
 		"3x1 (PCIE_B)"
 		"2x1 (PCIE_C)"
+	)
+
+	local i
+	for ((i=0; i<${#addrs[@]}; i++)); do
+		test_pci_register_tests "${names[i]}" "${addrs[i]}"
+	done
+}
+
+ds_rk3588_btb_evb_test_pci() {
+	local addrs=(
+#		"fe190000"
+#		"fe170000"
+		"fe150000"
+	)
+	local names=(
+#		"PCIE20x1L0"
+#		"PCIE20x1L2"
+		"PCIE30x4"
 	)
 
 	local i
