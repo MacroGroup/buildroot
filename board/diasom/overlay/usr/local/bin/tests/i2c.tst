@@ -62,6 +62,10 @@ generate_i2c_bus_test() {
 	register_test "@${func_name}" "${desc}" "${level}"
 }
 
+ds_imx8m_som_test_i2c() {
+	generate_i2c_bus_test 1 "I2C1 Bus (SOM)" 0 "0x4b:PMIC"
+}
+
 ds_rk3568_som_evb_test_i2c4_0x70() {
 	i2c_device_test 4 0x70
 	local ret=$?
@@ -123,10 +127,6 @@ ds_rk3568_som_smarc_test_i2c2() {
 	echo "Missing"
 
 	return 1
-}
-
-ds_imx8m_som_test_i2c() {
-	generate_i2c_bus_test 1 "I2C1 Bus (SOM)" 0 "0x4b:PMIC"
 }
 
 ds_rk3568_som_test_i2c() {
