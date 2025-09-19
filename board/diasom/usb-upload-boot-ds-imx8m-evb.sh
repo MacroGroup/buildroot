@@ -2,7 +2,8 @@
 
 set -euo pipefail
 
-script_dir=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd -P)
+src=$(readlink -f -- "$0")
+script_dir=$(cd $(dirname "$src") && pwd -P)
 
 loader_bin="imx-usb-loader"
 bootloader_img="barebox-diasom-imx8m-evb.img"

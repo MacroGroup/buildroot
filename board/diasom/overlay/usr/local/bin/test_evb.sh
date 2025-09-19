@@ -20,7 +20,7 @@ else
 fi
 
 TEST_FILTER=""
-SOURCE="${BASH_SOURCE[0]}"
+SOURCE=$(readlink -f -- "$0")
 DIR=$(dirname -- "$SOURCE")
 SCRIPT_DIR=$(cd -- "$DIR" && pwd)
 TEST_DIR="${SCRIPT_DIR}/tests"
