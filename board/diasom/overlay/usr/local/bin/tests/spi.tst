@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2181
 # SPDX-License-Identifier: GPL-2.0+
 # SPDX-FileCopyrightText: Alexander Shiyan <shc_work@mail.ru>
 
@@ -8,6 +9,7 @@ declare -A SPI_DT_MAP=(
 	["diasom,ds-rk3568-som"]=""
 	["diasom,ds-rk3568-som-evb"]="ds_rk3568_som_evb_test_spi"
 	["diasom,ds-rk3568-som-smarc-evb"]="ds_rk3568_som_smarc_evb_test_spi"
+	["diasom,ds-rk3588-btb"]="ds_rk3588_btb_test_spi"
 )
 
 check_dependencies_spi() {
@@ -16,7 +18,7 @@ check_dependencies_spi() {
 	check_dependencies "SPI" "${deps[@]}"
 }
 
-test_spi() {
+test_spi_mtd() {
 	local port_num=$1
 	local chipselect=$2
 	local device="spi${port_num}.${chipselect}"
@@ -49,34 +51,65 @@ test_spi() {
 	return 0
 }
 
-generate_spi_test() {
+test_spi_presense() {
+	local port_num=$1
+	local chipselect=$2
+	local device="spi${port_num}.${chipselect}"
+	local device_path="/sys/bus/spi/devices/${device}"
+
+	if [ ! -e "$device_path" ]; then
+		echo "Missing"
+		return 1
+	fi
+
+	echo "OK"
+
+	return 0
+}
+
+generate_spi_mtd_test() {
 	local port_num=$1
 	local port_name=$2
 	local num_chipselects="${3:-1}"
 
 	local cs
 	for ((cs=0; cs<num_chipselects; cs++)); do
-		local func_name="test_spi${port_num}_cs${cs}"
+		local func_name="test_spi_mtd${port_num}_cs${cs}"
 		local test_name="${port_name} CS#${cs}"
-		eval "${func_name}() { test_spi \"${port_num}\" \"${cs}\"; }"
+		eval "${func_name}() { test_spi_mtd \"${port_num}\" \"${cs}\"; }"
 
 		register_test "${func_name}" "${test_name}"
 	done
 }
 
+generate_spi_presense_test() {
+	local port_num=$1
+	local chipselect=$2
+	local test_name="$3"
+
+	local func_name="test_spi_presense${port_num}_cs${chipselect}"
+	eval "${func_name}() { test_spi_presense \"${port_num}\" \"${chipselect}\"; }"
+
+	register_test "${func_name}" "${test_name}"
+}
+
 ds_imx8m_som_evb_test_spi() {
-	generate_spi_test 1 "SPI1" 1
-	generate_spi_test 2 "SPI2" 1
+	generate_spi_mtd_test 1 "SPI1" 1
+	generate_spi_mtd_test 2 "SPI2" 1
 }
 
 ds_rk3568_som_evb_test_spi() {
-	generate_spi_test 1 "SPI1" 1
-	generate_spi_test 2 "SPI2" 2
+	generate_spi_mtd_test 1 "SPI1" 1
+	generate_spi_mtd_test 2 "SPI2" 2
 }
 
 ds_rk3568_som_smarc_evb_test_spi() {
-	generate_spi_test 2 "SPI0" 2
-	generate_spi_test 3 "SPI1" 2
+	generate_spi_mtd_test 2 "SPI0" 2
+	generate_spi_mtd_test 3 "SPI1" 2
+}
+
+ds_rk3588_btb_test_spi() {
+	generate_spi_presense_test 2 0 "SPI2.0 (RK806)"
 }
 
 if ! declare -F check_dependencies &>/dev/null; then
