@@ -7,6 +7,7 @@ declare -A USB_DT_MAP=(
 	["diasom,ds-rk3568-som"]=""
 	["diasom,ds-rk3568-som-evb"]="ds_rk3568_som_evb_test_usb"
 	["diasom,ds-rk3568-som-smarc-evb"]="ds_rk3568_som_smarc_test_usb"
+	["diasom,ds-rk3588-btb"]=""
 )
 
 declare -A USB_DISABLE_TESTS

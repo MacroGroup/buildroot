@@ -7,6 +7,7 @@ declare -A I2C_DT_MAP=(
 	["diasom,ds-rk3568-som"]="ds_rk3568_som_test_i2c"
 	["diasom,ds-rk3568-som-evb"]="ds_rk3568_som_evb_test_i2c"
 	["diasom,ds-rk3568-som-smarc"]="ds_rk3568_som_smarc_test_i2c"
+	["diasom,ds-rk3588-btb"]="ds_rk3588_btb_test_i2c"
 )
 
 check_dependencies_i2c() {
@@ -148,6 +149,12 @@ ds_rk3568_som_smarc_test_i2c() {
 	generate_i2c_bus_test 4 "I2C4 Bus (I2C_PM)" 0
 	generate_i2c_bus_test 3 "I2C3 Bus (I2C_GP)" 0 "0x68:RTC,0x51:EEPROM,0x50:EEPROM"
 	register_test "@ds_rk3568_som_smarc_test_i2c2" "I2C2 Bus (SMARC Internal)"
+}
+
+ds_rk3588_btb_test_i2c() {
+	generate_i2c_bus_test 0 "I2C0 Bus (BTB)" 0 "0x42:RK8602,0x43:RK8603"
+	generate_i2c_bus_test 2 "I2C2 Bus (BTB)" 0 "0x42:RK8602"
+	generate_i2c_bus_test 6 "I2C6 Bus (BTB)" 0 "0x51:RK628D,0x68:M41T62"
 }
 
 test_i2c_default() {

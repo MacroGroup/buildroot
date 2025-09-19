@@ -8,6 +8,7 @@ declare -A GPIO_DT_MAP=(
 	["diasom,ds-rk3568-som"]=""
 	["diasom,ds-rk3568-som-evb"]="ds_rk3568_som_evb_test_gpio"
 	["diasom,ds-rk3568-som-smarc-evb"]="ds_rk3568_som_smarc_evb_test_gpio"
+	["diasom,ds-rk3588-btb"]=""
 )
 
 check_dependencies_gpio() {

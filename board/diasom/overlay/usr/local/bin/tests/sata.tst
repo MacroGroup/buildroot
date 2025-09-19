@@ -7,6 +7,7 @@ declare -A SATA_DT_MAP=(
 	["diasom,ds-imx8m-som"]=""
 	["diasom,ds-rk3568-som"]=""
 	["diasom,ds-rk3568-som-smarc-evb"]="test_sata"
+	["diasom,ds-rk3588-btb"]=""
 )
 
 readonly SATA1_SPEED=150
