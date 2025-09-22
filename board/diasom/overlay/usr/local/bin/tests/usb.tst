@@ -706,9 +706,9 @@ ds_rk3588_btb_evb_test_usb() {
 		"fc880000"
 	)
 	local names=(
-		"USB3.0 OTG0"
-		"USB2.0"
-		"USB2.0"
+		"X28"
+		"X27"
+		"X27"
 	)
 
 	local i
