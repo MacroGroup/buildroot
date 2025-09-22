@@ -8,6 +8,7 @@ declare -A ETH_DT_MAP=(
 	["diasom,ds-rk3568-som-evb"]="ds_rk3568_som_evb_test_eth"
 	["diasom,ds-rk3568-som-smarc-evb"]="ds_rk3568_som_smarc_evb_test_eth"
 	["diasom,ds-rk3588-btb"]=""
+	["diasom,ds-rk3588-btb-evb"]="ds_rk3588_btb_evb_test_eth"
 )
 
 declare -a ETH_INTERFACES
@@ -215,8 +216,16 @@ test_eth_loop_end0_end1() {
 	test_eth_speed "end0" "end1"
 }
 
+test_eth_loop_end2_end3() {
+	test_eth_speed "end2" "end3"
+}
+
 test_eth_end0() {
 	test_eth "end0"
+}
+
+test_eth_end2() {
+	test_eth "end2"
 }
 
 test_eth_end1_with_loop() {
@@ -225,6 +234,17 @@ test_eth_end1_with_loop() {
 
 	if printf '%s\n' "${ETH_INTERFACES[@]}" | grep -q "end0" && printf '%s\n' "${ETH_INTERFACES[@]}" | grep -q "end1"; then
 		register_test "@test_eth_loop_end0_end1" "Eth0-Eth1 Bandwidth"
+	fi
+
+	return $ret
+}
+
+test_eth_end3_with_loop() {
+	test_eth "end3"
+	local ret=$?
+
+	if printf '%s\n' "${ETH_INTERFACES[@]}" | grep -q "end2" && printf '%s\n' "${ETH_INTERFACES[@]}" | grep -q "end3"; then
+		register_test "@test_eth_loop_end2_end3" "Eth2-Eth3 Bandwidth"
 	fi
 
 	return $ret
@@ -240,6 +260,14 @@ ds_rk3568_som_smarc_evb_test_eth()
 {
 	register_test "test_eth_end0" "Ethernet 0 (GBE0)"
 	register_test "test_eth_end1_with_loop" "Ethernet 1 (GBE1)"
+}
+
+ds_rk3588_btb_evb_test_eth()
+{
+	register_test "test_eth_end0" "Ethernet 0"
+	register_test "test_eth_end1_with_loop" "Ethernet 1"
+	register_test "test_eth_end2" "Ethernet 2"
+	register_test "test_eth_end3_with_loop" "Ethernet 3"
 }
 
 test_eth_default() {
