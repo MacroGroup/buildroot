@@ -8,6 +8,7 @@ declare -A I2C_DT_MAP=(
 	["diasom,ds-rk3568-som-evb"]="ds_rk3568_som_evb_test_i2c"
 	["diasom,ds-rk3568-som-smarc"]="ds_rk3568_som_smarc_test_i2c"
 	["diasom,ds-rk3588-btb"]="ds_rk3588_btb_test_i2c"
+	["diasom,ds-rk3588-btb-evb"]="ds_rk3588_btb_evb_test_i2c"
 )
 
 check_dependencies_i2c() {
@@ -114,6 +115,20 @@ ds_rk3568_som_smarc_test_i2c2_0x70() {
 	return $ret
 }
 
+ds_rk3588_btb_evb_test_i2c3_0x70() {
+	i2c_device_test 3 0x70
+	local ret=$?
+
+	if [ $ret -eq 0 ]; then
+		generate_i2c_bus_test 12 "I2C12 Bus (CAM3)" 2
+		generate_i2c_bus_test 11 "I2C11 Bus (TYPEC0)" 2 "0x22:FUSB302"
+		generate_i2c_bus_test 10 "I2C10 Bus (CAM1)" 2
+		generate_i2c_bus_test 9 "I2C9 Bus (CAM0)" 2
+	fi
+
+	return $ret
+}
+
 ds_rk3568_som_smarc_test_i2c2() {
 	if [ -e /dev/i2c-2 ]; then
 		register_test "@ds_rk3568_som_smarc_test_i2c2_0x70" "I2C2 Device 0x70 (I2C MUX)" 1
@@ -155,6 +170,25 @@ ds_rk3588_btb_test_i2c() {
 	generate_i2c_bus_test 6 "I2C6 Bus (BTB)" 0 "0x51:RK628D,0x68:M41T62"
 	generate_i2c_bus_test 2 "I2C2 Bus (BTB)" 0 "0x42:RK8602"
 	generate_i2c_bus_test 0 "I2C0 Bus (BTB)" 0 "0x42:RK8602,0x43:RK8603"
+}
+
+ds_rk3588_btb_evb_test_i2c3() {
+	if [ -e /dev/i2c-3 ]; then
+		register_test "@ds_rk3588_btb_evb_test_i2c3_0x70" "I2C3 Device 0x70 (TCA9546)" 1
+
+		echo "OK"
+
+		return 0
+	fi
+
+	echo "Missing"
+
+	return 1
+}
+
+ds_rk3588_btb_evb_test_i2c() {
+	generate_i2c_bus_test 7 "I2C7 Bus" 0 "0x52:EEPROM,0x51:EEPROM,0x50:EEPROM"
+	register_test "@ds_rk3588_btb_evb_test_i2c3" "I2C3 Bus"
 }
 
 test_i2c_default() {
