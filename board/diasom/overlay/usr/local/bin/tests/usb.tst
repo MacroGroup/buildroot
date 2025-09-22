@@ -8,6 +8,7 @@ declare -A USB_DT_MAP=(
 	["diasom,ds-rk3568-som-evb"]="ds_rk3568_som_evb_test_usb"
 	["diasom,ds-rk3568-som-smarc-evb"]="ds_rk3568_som_smarc_test_usb"
 	["diasom,ds-rk3588-btb"]=""
+	["diasom,ds-rk3588-btb-evb"]="ds_rk3588_btb_evb_test_usb"
 )
 
 declare -A USB_DISABLE_TESTS
@@ -698,6 +699,23 @@ ds_rk3568_som_smarc_test_usb() {
 	test_usb_register_expected_devices_tests expected_devices
 }
 
+ds_rk3588_btb_evb_test_usb() {
+	local addrs=(
+		"fc000000"
+		"fc8c0000"
+		"fc880000"
+	)
+	local names=(
+		"USB3.0 OTG0"
+		"USB2.0"
+		"USB2.0"
+	)
+
+	local i
+	for ((i=0; i<${#addrs[@]}; i++)); do
+		test_usb_register_tests "${names[i]}" "${addrs[i]}"
+	done
+}
 
 test_usb_default() {
 	test_usb_register_tests
