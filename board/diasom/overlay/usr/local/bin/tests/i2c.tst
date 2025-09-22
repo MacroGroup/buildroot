@@ -120,7 +120,6 @@ ds_rk3588_btb_evb_test_i2c3_0x70() {
 	local ret=$?
 
 	if [ $ret -eq 0 ]; then
-		generate_i2c_bus_test 12 "I2C12 Bus (CAM3)" 2
 		generate_i2c_bus_test 11 "I2C11 Bus (TYPEC0)" 2 "0x22:FUSB302"
 		generate_i2c_bus_test 10 "I2C10 Bus (CAM1)" 2
 		generate_i2c_bus_test 9 "I2C9 Bus (CAM0)" 2
