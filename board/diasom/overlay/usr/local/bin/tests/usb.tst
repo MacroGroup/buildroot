@@ -701,14 +701,22 @@ ds_rk3568_som_smarc_test_usb() {
 
 ds_rk3588_btb_evb_test_usb() {
 	local addrs=(
-		"fc000000"
+		"fc400000"
+		"fcd00000"
+		"fc840000"
+		"fc800000"
 		"fc8c0000"
 		"fc880000"
+		"fc000000"
 	)
 	local names=(
+		"X25L"
+		"X25U"
+		"X25U"
+		"X25U"
+		"X27"
+		"X27"
 		"X28"
-		"X27"
-		"X27"
 	)
 
 	local i
