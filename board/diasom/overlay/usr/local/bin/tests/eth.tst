@@ -232,7 +232,7 @@ test_eth_end1_with_loop() {
 	test_eth "end1"
 	local ret=$?
 
-	if printf '%s\n' "${ETH_INTERFACES[@]}" | grep -q "end0" && printf '%s\n' "${ETH_INTERFACES[@]}" | grep -q "end1"; then
+	if [[ " ${ETH_INTERFACES[*]} " =~ " end0 " ]] && [[ " ${ETH_INTERFACES[*]} " =~ " end1 " ]]; then
 		register_test "@test_eth_loop_end0_end1" "Eth0-Eth1 Bandwidth"
 	fi
 
@@ -243,7 +243,7 @@ test_eth_end3_with_loop() {
 	test_eth "end3"
 	local ret=$?
 
-	if printf '%s\n' "${ETH_INTERFACES[@]}" | grep -q "end2" && printf '%s\n' "${ETH_INTERFACES[@]}" | grep -q "end3"; then
+	if [[ " ${ETH_INTERFACES[*]} " =~ " end2 " ]] && [[ " ${ETH_INTERFACES[*]} " =~ " end3 " ]]; then
 		register_test "@test_eth_loop_end2_end3" "Eth2-Eth3 Bandwidth"
 	fi
 

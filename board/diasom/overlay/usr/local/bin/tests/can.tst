@@ -151,7 +151,7 @@ test_can_can1_with_loop() {
 	test_can can1
 	local ret=$?
 
-	if printf '%s\n' "${CAN_INTERFACES[@]}" | grep -q "can0" && printf '%s\n' "${CAN_INTERFACES[@]}" | grep -q "can1"; then
+	if [[ " ${CAN_INTERFACES[*]} " =~ " can0 " ]] && [[ " ${CAN_INTERFACES[*]} " =~ " can1 " ]]; then
 		register_test "@test_can_loop_can0_can1" "CAN Loopback"
 	fi
 
