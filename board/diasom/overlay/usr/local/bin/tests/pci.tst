@@ -334,7 +334,9 @@ test_pci_register_tests() {
 			fi
 			;;
 		"02")
-			if [ "$subclass" = "80" ]; then
+			if [ "$subclass" = "00" ]; then
+				skip="ETH"
+			elif [ "$subclass" = "80" ]; then
 				local test_read_func="test_pci_read_speed_wlan_$safe_addr"
 				eval "$test_read_func() { test_pci_speed_wlan \"$device\" false; }"
 				register_test "$test_read_func" "PCI Device $name Read" 1
@@ -356,7 +358,7 @@ test_pci_register_tests() {
 			register_test "$test_unsupported_func" "PCI Device $name" 1
 		else
 			local test_skipped_func="test_pci_skipped_$safe_addr"
-			eval "$test_skipped_func() { echo \"$skip (Skipped); return 0; }"
+			eval "$test_skipped_func() { echo \"$skip (Skipped)\"; return 0; }"
 			register_test "$test_skipped_func" "PCI Device $name" 1
 		fi
 	fi
@@ -398,13 +400,13 @@ ds_rk3568_som_smarc_evb_test_pci() {
 
 ds_rk3588_btb_evb_test_pci() {
 	local addrs=(
-#		"fe190000"
-#		"fe170000"
+		"fe190000"
+		"fe170000"
 		"fe150000"
 	)
 	local names=(
-#		"PCIE20x1L0"
-#		"PCIE20x1L2"
+		"PCIE20x1L0"
+		"PCIE20x1L2"
 		"PCIE30x4"
 	)
 
