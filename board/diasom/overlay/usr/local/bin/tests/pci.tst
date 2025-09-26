@@ -28,19 +28,21 @@ check_dependencies_pci_default() {
 test_pci_device() {
 	local device="$1"
 
-	local pci_info
-	pci_info=$(lspci -n -s "$device" 2>/dev/null)
+	if [[ -n "$device" ]]; then
+		local pci_info
+		pci_info=$(lspci -n -s "$device" 2>/dev/null)
 
-	if [ -n "$pci_info" ]; then
-		local pci_id
-		pci_id=$(echo "$pci_info" | awk '{print $3}')
-		if [ -n "$pci_id" ]; then
-			echo "$pci_id"
-		else
-			echo "OK"
+		if [ -n "$pci_info" ]; then
+			local pci_id
+			pci_id=$(echo "$pci_info" | awk '{print $3}')
+			if [ -n "$pci_id" ]; then
+				echo "$pci_id"
+			else
+				echo "OK"
+			fi
+
+			return 0
 		fi
-
-		return 0
 	fi
 
 	echo "Missing"
@@ -220,83 +222,6 @@ test_pci_speed_wlan() {
 	wlan_speed_test "$device" "$min_speed" "$writetest"
 }
 
-test_pci_read_speed_unknown() {
-	local device="$1"
-	local class="$2"
-
-	echo "Unsupported class: $class"
-
-	return 2
-}
-
-test_pci_write_speed_unknown() {
-	local device="$1"
-	local class="$2"
-
-	echo "Unsupported class: $class"
-
-	return 2
-}
-
-test_pci_read_speed() {
-	local device="$1"
-
-	if ! lspci -s "$device" &>/dev/null; then
-		echo "Missing"
-		return 2
-	fi
-
-	local class_info
-	class_info=$(lspci -n -s "$device" | awk '{print $2}' | cut -d: -f1)
-
-	local class=${class_info:0:2}
-
-	case "$class" in
-	"01")
-		if [ "${class_info:2:2}" = "08" ]; then
-			test_pci_read_speed_nvme "$device"
-		else
-			test_pci_read_speed_unknown "$device" "$class_info"
-		fi
-		;;
-	"02")
-		test_pci_speed_wlan "$device" false
-		;;
-	*)
-		test_pci_read_speed_unknown "$device" "$class_info"
-		;;
-	esac
-}
-
-test_pci_write_speed() {
-	local device="$1"
-
-	if ! lspci -s "$device" &>/dev/null; then
-		echo "Missing"
-		return 2
-	fi
-
-	local class_info
-	class_info=$(lspci -n -s "$device" | awk '{print $2}' | cut -d: -f1)
-
-	local class=${class_info:0:2}
-
-	case "$class" in
-	"01")
-		if [ "${class_info:2:2}" = "08" ]; then
-			test_pci_write_speed_nvme "$device"
-		else
-			test_pci_write_speed_unknown "$device" "$class_info"
-		fi
-		;;
-	"02")
-		test_pci_speed_wlan "$device" true
-		;;
-	*)
-		test_pci_write_speed_unknown "$device" "$class_info"
-		;;
-	esac
-}
 
 test_pci_find_device() {
 	local value="$1"
@@ -382,21 +307,58 @@ test_pci_register_tests() {
 	done
 
 	local test_dev_func="test_pci_device_$safe_addr"
-	if [[ -n "$device" ]]; then
-		eval "$test_dev_func() { test_pci_device \"$device\"; }"
-	else
-		eval "$test_dev_func() { echo \"Missing\"; return 1; }"
-	fi
+	eval "$test_dev_func() { test_pci_device \"$device\"; }"
 	register_test "$test_dev_func" "PCI Device $name" 1
 
 	if [[ -n "$device" ]]; then
-		local test_read_func="test_pci_read_speed_$safe_addr"
-		eval "$test_read_func() { test_pci_read_speed \"$device\"; }"
-		register_test "$test_read_func" "PCI Device $name Read" 1
+		local class_info
+		class_info=$(lspci -n -s "$device" | awk '{print $2}' | cut -d: -f1)
 
-		local test_write_func="test_pci_write_speed_$safe_addr"
-		eval "$test_write_func() { test_pci_write_speed \"$device\"; }"
-		register_test "$test_write_func" "PCI Device $name Write" 1
+		local class=${class_info:0:2}
+		local subclass=${class_info:2:2}
+
+		local skip=""
+
+		case "$class" in
+		"01")
+			if [ "$subclass" = "08" ]; then
+				local test_read_func="test_pci_read_speed_nvme_$safe_addr"
+				eval "$test_read_func() { test_pci_read_speed_nvme \"$device\"; }"
+				register_test "$test_read_func" "PCI Device $name Read" 1
+
+				local test_write_func="test_pci_write_speed_nvme_$safe_addr"
+				eval "$test_write_func() { test_pci_write_speed_nvme \"$device\"; }"
+				register_test "$test_write_func" "PCI Device $name Write" 1
+
+				return
+			fi
+			;;
+		"02")
+			if [ "$subclass" = "80" ]; then
+				local test_read_func="test_pci_read_speed_wlan_$safe_addr"
+				eval "$test_read_func() { test_pci_speed_wlan \"$device\" false; }"
+				register_test "$test_read_func" "PCI Device $name Read" 1
+
+				local test_write_func="test_pci_write_speed_wlan_$safe_addr"
+				eval "$test_write_func() { test_pci_speed_wlan \"$device\" true; }"
+				register_test "$test_write_func" "PCI Device $name Write" 1
+
+				return
+			fi
+			;;
+		*)
+			;;
+		esac
+
+		if [ -z "$skip" ]; then
+			local test_unsupported_func="test_pci_unsupported_$safe_addr"
+			eval "$test_unsupported_func() { echo \"Unsupported class: $class_info\"; return 2; }"
+			register_test "$test_unsupported_func" "PCI Device $name" 1
+		else
+			local test_skipped_func="test_pci_skipped_$safe_addr"
+			eval "$test_skipped_func() { echo \"$skip (Skipped); return 0; }"
+			register_test "$test_skipped_func" "PCI Device $name" 1
+		fi
 	fi
 }
 
