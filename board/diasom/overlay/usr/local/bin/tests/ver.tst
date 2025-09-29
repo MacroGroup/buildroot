@@ -8,12 +8,14 @@ declare -A VER_DT_MAP=(
 	["diasom,ds-rk3568-som-evb"]="ds_rk3568_som_evb_test_version"
 	["diasom,ds-rk3568-som-smarc-evb"]="ds_rk3568_som_smarc_test_version"
 	["diasom,ds-rk3588-btb"]="ds_rk3588_btb_test_version"
+	["diasom,ds-rk3588-btb-evb"]="ds_rk3588_btb_evb_test_version"
 )
 
 check_dependencies_ver() {
 	local deps=("${VER_DEPS[@]}")
 	deps+=(@ver_get_ds_rk3568_som_version @ver_get_ds_rk3568_som_evb_version)
-	deps+=(@ver_get_ds_rk3568_som_smarc_version @ver_get_ds_rk3588_btb_version)
+	deps+=(@ver_get_ds_rk3568_som_smarc_version)
+	deps+=(@ver_get_ds_rk3588_btb_version @ver_get_ds_rk3588_btb_evb_version)
 	check_dependencies "VER" "${deps[@]}"
 }
 
@@ -31,6 +33,10 @@ ds_rk3568_som_smarc_test_version() {
 
 ds_rk3588_btb_test_version() {
 	register_test "@@ver_get_ds_rk3588_btb_version" "BTB Version"
+}
+
+ds_rk3588_btb_evb_test_version() {
+	register_test "@@ver_get_ds_rk3588_btb_evb_version" "EVB Version"
 }
 
 if ! declare -F check_dependencies &>/dev/null; then

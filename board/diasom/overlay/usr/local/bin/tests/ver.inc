@@ -81,4 +81,11 @@ ver_get_ds_rk3588_btb_version() {
 	return 2
 }
 
+ver_get_ds_rk3588_btb_evb_version() {
+	EVB_VERSION=0x100
+	echo "Ver. 1.0.0+"
+
+	return 0
+}
+
 return 0
