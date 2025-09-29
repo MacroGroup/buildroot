@@ -252,7 +252,7 @@ else
 	done
 fi
 
-if [ ${#TEST_QUEUE[@]} -eq 0 ]; then
+if [ ${#TEST_QUEUE[@]} -eq 0 ] && [ ${#SYS_QUEUE[@]} -eq 0 ]; then
 	echo -e "${COLOR_DEBUG}No tests registered, running self-tests${COLOR_RESET}"
 	register_self_tests
 fi
