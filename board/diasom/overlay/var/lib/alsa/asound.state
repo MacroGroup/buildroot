@@ -69,7 +69,28 @@ state.ES8388 {
 	}
 }
 
-state.HDMI {
+state.HDMI0 {
+	control.1 {
+		iface PCM
+		name 'Playback Channel Map'
+		value.0 0
+		value.1 0
+		value.2 0
+		value.3 0
+		value.4 0
+		value.5 0
+		value.6 0
+		value.7 0
+		comment {
+			access read
+			type INTEGER
+			count 8
+			range '0 - 36'
+		}
+	}
+}
+
+state.HDMI1 {
 	control.1 {
 		iface PCM
 		name 'Playback Channel Map'
@@ -99,48 +120,6 @@ state.SPDIF {
 			access 'read write'
 			type BOOLEAN
 			count 1
-		}
-	}
-}
-
-state.hdmi0 {
-	control.1 {
-		iface PCM
-		name 'Playback Channel Map'
-		value.0 0
-		value.1 0
-		value.2 0
-		value.3 0
-		value.4 0
-		value.5 0
-		value.6 0
-		value.7 0
-		comment {
-			access read
-			type INTEGER
-			count 8
-			range '0 - 36'
-		}
-	}
-}
-
-state.hdmi1 {
-	control.1 {
-		iface PCM
-		name 'Playback Channel Map'
-		value.0 0
-		value.1 0
-		value.2 0
-		value.3 0
-		value.4 0
-		value.5 0
-		value.6 0
-		value.7 0
-		comment {
-			access read
-			type INTEGER
-			count 8
-			range '0 - 36'
 		}
 	}
 }
