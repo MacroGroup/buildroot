@@ -14,7 +14,7 @@ Documentation=http://wayland.freedesktop.org/
 
 # D-Bus is necessary for contacting logind. Logind is required.
 Wants=dbus.socket
-After=dbus.socket systemd-vconsole-setup.service systemd-logind.service
+After=dbus.socket network.target
 
 # Ensure the socket is present
 Requires=weston.socket
