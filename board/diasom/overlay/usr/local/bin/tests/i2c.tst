@@ -7,6 +7,7 @@ declare -A I2C_DT_MAP=(
 	["diasom,ds-rk3568-som"]="ds_rk3568_som_test_i2c"
 	["diasom,ds-rk3568-som-evb"]="ds_rk3568_som_evb_test_i2c"
 	["diasom,ds-rk3568-som-smarc"]="ds_rk3568_som_smarc_test_i2c"
+	["diasom,ds-rk3568-som-sodimm"]="ds_rk3568_som_sodimm_test_i2c"
 	["diasom,ds-rk3588-btb"]="ds_rk3588_btb_test_i2c"
 	["diasom,ds-rk3588-btb-evb"]="ds_rk3588_btb_evb_test_i2c"
 )
@@ -115,6 +116,20 @@ ds_rk3568_som_smarc_test_i2c2_0x70() {
 	return $ret
 }
 
+ds_rk3568_som_sodimm_test_i2c4_0x70() {
+	i2c_device_test 4 0x70
+	local ret=$?
+
+	if [ $ret -eq 0 ]; then
+		generate_i2c_bus_test 9 "I2C9 Bus (SODIMM Internal)" 2 "0x68:M41T62"
+		generate_i2c_bus_test 8 "I2C8 Bus (SODIMM I2C2)" 2
+		generate_i2c_bus_test 7 "I2C7 Bus (SODIMM I2C1)" 2
+		generate_i2c_bus_test 6 "I2C6 Bus (SODIMM I2C0)" 2
+	fi
+
+	return $ret
+}
+
 ds_rk3588_btb_evb_test_i2c3_0x70() {
 	i2c_device_test 3 0x70
 	local ret=$?
@@ -132,6 +147,22 @@ ds_rk3568_som_smarc_test_i2c2() {
 	if [ -e /dev/i2c-2 ]; then
 		register_test "@ds_rk3568_som_smarc_test_i2c2_0x70" "I2C2 Device 0x70 (I2C MUX)" 1
 		generate_i2c_device_test 2 0x23 "I2C GPIO" 1
+
+		echo "OK"
+
+		return 0
+	fi
+
+	echo "Missing"
+
+	return 1
+}
+
+ds_rk3568_som_sodimm_test_i2c4() {
+	if [ -e /dev/i2c-4 ]; then
+		register_test "@ds_rk3568_som_sodimm_test_i2c4_0x70" "I2C4 Device 0x70 (I2C MUX)" 1
+		generate_i2c_device_test 4 0x51 "EEPROM" 1
+		generate_i2c_device_test 4 0x50 "EEPROM" 1
 
 		echo "OK"
 
@@ -163,6 +194,10 @@ ds_rk3568_som_smarc_test_i2c() {
 	generate_i2c_bus_test 4 "I2C4 Bus (I2C_PM)" 0
 	generate_i2c_bus_test 3 "I2C3 Bus (I2C_GP)" 0 "0x68:RTC,0x51:EEPROM,0x50:EEPROM"
 	register_test "@ds_rk3568_som_smarc_test_i2c2" "I2C2 Bus (SMARC Internal)"
+}
+
+ds_rk3568_som_sodimm_test_i2c() {
+	register_test "ds_rk3568_som_sodimm_test_i2c4" "I2C4 Bus (SODIMM Internal)"
 }
 
 ds_rk3588_btb_test_i2c() {
