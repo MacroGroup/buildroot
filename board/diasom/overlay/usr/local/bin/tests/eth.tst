@@ -277,7 +277,6 @@ test_eth_default() {
 		all_interfaces+=("$(basename "$interface")")
 	done < <(find /sys/class/net -mindepth 1 -maxdepth 1 -type l -print0 2>/dev/null)
 
-	local eth_interfaces=()
 	for interface in "${all_interfaces[@]}"; do
 		local interface_type
 		interface_type=$(cat "/sys/class/net/$interface/type" 2>/dev/null)
@@ -286,10 +285,6 @@ test_eth_default() {
 			continue
 		fi
 
-		eth_interfaces+=("$interface")
-	done
-
-	for interface in "${eth_interfaces[@]}"; do
 		local test_func="test_eth_${interface}"
 		eval "${test_func}() { test_eth \"${interface}\"; }"
 		register_test "${test_func}" "Ethernet ${interface}"
