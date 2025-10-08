@@ -6,7 +6,8 @@
 declare -A USB_DT_MAP=(
 	["diasom,ds-rk3568-som"]=""
 	["diasom,ds-rk3568-som-evb"]="ds_rk3568_som_evb_test_usb"
-	["diasom,ds-rk3568-som-smarc-evb"]="ds_rk3568_som_smarc_test_usb"
+	["diasom,ds-rk3568-som-smarc"]="ds_rk3568_som_smarc_test_usb"
+	["diasom,ds-rk3568-som-sodimm"]="ds_rk3568_som_sodimm_test_usb"
 	["diasom,ds-rk3588-btb"]=""
 	["diasom,ds-rk3588-btb-evb"]="ds_rk3588_btb_evb_test_usb"
 )
@@ -684,6 +685,33 @@ ds_rk3568_som_smarc_test_usb() {
 		"HOST0 (USB0)"
 		"HOST1 (SMARC Internal)"
 		"HOST1 (SMARC Internal)"
+	)
+
+	local i
+	for ((i=0; i<${#addrs[@]}; i++)); do
+		test_usb_register_tests "${names[i]}" "${addrs[i]}"
+	done
+
+	local expected_devices=(
+		"05e3:0610:(USB 2.0 Hub)"
+		"05e3:0620:(USB 3.0 Hub)"
+	)
+
+	test_usb_register_expected_devices_tests expected_devices
+}
+
+ds_rk3568_som_sodimm_test_usb() {
+	local addrs=(
+		"fd840000"
+		"fcc00000"
+		"fd8c0000"
+		"fd000000"
+	)
+	local names=(
+		"HOST0 (USB0)"
+		"HOST0 (USB0)"
+		"HOST1 (SODIMM Internal)"
+		"HOST1 (SODIMM Internal)"
 	)
 
 	local i
