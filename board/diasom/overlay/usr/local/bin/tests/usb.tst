@@ -640,10 +640,6 @@ test_usb_register_tests() {
 				continue
 			fi
 
-			if [[ "$device" == *:* ]]; then
-				continue
-			fi
-
 			if test_usb_register_single_device "$device" 1 "$safe_addr" "$port_index" "$device_index"; then
 				((device_index++))
 			fi
