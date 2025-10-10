@@ -356,7 +356,7 @@ test_usb_read_speed_bt() {
 	fi
 }
 
-test_usb_read_speed_wlan() {
+test_usb_speed_wlan() {
 	local device="$1"
 	local class_info="$2"
 
@@ -374,7 +374,7 @@ test_usb_read_speed_unknown() {
 	return 2
 }
 
-test_usb_read_speed() {
+test_usb_speed() {
 	local device="$1"
 	local class_info class subclass protocol
 	class_info=$(test_usb_get_class "$device")
@@ -398,11 +398,11 @@ test_usb_read_speed() {
 		if [ "$subclass" = "01" ] && [ "$protocol" = "01" ]; then
 			test_usb_read_speed_bt "$device"
 		else
-			test_usb_read_speed_wlan "$device" "$class_info"
+			test_usb_speed_wlan "$device" "$class_info"
 		fi
 		;;
 	"ff")
-		test_usb_read_speed_wlan "$device" "$class_info"
+		test_usb_speed_wlan "$device" "$class_info"
 		;;
 	*)
 		test_usb_read_speed_unknown "$device" "$class_info"
@@ -537,8 +537,8 @@ test_usb_register_single_device() {
 		register_test "$test_dev_func" "USB Device Port $((port_number))" "$level"
 
 		if [ -z "${USB_DISABLE_TESTS[*]}" ]; then
-			local test_read_func="test_usb_read_speed_$full_index"
-			eval "$test_read_func() { test_usb_read_speed \"$device\"; }"
+			local test_read_func="test_usb_speed_$full_index"
+			eval "$test_read_func() { test_usb_speed \"$device\"; }"
 			register_test "$test_read_func" "USB Device Port $((port_number)) I/O" "$level"
 		fi
 	fi
