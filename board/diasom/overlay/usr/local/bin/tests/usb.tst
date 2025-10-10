@@ -564,6 +564,14 @@ test_usb_register_hub_tests() {
 			continue
 		fi
 
+		local parent_path
+		parent_path=$(readlink -f "$dev/..")
+		local parent_name
+		parent_name=$(basename "$parent_path")
+		if [[ "$parent_name" != "$hub_device" ]]; then
+			continue
+		fi
+
 		if test_usb_register_single_device "$dev_name" "$((level + 1))" "$safe_addr" "$port_index" "$device_index"; then
 			((device_index++))
 		fi
@@ -637,6 +645,14 @@ test_usb_register_tests() {
 		local device_index=0
 		for device in "${devices[@]}"; do
 			if [ ! -d "/sys/bus/usb/devices/$device" ]; then
+				continue
+			fi
+
+			local parent_path
+			parent_path=$(readlink -f "/sys/bus/usb/devices/$device/..")
+			local parent_name
+			parent_name=$(basename "$parent_path")
+			if [[ "$parent_name" != "$root_port" ]]; then
 				continue
 			fi
 
