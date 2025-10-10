@@ -15,8 +15,8 @@ declare -A USB_DT_MAP=(
 declare -A USB_DISABLE_TESTS
 
 check_dependencies_usb() {
-	local deps=("${DEV_DEPS[@]}")
-	deps+=(@dev_modprobe bt-adapter fio jq mkfifo xargs)
+	local deps=("${DEV_DEPS[@]}" "${WLAN_DEPS[@]}")
+	deps+=(@dev_modprobe @wlan_speed_test bt-adapter fio jq mkfifo xargs)
 	check_dependencies "USB" "${deps[@]}"
 }
 
@@ -358,11 +358,25 @@ test_usb_read_speed_bt() {
 
 test_usb_speed_wlan() {
 	local device="$1"
-	local class_info="$2"
 
-	echo "Unsupported: WLAN: $device:$class_info"
+	local device_path="/sys/bus/usb/devices/$device"
+	local real_device_path
+	real_device_path=$(readlink -f "$device_path")
 
-	return 2
+	local iface=""
+	for net_path in /sys/class/net/*; do
+		local net_device_path
+		net_device_path=$(readlink -f "$net_path/device" 2>/dev/null)
+
+		if [[ "$net_device_path" == *"$real_device_path"* ]]; then
+			iface=$(basename "$net_path")
+			break
+		fi
+	done
+
+	local min_speed=10
+
+	wlan_speed_test "$iface" "$min_speed" false
 }
 
 test_usb_read_speed_unknown() {

@@ -5,25 +5,18 @@
 declare -g WLAN_DEPS=(iw iperf3 ip jq timeout)
 
 wlan_speed_test() {
-	local device="$1"
+	local iface="$1"
 	local min_speed="$2"
 	local writetest="$3"
 
-	local iface
-	for iface_path in /sys/class/net/*; do
-		if [ -e "$iface_path/device" ]; then
-			local iface_dev
-			iface_dev=$(readlink -f "$iface_path/device" | awk -F/ '{print $NF}')
-
-			if [ "$iface_dev" = "$device" ]; then
-				iface=$(basename "$iface_path")
-				break
-			fi
-		fi
-	done
-
 	if [ -z "$iface" ]; then
 		echo "WLAN: Interface not found (Unsupported card?)"
+		return 2
+	fi
+
+	local wireless_path="/sys/class/net/$iface/wireless"
+	if [ ! -d "$wireless_path" ]; then
+		echo "WLAN: Not a wireless interface"
 		return 2
 	fi
 

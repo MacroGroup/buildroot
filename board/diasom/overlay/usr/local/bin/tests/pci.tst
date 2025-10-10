@@ -219,7 +219,20 @@ test_pci_speed_wlan() {
 	local min_speed
 	min_speed=$(test_pci_get_speed "$device" "$writetest")
 
-	wlan_speed_test "$device" "$min_speed" "$writetest"
+	local iface=""
+	for iface_path in /sys/class/net/*; do
+		if [ -e "$iface_path/device" ]; then
+			local iface_dev
+			iface_dev=$(readlink -f "$iface_path/device" | awk -F/ '{print $NF}')
+
+			if [ "$iface_dev" = "$device" ]; then
+				iface=$(basename "$iface_path")
+				break
+			fi
+		fi
+	done
+
+	wlan_speed_test "$iface" "$min_speed" "$writetest"
 }
 
 
