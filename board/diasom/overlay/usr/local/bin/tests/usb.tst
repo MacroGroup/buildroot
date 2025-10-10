@@ -540,8 +540,10 @@ test_usb_register_single_device() {
 	class=$(echo "$class_info" | cut -d: -f1)
 
 	if [ "$class" = "09" ]; then
+		local hub_num_ports=$(cat "/sys/bus/usb/devices/$device/maxchild" 2>/dev/null)
+
 		local test_dev_func="test_usb_device_$full_index"
-		eval "$test_dev_func() { test_usb_device \"$device\" \"Hub\"; }"
+		eval "$test_dev_func() { test_usb_device \"$device\" \"Hub/$hub_num_ports\"; }"
 		register_test "$test_dev_func" "USB Device Port $((port_number))" "$level"
 
 		test_usb_register_hub_tests "$device" "$level" "$safe_addr" "${port_index}_${device_index}"
@@ -565,8 +567,6 @@ test_usb_register_hub_tests() {
 	local level="$2"
 	local safe_addr="$3"
 	local port_index="$4"
-
-#	local hub_num_ports=$(cat "/sys/bus/usb/devices/$hub_device/num_ports" 2>/dev/null)
 
 	local device_index=0
 	while IFS= read -r -d $'\0' dev; do
@@ -632,8 +632,9 @@ test_usb_register_tests() {
 			esac
 		fi
 
+		local hub_num_ports=$(cat "/sys/bus/usb/devices/$root_port/maxchild" 2>/dev/null)
 		local test_bus_func="test_usb_bus_${safe_addr}_${port_index}"
-		eval "$test_bus_func() { test_usb_device \"$root_port\" \"Root Hub\"; }"
+		eval "$test_bus_func() { test_usb_device \"$root_port\" \"Root Hub/$hub_num_ports\"; }"
 		if [ -z "$name" ]; then
 			register_test "$test_bus_func" "USB $port_index $controller_type"
 		else
