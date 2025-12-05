@@ -1,3 +1,268 @@
+2025.05, released June 9th, 2025
+
+	Various fixes.
+
+	Updated/fixed packages: armadillo, busybox, dhcpcd, dovecot,
+	easyframes, exim, ghostscript, go, gst1-plugins-bad, iputils,
+	jq, libcurl, libftdi1, libglib2, lm-sensors,
+	mender-update-modules, mesa3d, mongoose, mpd, ninja, podman,
+	python-django, python-gobject, qoriq-mc-utils, qt5declarative,
+	qt5webengine, qt5webengine-chromium, qt6base, qt6tools, redis,
+	rtl8723ds, spirv-llvm-translator, unzip, yasm
+
+2025.05-rc2, released May 28th, 2025
+
+	Fixes all over the tree.
+
+        Defconfigs: imx8mn-bsh-smm-s2: Unbreak boot after move to
+        U-Boot 2025.04.
+
+	Updated/fixed packages: assimp, atkmm, atkmm2_28, binutils,
+	casync-nano, esp-hosted, gmrender-resurrect, gtkmm3, kmsxx,
+	libcamera, libglade, linux, lzo, python-click, python-django,
+	python-flask-restx, python-pydantic, python-pydantic-core,
+	python-referencing, python-tornado, sane-airscan, systemd,
+	uacme, uuu
+
+2025.05-rc1, released May 19th, 2025
+
+	Fixes all over the tree and package updates.
+
+	Download:
+
+	- Rust updated to version 1.86.0, which has slightly changed
+	  the cargo fetching behaviour, so the generated tarballs now
+	  use a -cargo4 suffix to reflect that.
+
+	- Subversion download logic is now reproducible with non-US
+	  locales
+
+	- Sources can now be fetched from a smb:// location (using
+	  curl).
+
+	Dependencies:
+
+	- AWK is now required on the build host.
+
+	Toolchains:
+
+	- Bootlin ARMv7-A toolchains are now also available for
+	  ARMv8-A CPUs in 32bit mode
+
+	Misc:
+
+	- /etc/resolv.conf symlink now points to /run rather than /tmp
+
+	- support/scripts/pkg-stats can now report stale CVE entries,
+	  E.G. entries in <PKG>_IGNORE_CVES that are no longer needed
+	  after a NVD update.
+
+	New defconfigs: Engicam PX30 SOM, Freescale i.IM 91 EVK and 93
+	Freedom, HiFive Unmatched, Pine64 ROCKPro64 EBBR boot,
+	Raspberrypi 2 in 64bit mode, Sipeed LicheePi 4A
+
+	New packages: aardvark-dns, amazon-ecr-credential-helper,
+	casync-nano, cgroupfs-v2-mount, docker-credential-acr-env,
+	docker-credential-gcr, grout, lowdown, lpac,
+	mender-update-modules, netavark, passt, podman,
+	python-aniso8601, python-cachelib, python-emailproxy,
+	python-flask-caching, python-flask-restx, python-mypy,
+	python-pyproj, python-simple-pid, python-smbus2,
+	python-types-psutil, python-types-setuptools,
+	python-typing-inspection, python-tzlocal,
+	qoriq-ddr-phy-binary, qoriq-firmware-inphi, qoriq-mc-binary,
+	qoriq-mc-utils, sane-airscan, sipeed-lpi4abin, ufs-utils,
+	xilinx-fpgautil
+
+	Issues resolved:
+
+	- openh264's build/ should not be removed
+	  https://gitlab.com/buildroot.org/buildroot/-/issues/64
+
+	- package/dbus: incorrect session bus configuration file..
+	  https://gitlab.com/buildroot.org/buildroot/-/issues/67
+
+	- Update pkcs11-tool to v1.9.1
+	  https://gitlab.com/buildroot.org/buildroot/-/issues/109
+
+	- netsnmp: unexpected header length in /proc/net/snmp...
+	  https://gitlab.com/buildroot.org/buildroot/-/issues/110
+
+2025.02.3, released May 19th, 2025
+	Build issues and other problems solved for packages:
+
+        libcap
+
+2025.02.2, released May 18th, 2025
+
+	Important / security related fixes:
+
+	- openvpn: CVE-2025-2704
+	- ghostscript: CVE-2025-27830, CVE-2025-27831, CVE-2025-27832,
+		CVE-2025-27833, CVE-2025-27834, CVE-2025-27835,
+		CVE-2025-27836, CVE-2025-27837,
+	- libfcgi: CVE-2025-23016
+	- perl: CVE-2024-56406
+	- mosquitto: CVE-2023-28366
+	- c-ares: CVE-2025-31498
+	- graphicsmagick: CVE-2025-32460, CVE-2025-27795
+	- libxml2: CVE-2025-32414, CVE-2025-32415
+	- wireshark: CVE-2025-1492
+	- yam: CVE-2021-33454
+	- sqlite: CVE-2025-29087
+	- xz: CVE-2025-31115
+	- python-django: CVE-2025-32873
+	- libraw: CVE-2025-43961, CVE-2025-43962, CVE-2025-43963,
+	    CVE-2025-43964
+	- dropbear: CVE-2025-47203
+	- intel-microcode: CVE-2025-24495, CVE-2024-28956, CVE-2024-43420,
+	    CVE-2025-20103
+	- openssh: CVE-2025-32728
+	- screen: CVE-2025-23395, CVE-2025-46802, CVE-2025-46803,
+	    CVE-2025-46804, CVE-2025-46805
+	- python-flask: CVE-2025-47278
+	- python-h11: CVE-2025-43859
+	- postgresql: CVE-2025-4207
+
+	Updated / fixed packages: sysklogd, libfcgi, double-conversion,
+	igh-ethercat, c-periphery, socat, lua-periphery, fluent-bit,
+	samba4, ca-certificates, dbus-cxx, atkmm2_28, pangomm2_46,
+	cairomm1_14, glibmm2_66, gtkmm3, file, opencsd, libopenmpt,
+	fwts, libtracefs, iproute2, ripgrep, bat, dust, trace-cmd,
+	libubootenv, micropython, python-cryptography, dnsmasq,
+	wireless-regdb, python-setuptools, libuci, libubox, ubus, waf,
+	armadillo, ncftp, expat, libxml2, wireshark, hiredis, zfs,
+	sunxi-mali-utgard-driver, ruby, mtools, hwdata, traceroute,
+	zic, tzdata, jo, gdb, tpm2-pkcs11, nss-pam-ldapd, ghostscript,
+	dropbear, intel-microcode, screen, python-flask, python-h11,
+	mariadb, ffmpeg, postgresql
+
+	Test Improvements:
+
+	- test_edk2: add a few build tests
+	- weston: fix the weston shutdown test
+	- lighttpd: runtime test
+	- openocd: runtime test
+	- hyperfine: runtime test
+	- python-urllib3: runtime test
+	- test_edk2: add macchiatobin build test
+	- bat: runtime test
+	- dust: runtime test
+
+	Infrastructure updates / fixes:
+
+	- libopenh264: ignore CVE-2025-27091
+	- edk2: drop dependency on tf-a for macchiatobin
+	- vim: extend comment about vi symlink
+	- board/raspberrypi/readme.txt: various improvements
+	- raspberrypi5: install Raspberry Pi 500 device-tree blob
+	- gen-bootlin-toolchains: allows armv8-a CPU to use armv7-a toolchains
+	- libsigrokdecode: needs python3 w/ zlib support
+	- dejavu: update homepage
+	- pulseview: fix, update, and reorganise dependencies
+	- boost: move host variables closer together
+	- boost: move target library selection variables closer together
+	- support/download/git: use FOO_DL_OPTS
+	- stm32mp135f_dk: fix optee hash
+	- libcamera: various fixes
+	- apparmor don't reference libapparmor variables
+	- rpi-firmware: add note to keep in sync with kernel
+	- python-sdbus: fix upstream url
+	- qt5webengine: drop unused file
+	- warp7: Improve Wifi instructions
+	- cryptopp: add upstream URL in help text
+	- dpdk: fixup Config.in comment about dependencies
+	- ffmpeg: add support for libopenmpt
+	- pkg-stats: fix typo in --disable help text
+	- imx28evk: enable BR2_DOWNLOAD_FORCE_CHECK_HASHES
+	- friendlyarm_nanopi_r3s: fix host linux headers custom version
+	- support/dependencies/dependencies.sh: awk is needed by Buildroot
+	- Config.in: introduce BR2_HOST_GCC_AT_LEAST_{12..15}
+	- dbus: set session-socket-dir to /tmp
+	- fs/erofs: unbreak custom compression handling
+	- nodejs: make target nodejs package virtual
+	- mpd: update CPE/CVE information
+	- Various fix for GCC15 host
+
+	Build issues and other problems solved for packages:
+
+	sqlite, pahole, libv4l, arm-trusted-firmware, libopenmpt, iptables,
+	tailscale, wilc-driver, rtl8188eu, rtl8723ds, lmbench, fluent-bit,
+	mosquitto, iproutes2, pixman, linux-tools, libcoap, libcamera,
+	strongswan, mpv, hiredis, zfs, bird, netsnmp, libcap, musepack,
+	ffmpeg, libqrencode
+
+2025.02.1, released April 22nd, 2025
+
+	Changes with potentially large impact:
+
+	- gstreamer1 and related packages: updated from 1.22.x to 1.24.x.
+	  1.22.x was already EOL when Buildroot 2025.02 was released, so
+	  GStreamer should really already have been udpated to 1.24.x.
+	  This update was needed to fix a lot of vulnerabilities.
+	- frr: updated from 9.1.3 to 10.3. Version 9 is no longer
+	  maintained upstream, and not in any distro either. This update
+	  was needed to fix a vulernability.
+
+	Important / security related fixes:
+
+	- libmodsecurity: CVE-2025-27110.
+	- tinyxml2: CVE-2024-50615.
+	- xserver_xorg-server & xwayland: CVE-2024-9632, CVE-2025-26594,
+	    CVE-2025-26595, CVE-2025-26596, CVE-2025-26597,  CVE-2025-26598,
+	    CVE-2025-26599, CVE-2025-26600, CVE-2025-26601.
+	- exim: CVE-2025-30232.
+	- mbedtls: CVE-2025-27809, CVE-2025-27810.
+	- libfreeglut: CVE-2024-24258, CVE-2024-24259.
+	- libopenh264: CVE-2025-27091.
+	- gstreamer1: CVE-2024-47834, CVE-2024-47835, CVE-2024-47778,
+	    CVE-2024-47777 CVE-2024-47776, CVE-2024-47775, CVE-2024-47774,
+	    CVE-2024-47615, CVE-2024-47613, CVE-2024-47607, CVE-2024-47606,
+	    CVE-2024-47603, CVE-2024-47602, CVE-2024-47601, CVE-2024-47600,
+	    CVE-2024-47599, CVE-2024-47598, CVE-2024-47597, CVE-2024-47596,
+	    CVE-2024-47546, CVE-2024-47545, CVE-2024-47544, CVE-2024-47543,
+	    CVE-2024-47542, CVE-2024-47541, CVE-2024-47540, CVE-2024-47539,
+	    CVE-2024-47538, CVE-2024-47537.
+	- augeas: CVE-2025-2588.
+	- libndp: CVE-2024-5564.
+	- python-jinja2: CVE-2025-27516.
+	- python-django: CVE-2025-26699.
+	- libarchive: CVE-2024-57970, CVE-2025-1632.
+	- frr: CVE-2024-55553.
+
+	Updated / fixed packages: libmodsecurity, intel-mediadriver,
+	intel-vpl-gpu-rt, python-aerich, python-aiohttp, python-maturin,
+	python-tortoise-orm, python-sqlalchemy, kodi-pvr-waipu, tor, mc,
+	tinyxml2, libgeos, intel-vpl-gpu-rt, intel-mediadriver, ruby,
+	ncftp, xserver_xorg-server, exim, mbedtls, gdb, freerdp, uclibc,
+	libsoup3, cairo, zabbix, armadillo, spdlog, go, linux, linux-tools,
+	gstreamer, linux-header, ethtool, apr, mali-driver, libcoap, libcap
+	python-fastapi, python-twisted.
+
+	Test Improvements:
+
+	- linux-tools: selftests: Add path containing BPF binary.
+	- testing: make time setting portable.
+	- testing: set date in emulated machine.
+	- testing: add git runtime test.
+	- test_gstreamer1: fix test by using bootlin toolchain.
+
+	Infrastructure updates/fixes:
+
+	- kconfig: Handle backspace (^H) key.
+	- xilinx-embeddedsw: fix menuconfig visualization.
+	- DEVELOPERS: change arnout's address.
+	- support/download/svn: use 'svn info' whith LC_ALL=C
+	- glibc: disable on RISC-V ilp32f and lp64f, not supported.
+	- dillo: Fix an issue related to _SITE url for make show-info.
+	- pkg-stats: add -v/--verbose option
+
+	Build issues/problems solved for packages:
+
+	dillo, freerdp, freeswitch, gdb, glibc, linux-tools,
+	mesa3d-demos, ncftp, tesseract-ocr,
+	v4l2loopback, zabbix
+
 2025.02, released March 17th, 2025
 
 	Various fixes.
@@ -76,6 +341,63 @@
 	  https://gitlab.com/buildroot.org/buildroot/-/issues/69
 	- samba4 build failed in master
 	  https://gitlab.com/buildroot.org/buildroot/-/issues/86
+
+2024.11.4, released April 22nd, 2025
+
+	Important / security related fixes:
+
+	- xserver_xorg-server & xwayland: CVE-2024-9632, CVE-2025-26594,
+	    CVE-2025-26595, CVE-2025-26596, CVE-2025-26597,  CVE-2025-26598
+	    CVE-2025-26599, CVE-2025-26600, CVE-2025-26601.
+	- exim: CVE-2025-30232.
+	- mbedtls: CVE-2025-27809, CVE-2025-27810.
+	- augeas: CVE-2025-2588.
+	- libarchive: CVE-2024-57970, CVE-2025-1632, CVE-2025-25724.
+	- xwayland: CVE-2024-31081, CVE-2024-31083, CVE-2024-9632,
+	    CVE-2025-26594, CVE-2025-26595, CVE-2025-26596,
+	    CVE-2025-26597, CVE-2025-26598, CVE-2025-26599,
+	    CVE-2025-26600, CVE-2025-26601
+	- libopenh264: CVE-2025-27091.
+	- libmodsecurity: CVE-2025-27110.
+	- tinyxml2: CVE-2024-50615.
+
+	Updated/fixed packages:
+
+	libgeos, freerdp, libsoup3, cairo, linux, apr, mali-driver,
+	libcoap, python-fastapi, python-twisted, tor, mc, linux-header,
+	linux-tools.
+
+	Test Improvements:
+
+	- linux-tools: selftests: Add path containing BPF binary.
+	- testing: add git runtime test.
+
+	Infrastructure updates/fixes:
+
+	- DEVELOPERS: change arnout's address.
+	- DEVELOPERS: add Dario Binacchi for ti-k3-boot-firmware.
+	- support/download/svn: use 'svn info' whith LC_ALL=C**.
+	- dillo: Fix an issue related to _SITE url for make show-info.
+	- kconfig: Handle backspace (^H) key.
+	- pkg-stats: add -v/--verbose option
+
+	Build issues/problems solved for:
+
+	freeswitch, glibc, v4l2loopback, ls1028ardb, ls1028ardb,
+	mesa3d-demos.
+
+2024.11.3, released March 24st, 2025
+
+	Important / security related fixes.
+
+	Defconfigs: Octavo osd23mp1: Fix TF-A/Linux compilation after
+	move to newer toolchain versions.
+
+	Updated/fixed packages: compiler-rt, exim, expat, fio, foot,
+	go, jbig2dec, libcamera, libjxl, libopenssl, libxml2, mokutil,
+	musl, optee-os, php, pkgconf, postgresql, prboom,
+	python-typing-extensions, rauc, systemd, util-linux,
+	watchdogd, webkitgtk
 
 2024.11.2, released February 21st, 2025
 
@@ -622,6 +944,62 @@
         #16009: 'select' does not work with 'choice'
         #16036: android-tools version is too old
         #16075: Cannot use linux kernel extensions from external tree..
+
+2024.02.13, released April 22nd, 2025
+
+	Important / security related fixes:
+
+	- xserver_xorg-server & xwayland: CVE-2024-9632, CVE-2025-26594,
+	    CVE-2025-26595, CVE-2025-26596, CVE-2025-26597,  CVE-2025-26598,
+	    CVE-2025-26599, CVE-2025-26600, CVE-2025-26601.
+	- exim: CVE-2025-30232.
+	- mbedtls: CVE-2025-27809, CVE-2025-27810.
+	- augeas: CVE-2025-2588.
+	- libarchive: CVE-2024-57970, CVE-2025-1632, CVE-2025-25724.
+	- libopenh264: CVE-2025-27091.
+	- libmodsecurity: CVE-2025-27110.
+	- tinyxml2: CVE-2024-50615.
+	- libndp: CVE-2024-5564.
+	- xwayland: CVE-2024-31080, CVE-2024-31081, CVE-2024-31083,
+	    CVE-2024-9632, CVE-2025-26594, CVE-2025-26595,
+	    CVE-2025-26596, CVE-2025-26597, CVE-2025-26598,
+	    CVE-2025-26599, CVE-2025-26600, CVE-2025-26601.
+	- libfreeglut: CVE-2024-24258, CVE-2024-24259.
+
+	Updated/fixed packages:
+
+	libsoup3, linux, apr, mali-driver,
+	libcoap, python-fastapi, python-twisted, tor, linux-header,
+	linux-tools, libmodsecurity
+
+	Test Improvements:
+
+	- linux-tools: selftests: Add path containing BPF binary.
+	- testing: add git runtime test.
+
+	Infrastructure updates/fixes:
+
+	- DEVELOPERS: change arnout's address.
+	- DEVELOPERS: add Dario Binacchi for ti-k3-boot-firmware.
+	- support/download/svn: use 'svn info' whith LC_ALL=C.
+	- dillo: Fix an issue related to _SITE url for make show-info.
+	- kconfig: Handle backspace (^H) key.
+	- pkg-stats: add -v/--verbose option
+
+	Build issues/problems solved for:
+	glibc, mesa3d-demos.
+
+2024.02.12, released March 24st, 2025
+
+	Important / security related fixes.
+
+	Defconfigs: Octavo osd23mp1: Fix TF-A/Linux compilation after
+	move to newer toolchain versions.
+
+	Updated/fixed packages: compiler-rt, exim, expat, fio, foot,
+	jbig2dec, libjxl, libxml2, musl, optee-os, php, postgresql,
+	prboom, python-typing-extensions, systemd, util-linux,
+	watchdogd, webkitgtk
 
 2024.02.11, released February 21st, 2025
 

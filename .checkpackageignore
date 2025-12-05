@@ -72,7 +72,6 @@ board/roseapplepi/patches/uboot/0001-compiler-.h-sync-include-linux-compiler-.h-
 board/roseapplepi/post-build.sh Shellcheck
 board/seeed/stm32mp157c-odyssey/patches/linux/0001-ARM-dts-stm32-fix-stm32mp157c-odyssey-card-detect.patch lib_patch.Upstream
 board/sheevaplug/patches/uboot/0001-Remove-redundant-YYLOC-global-declaration.patch lib_patch.Upstream
-board/sifive/hifive-unleashed/post-build.sh Shellcheck
 board/solidrun/clearfog/post-build.sh Shellcheck
 board/solidrun/macchiatobin/post-build-mainline.sh Shellcheck
 board/solidrun/macchiatobin/post-build.sh Shellcheck
@@ -140,14 +139,12 @@ configs/engicam_imx6qdl_icore_qt5_defconfig lib_defconfig.ForceCheckHash
 configs/engicam_imx6qdl_icore_rqs_defconfig lib_defconfig.ForceCheckHash
 configs/engicam_imx6ul_geam_defconfig lib_defconfig.ForceCheckHash
 configs/engicam_imx6ul_isiot_defconfig lib_defconfig.ForceCheckHash
-configs/freescale_imx28evk_defconfig lib_defconfig.ForceCheckHash
 configs/freescale_p1025twr_defconfig lib_defconfig.ForceCheckHash
 configs/freescale_t1040d4rdb_defconfig lib_defconfig.ForceCheckHash
 configs/freescale_t2080_qds_rdb_defconfig lib_defconfig.ForceCheckHash
 configs/friendlyarm_nanopi_r2s_defconfig lib_defconfig.ForceCheckHash
 configs/galileo_defconfig lib_defconfig.ForceCheckHash
 configs/globalscale_espressobin_defconfig lib_defconfig.ForceCheckHash
-configs/hifive_unleashed_defconfig lib_defconfig.ForceCheckHash
 configs/imx23evk_defconfig lib_defconfig.ForceCheckHash
 configs/imx6-sabreauto_defconfig lib_defconfig.ForceCheckHash
 configs/imx6-sabresd_defconfig lib_defconfig.ForceCheckHash
@@ -281,7 +278,6 @@ package/asterisk/0004-install-samples-need-the-data-files.patch lib_patch.Upstre
 package/at/0001-Makefile.in-fix-make-install-for-non-root-don-t-stri.patch lib_patch.Upstream
 package/at/S99at lib_sysv.Indent lib_sysv.Variables
 package/attr/0001-build-with-older-GCCs.patch lib_patch.Upstream
-package/audit/S02auditd Shellcheck lib_sysv.Variables
 package/aufs-util/0001-remove-user-settings.patch lib_patch.Upstream
 package/aufs-util/0002-no-check-ver.patch lib_patch.Upstream
 package/aufs-util/0003-no-strip-lib.patch lib_patch.Upstream
@@ -496,24 +492,24 @@ package/gdb/14.2/0006-Fix-getrandom-compile-for-uclibc-v1.0.35.patch lib_patch.U
 package/gdb/14.2/0007-fix-musl-build-on-riscv.patch lib_patch.Upstream
 package/gdb/14.2/0008-gdbserver-Makefile.in-fix-NLS-build.patch lib_patch.Upstream
 package/gdb/14.2/0009-gdb-Fix-native-build-on-xtensa.patch lib_patch.Upstream
-package/gdb/15.1/0001-ppc-ptrace-Define-pt_regs-uapi_pt_regs-on-GLIBC-syst.patch lib_patch.Upstream
-package/gdb/15.1/0002-sh-ptrace-Define-pt_-dsp-regs-uapi_pt_-dsp-regs-on-G.patch lib_patch.Upstream
-package/gdb/15.1/0003-use-asm-sgidefs.h.patch lib_patch.Upstream
-package/gdb/15.1/0004-gdbserver-fix-build-for-m68k.patch lib_patch.Upstream
-package/gdb/15.1/0005-nat-fork-inferior-include-linux-ptrace.h.patch lib_patch.Upstream
-package/gdb/15.1/0006-Fix-getrandom-compile-for-uclibc-v1.0.35.patch lib_patch.Upstream
-package/gdb/15.1/0007-fix-musl-build-on-riscv.patch lib_patch.Upstream
-package/gdb/15.1/0008-gdbserver-Makefile.in-fix-NLS-build.patch lib_patch.Upstream
-package/gdb/15.1/0009-gdb-Fix-native-build-on-xtensa.patch lib_patch.Upstream
-package/gdb/16.1/0001-ppc-ptrace-Define-pt_regs-uapi_pt_regs-on-GLIBC-syst.patch lib_patch.Upstream
-package/gdb/16.1/0002-sh-ptrace-Define-pt_-dsp-regs-uapi_pt_-dsp-regs-on-G.patch lib_patch.Upstream
-package/gdb/16.1/0003-use-asm-sgidefs.h.patch lib_patch.Upstream
-package/gdb/16.1/0004-gdbserver-fix-build-for-m68k.patch lib_patch.Upstream
-package/gdb/16.1/0005-nat-fork-inferior-include-linux-ptrace.h.patch lib_patch.Upstream
-package/gdb/16.1/0006-Fix-getrandom-compile-for-uclibc-v1.0.35.patch lib_patch.Upstream
-package/gdb/16.1/0007-fix-musl-build-on-riscv.patch lib_patch.Upstream
-package/gdb/16.1/0008-gdbserver-Makefile.in-fix-NLS-build.patch lib_patch.Upstream
-package/gdb/16.1/0009-gdb-Fix-native-build-on-xtensa.patch lib_patch.Upstream
+package/gdb/15.2/0001-ppc-ptrace-Define-pt_regs-uapi_pt_regs-on-GLIBC-syst.patch lib_patch.Upstream
+package/gdb/15.2/0002-sh-ptrace-Define-pt_-dsp-regs-uapi_pt_-dsp-regs-on-G.patch lib_patch.Upstream
+package/gdb/15.2/0003-use-asm-sgidefs.h.patch lib_patch.Upstream
+package/gdb/15.2/0004-gdbserver-fix-build-for-m68k.patch lib_patch.Upstream
+package/gdb/15.2/0005-nat-fork-inferior-include-linux-ptrace.h.patch lib_patch.Upstream
+package/gdb/15.2/0006-Fix-getrandom-compile-for-uclibc-v1.0.35.patch lib_patch.Upstream
+package/gdb/15.2/0007-fix-musl-build-on-riscv.patch lib_patch.Upstream
+package/gdb/15.2/0008-gdbserver-Makefile.in-fix-NLS-build.patch lib_patch.Upstream
+package/gdb/15.2/0009-gdb-Fix-native-build-on-xtensa.patch lib_patch.Upstream
+package/gdb/16.3/0001-ppc-ptrace-Define-pt_regs-uapi_pt_regs-on-GLIBC-syst.patch lib_patch.Upstream
+package/gdb/16.3/0002-sh-ptrace-Define-pt_-dsp-regs-uapi_pt_-dsp-regs-on-G.patch lib_patch.Upstream
+package/gdb/16.3/0003-use-asm-sgidefs.h.patch lib_patch.Upstream
+package/gdb/16.3/0004-gdbserver-fix-build-for-m68k.patch lib_patch.Upstream
+package/gdb/16.3/0005-nat-fork-inferior-include-linux-ptrace.h.patch lib_patch.Upstream
+package/gdb/16.3/0006-Fix-getrandom-compile-for-uclibc-v1.0.35.patch lib_patch.Upstream
+package/gdb/16.3/0007-fix-musl-build-on-riscv.patch lib_patch.Upstream
+package/gdb/16.3/0008-gdbserver-Makefile.in-fix-NLS-build.patch lib_patch.Upstream
+package/gdb/16.3/0009-gdb-Fix-native-build-on-xtensa.patch lib_patch.Upstream
 package/genpart/0001-fix-return-code.patch lib_patch.Upstream
 package/gensio/0001-Fix-missing-EVP_PKEY_ED25519-build-error-on-libressl.patch lib_patch.Upstream
 package/gerbera/S99gerbera lib_sysv.Indent
@@ -584,7 +580,6 @@ package/ipmitool/0002-Fix-enterprise-numbers-URL.patch lib_patch.Upstream
 package/ipmitool/0003-Do-not-require-the-IANA-PEN-registry-file.patch lib_patch.Upstream
 package/ipmitool/0004-configure.ac-allow-disabling-registry-downloads.patch lib_patch.Upstream
 package/iprutils/0001-configure.ac-add-AC_USE_SYSTEM_EXTENSIONS.patch lib_patch.Upstream
-package/iptables/S35iptables Shellcheck
 package/irda-utils/0001-daemon.patch lib_patch.Sob lib_patch.Upstream
 package/irda-utils/0002-nommu.patch lib_patch.Sob lib_patch.Upstream
 package/irda-utils/0003-subdir.patch lib_patch.Sob lib_patch.Upstream
@@ -621,7 +616,6 @@ package/libavl/0001-fix-makefile.patch lib_patch.Upstream
 package/libb64/0001-Integer-overflows.patch lib_patch.Upstream
 package/libb64/0002-Initialize-C++-objects.patch lib_patch.Upstream
 package/libcdaudio/0001-libcdaudio-enable-autoreconf.patch lib_patch.Upstream
-package/libcec/0001-cecloader-h-fix-null-return.patch lib_patch.Upstream
 package/libcgi/0001-CMakeLists.txt-honour-BUILD_TESTING.patch lib_patch.Upstream
 package/libcgicc/0001-disable-documentation-option.patch lib_patch.Sob lib_patch.Upstream
 package/libconfuse/0001-Fix-163-unterminated-username-used-with-getpwnam.patch lib_patch.Upstream
@@ -634,8 +628,6 @@ package/libdvbcsa/0001-altivec-powerpc64.patch lib_patch.Upstream
 package/libeXosip2/0001-src-eXtl_dtls.c-fix-build-with-libressl-3.4.1.patch lib_patch.Upstream
 package/libedit/0001-check-bsd-functions-in-libbsd.patch lib_patch.Upstream
 package/libevent/0001-Don-t-define-BIO_get_init-for-LibreSSL-3-5.patch lib_patch.Upstream
-package/libfcgi/0001-link-against-math.patch lib_patch.Upstream
-package/libfcgi/0002-disable-examples.patch lib_patch.Upstream
 package/libffi/0001-Fix-use-of-compact-eh-frames-on-MIPS.patch lib_patch.Upstream
 package/libfm/0001-modules-fix-cross-compilation.patch lib_patch.Upstream
 package/libfreeimage/0001-no-root-install.patch lib_patch.Upstream
@@ -644,9 +636,6 @@ package/libfreeimage/0003-fix-big-endian-os.patch lib_patch.Upstream
 package/libfreeimage/0004-fixed-C-11-warnings.patch lib_patch.Upstream
 package/libftdi/0001-pkgconfig_libusb.patch lib_patch.Sob lib_patch.Upstream
 package/libftdi/0002-libftdi.pc-requires-libusb-fix-static-build.patch lib_patch.Sob lib_patch.Upstream
-package/libftdi1/0001-cmake-use-the-standard-CMake-flag-to-drive-the-share.patch lib_patch.Upstream
-package/libftdi1/0002-CMakeLists.txt-fix-paths-when-FTDIPP-is-set.patch lib_patch.Upstream
-package/libftdi1/0003-CMakeLists.txt-fix-static-build-with-libusb-and-lato.patch lib_patch.Upstream
 package/libfuse/0001-fix-aarch64-build.patch lib_patch.Upstream
 package/libfuse/0002-util-ulockmgr_server-c-conditionally-define-closefrom-fix-glibc-2-34.patch lib_patch.Upstream
 package/libgcrypt/0001-configure.ac-add-an-option-to-disable-tests.patch lib_patch.Upstream
@@ -826,7 +815,6 @@ package/mono-gtksharp3/0001-Fixes-MONO_PROFILE_ENTER_LEAVE-undeclared.patch lib_
 package/mono-gtksharp3/0002-Mono-compilation-error-branch.patch lib_patch.Upstream
 package/mono/0001-Fix-linkage-with-a-system-libatomic_ops-shared-library.patch lib_patch.Upstream
 package/mono/0002-Ongoing-work-on-the-cmake-build.patch lib_patch.Upstream
-package/mosquitto/S50mosquitto Shellcheck lib_sysv.Indent lib_sysv.Variables
 package/motion/S99motion Shellcheck lib_sysv.Indent lib_sysv.Variables
 package/mpir/0001-mpn-arm-udiv.asm-workaround-binutils-bug-14887.patch lib_patch.Upstream
 package/mpv/0001-fix-powerpc64-altivec.patch lib_patch.Upstream
@@ -1008,17 +996,6 @@ package/python-scipy/0001-build-sh4-FE.patch lib_patch.Upstream
 package/python-setuptools/0001-add-executable.patch lib_patch.Upstream
 package/python-sip/0001-remove-join-from-sip-h-files-string.patch lib_patch.Upstream
 package/python-web2py/S51web2py Shellcheck lib_sysv.Variables
-package/python3/0001-Make-the-build-of-pyc-files-conditional.patch lib_patch.Upstream
-package/python3/0002-Disable-buggy_getaddrinfo-configure-test-when-cross-.patch lib_patch.Upstream
-package/python3/0003-Add-an-option-to-disable-pydoc.patch lib_patch.Upstream
-package/python3/0004-Add-an-option-to-disable-lib2to3.patch lib_patch.Upstream
-package/python3/0005-Add-an-option-to-disable-IDLE.patch lib_patch.Upstream
-package/python3/0006-configure.ac-move-PY_STDLIB_MOD_SET_NA-further-up.patch lib_patch.Upstream
-package/python3/0007-Add-option-to-disable-the-sqlite3-module.patch lib_patch.Upstream
-package/python3/0008-Add-an-option-to-disable-the-tk-module.patch lib_patch.Upstream
-package/python3/0009-Add-an-option-to-disable-the-curses-module.patch lib_patch.Upstream
-package/python3/0010-Add-an-option-to-disable-expat.patch lib_patch.Upstream
-package/python3/0011-configure.ac-fixup-CC-print-multiarch-output-for-mus.patch lib_patch.Upstream
 package/qextserialport/0001-Create-a-main-include-file-QExtSerialPort.patch lib_patch.Upstream
 package/qextserialport/0002-Tell-qmake-to-add-a-pkgconfig-file-to-ease-usage-wit.patch lib_patch.Upstream
 package/qt5/qt5base/0001-qtbase-Fix-build-error-when-using-EGL.patch lib_patch.Upstream
@@ -1048,7 +1025,6 @@ package/qt5/qt5webkit/0006-Warnings-due-to-AppSinkCallbacks-struct-growth-https.
 package/qt5cinex/0001-Fix-execution-problem-with-Qt5.3.patch lib_patch.Upstream
 package/racehound/0001-Fix-module-install-path-lib-instead-of-usr-lib-prefi.patch lib_patch.Upstream
 package/rapidxml/0001-ensure-internal-print-operations-are-declared-before.patch lib_patch.Upstream
-package/raspberrypi-usbboot/0001-Makefile-allow-passing-CFLAGS-LDFLAGS.patch lib_patch.Upstream
 package/read-edid/0001-Fix-install-file-list.patch lib_patch.Upstream
 package/read-edid/0002-Fix-compiler-check.patch lib_patch.Upstream
 package/read-edid/0003-fix-build-with-gcc-10.patch lib_patch.Upstream
