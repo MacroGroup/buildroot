@@ -1,0 +1,36 @@
+diff '--color=auto' -urN camera_engine_rkaiq.fix/rkaiq/algos/adegamma/rk_aiq_adegamma_algo.cpp camera_engine_rkaiq.fix2/rkaiq/algos/adegamma/rk_aiq_adegamma_algo.cpp
+--- camera_engine_rkaiq.fix/rkaiq/algos/adegamma/rk_aiq_adegamma_algo.cpp	2024-04-25 15:29:40.215742808 +0300
++++ camera_engine_rkaiq.fix2/rkaiq/algos/adegamma/rk_aiq_adegamma_algo.cpp	2025-12-08 15:56:17.529398655 +0300
+@@ -26,7 +26,7 @@
+ {
+     LOG1_ADEGAMMA("ENTER: %s \n", __func__);
+     XCamReturn ret = XCAM_RETURN_NO_ERROR;
+-    AdegammaHandle_t* handle = (AdegammaHandle_t*)calloc(sizeof(AdegammaHandle_t), 1);
++    AdegammaHandle_t* handle = (AdegammaHandle_t*)calloc(1, sizeof(AdegammaHandle_t));
+     if (NULL == handle)
+         return XCAM_RETURN_ERROR_MEM;
+ 
+diff '--color=auto' -urN camera_engine_rkaiq.fix/rkaiq/algos/agamma/rk_aiq_agamma_algo_v10.cpp camera_engine_rkaiq.fix2/rkaiq/algos/agamma/rk_aiq_agamma_algo_v10.cpp
+--- camera_engine_rkaiq.fix/rkaiq/algos/agamma/rk_aiq_agamma_algo_v10.cpp	2024-04-25 15:29:40.336743261 +0300
++++ camera_engine_rkaiq.fix2/rkaiq/algos/agamma/rk_aiq_agamma_algo_v10.cpp	2025-12-08 15:52:52.706357162 +0300
+@@ -27,7 +27,7 @@
+ XCamReturn AgammaInit(AgammaHandle_t** pGammaCtx, CamCalibDbV2Context_t* pCalib) {
+     LOG1_AGAMMA("ENTER: %s \n", __func__);
+     XCamReturn ret         = XCAM_RETURN_NO_ERROR;
+-    AgammaHandle_t* handle = (AgammaHandle_t*)calloc(sizeof(AgammaHandle_t), 1);
++    AgammaHandle_t* handle = (AgammaHandle_t*)calloc(1, sizeof(AgammaHandle_t));
+     if (NULL == handle) return XCAM_RETURN_ERROR_MEM;
+ 
+     CalibDbV2_gamma_v10_t* calibv2_agamma_calib =
+diff '--color=auto' -urN camera_engine_rkaiq.fix/rkaiq/iq_parser/tinyxml2.h camera_engine_rkaiq.fix2/rkaiq/iq_parser/tinyxml2.h
+--- camera_engine_rkaiq.fix/rkaiq/iq_parser/tinyxml2.h	2024-04-25 15:29:42.778752421 +0300
++++ camera_engine_rkaiq.fix2/rkaiq/iq_parser/tinyxml2.h	2025-12-08 16:00:42.053206269 +0300
+@@ -169,7 +169,7 @@
+ class DynArray
+ {
+ public:
+-    DynArray< T, INIT >()
++    DynArray()
+     {
+         mem = pool;
+         allocated = INIT;
