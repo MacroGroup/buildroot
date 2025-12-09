@@ -26,6 +26,37 @@ GRUB2_IGNORE_CVES += CVE-2023-4001
 # grub2-set-bootflag tool, which doesn't exist upstream
 GRUB2_IGNORE_CVES += CVE-2024-1048
 
+# 0004-fs-hfs-Fix-stack-OOB-write-with-grub_strcpy.patch (yes, two
+# CVEs are fixed by this patch)
+GRUB2_IGNORE_CVES += CVE-2024-45782
+GRUB2_IGNORE_CVES += CVE-2024-56737
+
+# 0006-fs-tar-Integer-overflow-leads-to-heap-OOB-write.patch
+GRUB2_IGNORE_CVES += CVE-2024-45780
+
+# 0037-gettext-Integer-overflow-leads-to-heap-OOB-write.patch
+GRUB2_IGNORE_CVES += CVE-2024-45777
+
+# 0043-fs-bfs-Disable-under-lockdown.patch (yes, two CVEs are fixed by
+# this patch)
+GRUB2_IGNORE_CVES += CVE-2024-45778
+GRUB2_IGNORE_CVES += CVE-2024-45779
+
+# 0044-fs-Disable-many-filesystems-under-lockdown.patch (yes, four
+# CVEs are fixed by this patch)
+GRUB2_IGNORE_CVES += CVE-2025-0684
+GRUB2_IGNORE_CVES += CVE-2025-0685
+GRUB2_IGNORE_CVES += CVE-2025-0686
+GRUB2_IGNORE_CVES += CVE-2025-0689
+
+# 0050-fs-Prevent-overflows-when-allocating-memory-for-arra.patch
+# (yes, two CVEs are fixed by this patch)
+GRUB2_IGNORE_CVES += CVE-2025-0678
+GRUB2_IGNORE_CVES += CVE-2025-1125
+
+# 0074-Constant-time-grub_crypto_memcmp.patch
+GRUB2_IGNORE_CVES += CVE-2024-56738
+
 ifeq ($(BR2_TARGET_GRUB2_INSTALL_TOOLS),y)
 GRUB2_INSTALL_TARGET = YES
 else
@@ -101,6 +132,15 @@ GRUB2_PLATFORM_riscv64-efi = efi
 GRUB2_BUILTIN_CONFIG_riscv64-efi = $(GRUB2_BUILTIN_CONFIG_EFI)
 GRUB2_BUILTIN_MODULES_riscv64-efi = $(GRUB2_BUILTIN_MODULES_EFI)
 GRUB2_TUPLES-$(BR2_TARGET_GRUB2_RISCV64_EFI) += riscv64-efi
+
+GRUB2_IMAGE_loongarch64-efi = $(BINARIES_DIR)/efi-part/EFI/BOOT/bootloongarch64.efi
+GRUB2_CFG_loongarch64-efi = $(BINARIES_DIR)/efi-part/EFI/BOOT/grub.cfg
+GRUB2_PREFIX_loongarch64-efi = /EFI/BOOT
+GRUB2_TARGET_loongarch64-efi = loongarch64
+GRUB2_PLATFORM_loongarch64-efi = efi
+GRUB2_BUILTIN_CONFIG_loongarch64-efi = $(GRUB2_BUILTIN_CONFIG_EFI)
+GRUB2_BUILTIN_MODULES_loongarch64-efi = $(GRUB2_BUILTIN_MODULES_EFI)
+GRUB2_TUPLES-$(BR2_TARGET_GRUB2_LOONGARCH64_EFI) += loongarch64-efi
 
 # Grub2 is kind of special: it considers CC, LD and so on to be the
 # tools to build the host programs and uses TARGET_CC, TARGET_CFLAGS,

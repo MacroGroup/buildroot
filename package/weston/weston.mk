@@ -43,7 +43,8 @@ else
 WESTON_CONF_OPTS += -Dlauncher-libseat=false
 endif
 
-ifeq ($(BR2_PACKAGE_JPEG),y)
+# weston uses jpeg_read_icc_profile(), only provided by jpeg-turbo
+ifeq ($(BR2_PACKAGE_JPEG_TURBO),y)
 WESTON_CONF_OPTS += -Dimage-jpeg=true
 WESTON_DEPENDENCIES += jpeg
 else
