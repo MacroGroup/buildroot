@@ -179,8 +179,8 @@ ds_imx8m_som_evb_test_gpio() {
 
 ds_rk3568_som_evb_test_gpio() {
 	local gpio_tests=(
-		"gpio1	4	gpio1	6	GPIO1-GPIO2"
-		"gpio1	7	gpio1	8	GPIO3-GPIO4"
+		"gpio1	4	gpio1	6	GPIO0-GPIO1"
+		"gpio1	7	gpio1	8	GPIO2-GPIO3"
 	)
 
 	register_gpio_pair_tests "${gpio_tests[@]}"
