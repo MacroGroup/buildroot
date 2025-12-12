@@ -6,7 +6,7 @@
 
 # When updating the version, check whether the list of supported targets
 # needs to be updated.
-QEMU_VERSION = 10.0.0
+QEMU_VERSION = 10.1.0
 QEMU_SOURCE = qemu-$(QEMU_VERSION).tar.xz
 QEMU_SITE = https://download.qemu.org
 QEMU_SELINUX_MODULES = qemu virt
@@ -271,6 +271,13 @@ else
 QEMU_OPTS += --disable-install-blobs
 endif
 
+ifeq ($(BR2_PACKAGE_ZSTD),y)
+QEMU_OPTS += --enable-zstd
+QEMU_DEPENDENCIES += zstd
+else
+QEMU_OPTS += --disable-zstd
+endif
+
 # Override CPP, as it expects to be able to call it like it'd
 # call the compiler.
 define QEMU_CONFIGURE_CMDS
@@ -458,6 +465,13 @@ HOST_QEMU_OPTS += --enable-libusb
 HOST_QEMU_DEPENDENCIES += host-libusb
 else
 HOST_QEMU_OPTS += --disable-libusb
+endif
+
+ifeq ($(BR2_PACKAGE_HOST_ZSTD),y)
+HOST_QEMU_OPTS += --enable-zstd
+HOST_QEMU_DEPENDENCIES += host-zstd
+else
+HOST_QEMU_OPTS += --disable-zstd
 endif
 
 # Override CPP, as it expects to be able to call it like it'd

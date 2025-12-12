@@ -144,6 +144,329 @@ endif
 
 ###############################################################################
 
+comment "Legacy options removed in 2025.11"
+
+config BR2_KERNEL_HEADERS_5_4
+	bool "kernel headers version 5.4.x are no longer supported"
+	select BR2_LEGACY
+	help
+	  Version 5.4.x of the Linux kernel headers are no longer
+	  maintained upstream and are now removed.
+
+config BR2_PACKAGE_LIBARGTABLE2
+	bool "libargtable2 has been removed"
+	select BR2_LEGACY
+	help
+	  libargtable2 is unmaintained and has been removed
+
+config BR2_PACKAGE_OLA
+	bool "ola has been removed"
+	select BR2_LEGACY
+	help
+	  ola is incompatible with current versions of protobuf
+
+config BR2_PACKAGE_BATMAN_ADV_NC
+	bool "batman-adv removed network coding"
+	select BR2_LEGACY
+	help
+	  batman-adv removed B.A.T.M.A.N. network coding
+
+config BR2_PACKAGE_DVBSNOOP
+	bool "dvbsnoop has been removed"
+	select BR2_LEGACY
+	help
+	  dvbsnoop is unmaintained and has been removed
+
+config BR2_PACKAGE_PROCRANK_LINUX
+	bool "procrank_linux has been removed"
+	select BR2_LEGACY
+	help
+	  procrank_linux is unmaintained and has been removed
+
+config BR2_PACKAGE_MONGREL2
+	bool "mongrel2 has been removed"
+	select BR2_LEGACY
+	help
+	  mongrel2 is incompatible with MbedTLS 3.6 and has been removed
+
+config BR2_PACKAGE_EXPECT
+	bool "expect has been removed"
+	select BR2_LEGACY
+	help
+	  expect is unmaintained and has been removed
+
+config BR2_PACKAGE_BCTOOLBOX
+	bool "bctoolbox has been removed"
+	select BR2_LEGACY
+	help
+	  This package has been removed as part of the linphone
+	  removal. In addition, newer version of linphone directly
+	  bundle bctoolbox making a separate package unnecessary.
+
+config BR2_PACKAGE_ORTP
+	bool "ortp has been removed"
+	select BR2_LEGACY
+	help
+	  This package has been removed as part of the linphone
+	  removal. In addition, newer version of linphone directly
+	  bundle ortp making a separate package unnecessary.
+
+config BR2_PACKAGE_MEDIASTREAMER
+	bool "mediastreamer has been removed"
+	select BR2_LEGACY
+	help
+	  This package has been removed as part of the linphone
+	  removal. In addition, newer version of linphone directly
+	  bundle mediastreamer making a separate package unnecessary.
+
+config BR2_PACKAGE_BELR
+	bool "belr has been removed"
+	select BR2_LEGACY
+	help
+	  This package has been removed as part of the linphone
+	  removal. In addition, newer version of linphone directly
+	  bundle belr making a separate package unnecessary.
+
+config BR2_PACKAGE_BELLE_SIP
+	bool "belle-sip has been removed"
+	select BR2_LEGACY
+	help
+	  This package has been removed as part of the linphone
+	  removal. In addition, newer version of linphone directly
+	  bundle belle-sip making a separate package unnecessary.
+
+config BR2_PACKAGE_LINPHONE
+	bool "linphone has been removed"
+	select BR2_LEGACY
+	help
+	  This package was no longer maintained in Buildroot and was
+	  no longer building. It can be re-added if someone volunteers
+	  to fix the issues, update the package and maintain it.
+
+config BR2_PACKAGE_LIBJWT
+	bool "libjwt has been removed"
+	select BR2_LEGACY
+	help
+	  The only dependee of libjwt, asterisk, is incompatible with
+	  version 3 so the version bundled with asterisk is used and
+	  this package has been removed.
+
+config BR2_PACKAGE_RAMSPEED
+	bool "ramspeed has been removed"
+	select BR2_LEGACY
+	help
+	  The ramspeed package was removed as it is not maintained
+	  anymore and the upstream repo is gone.
+
+config BR2_PACKAGE_LESSTIF
+	bool "lesstif has been removed"
+	select BR2_LEGACY
+	help
+	  lesstif is unmaintained and has been removed
+
+config BR2_KERNEL_HEADERS_6_16
+	bool "kernel headers version 6.16.x are no longer supported"
+	select BR2_LEGACY
+	help
+	  Version 6.16.x of the Linux kernel headers are no longer
+	  maintained upstream and are now removed.
+
+config BR2_PACKAGE_MURATA_CYW_FW_CYW4339_1CK
+	bool "This firmware has been removed"
+	select BR2_LEGACY
+	help
+	  This firmware has been removed from Murata package
+
+config BR2_PACKAGE_MURATA_CYW_FW_CYW4339_ZP
+	bool "BR2_PACKAGE_MURATA_CYW_FW_CYW4339_ZP has been renamed"
+	select BR2_LEGACY
+	select BR2_PACKAGE_MURATA_CYW_FW_CYW4339
+	help
+	  The option has been renamed to
+	  BR2_PACKAGE_MURATA_CYW_FW_CYW4339
+
+config BR2_PACKAGE_LIBBSON
+	bool "libbson has been removed"
+	select BR2_LEGACY
+	help
+	  libbson is officially deprecated upstream and has been removed
+
+config BR2_TARGET_ROOTFS_AXFS
+	bool "AXFS root filesystem has been removed"
+	select BR2_LEGACY
+	help
+	  AXFS root filesystem support has been removed.
+
+config BR2_PACKAGE_LOGSURFER
+	bool "logsurfer has been removed"
+	select BR2_LEGACY
+	help
+	  Logsurfer last updates was on 2011 and fails to build with
+	  GCC14.
+
+config BR2_LINUX_KERNEL_EXT_FBTFT
+	bool "FB TFT drivers are deprecated"
+	select BR2_LEGACY
+	help
+	  FB TFT drivers were only needed for linux kernels until v3.19,
+	  since v4.0 the drivers are included in the staging area.
+
+config BR2_PACKAGE_DMENU_WAYLAND
+	bool "dmenu-wayland has been removed"
+	select BR2_LEGACY
+	help
+	  The package has been abandoned for several years.
+	  The only package that previously relied on dmenu-wayland
+	  was sway, and that now relies on wmenu. Please select
+	  wmenu instead.
+
+config BR2_PACKAGE_SYLPHEED
+	bool "sylpheed has been removed"
+	select BR2_LEGACY
+	help
+	  Due to the removal of libgtk2, the sylpheed package has been
+	  removed.
+
+config BR2_PACKAGE_PINENTRY_GTK2
+	bool "gtk2 backend of pinentry has been removed"
+	select BR2_LEGACY
+	help
+	  Due to the removal of libgtk2, the gtk2 backend of pinentry
+	  has been removed.
+
+config BR2_PACKAGE_OPENCV4_WITH_GTK
+	bool "opencv4 gtk support has been removed"
+	select BR2_LEGACY
+	help
+	  Due to the removal of libgtk2, the gtk support of opencv4
+	  has been removed. gtk3 support is still available.
+
+config BR2_PACKAGE_OPENCV3_WITH_GTK
+	bool "opencv3 gtk support has been removed"
+	select BR2_LEGACY
+	help
+	  Due to the removal of libgtk2, the gtk support of opencv3
+	  has been removed. gtk3 support is still available.
+
+config BR2_PACKAGE_NETSURF_GTK
+	bool "gtk frontend of netsurf has been removed"
+	select BR2_LEGACY
+	help
+	  Due to the removal of libgtk2, the gtk frontend of netsurf
+	  has been removed. The gtk3 frontend can be used instead for
+	  example.
+
+config BR2_PACKAGE_METACITY
+	bool "metacity has been removed"
+	select BR2_LEGACY
+	help
+	  The metacity package has been removed, as libgtk2 has been
+	  removed as well.
+
+config BR2_PACKAGE_LIBSEXY
+	bool "libsexy has been removed"
+	select BR2_LEGACY
+	help
+	  The libsexy package has been removed, as libgtk2 has been
+	  removed as well.
+
+config BR2_PACKAGE_LIBGLADE
+	bool "libglade has been removed"
+	select BR2_LEGACY
+	help
+	  The libglade package has been removed, as libgtk2 has been
+	  removed as well.
+
+config BR2_PACKAGE_LEAFPAD
+	bool "leafpad has been removed"
+	select BR2_LEGACY
+	help
+	  The leafpad package has been removed, as libgtk2 has been
+	  removed as well.
+
+config BR2_PACKAGE_GTKPERF
+	bool "gtkperf has been removed"
+	select BR2_LEGACY
+	help
+	  The gtkperf package has been removed, as libgtk2 has been
+	  removed as well.
+
+config BR2_PACKAGE_GTK2_ENGINES
+	bool "gtk2-engines has been removed"
+	select BR2_LEGACY
+	help
+	  The gtk2-engines package has been removed, as libgtk2 has
+	  been removed as well.
+
+config BR2_PACKAGE_GKRELLM_CLIENT
+	bool "gkrellm client has been removed"
+	select BR2_LEGACY
+	help
+	  The gkrellm client option has been removed, as it required
+	  libgtk2, which was removed from Buildroot.
+
+config BR2_PACKAGE_CWIID_WMGUI
+	bool "cwiid wmgui has been removed"
+	select BR2_LEGACY
+	help
+	  The wmgui part of cwiid required libgtk2, which has been
+	  removed from Buildroot.
+
+config BR2_LINUX_KERNEL_EXT_AUFS
+	bool "Aufs Filesystem Module patch has been removed"
+	select BR2_LEGACY
+	help
+	  aufs kernel module patch is unmaintained and has been
+	  removed.
+
+config BR2_PACKAGE_AUFS_UTIL
+	bool "aufs-util has been removed"
+	select BR2_LEGACY
+	help
+	  aufs-util package is unmaintained and has been removed.
+
+config BR2_TOOLCHAIN_EXTERNAL_LINARO_ARMEB
+	bool "Linaro armeb 2018.05 external toolchain is deprecated"
+	select BR2_LEGACY
+	help
+	  Linaro armeb 2018.05 is no longer maintained and has been
+	  removed from Buildroot.
+
+config BR2_TOOLCHAIN_EXTERNAL_LINARO_ARM
+	bool "Linaro ARM 2018.05 external toolchain is deprecated"
+	select BR2_LEGACY
+	help
+	  Linaro ARM 2018.05 is no longer maintained and has been
+	  removed from Buildroot.
+
+config BR2_TOOLCHAIN_EXTERNAL_LINARO_AARCH64_BE
+	bool "Linaro AArch64 BE 2018.05 external toolchain is deprecated"
+	select BR2_LEGACY
+	help
+	  Linaro AArch64 2018.05 BE is no longer maintained and has been
+	  removed from Buildroot.
+
+config BR2_TOOLCHAIN_EXTERNAL_LINARO_AARCH64
+	bool "Linaro AArch64 2018.05 external toolchain is deprecated"
+	select BR2_LEGACY
+	help
+	  Linaro AArch64 2018.05 is no longer maintained and has been
+	  removed from Buildroot.
+
+config BR2_TOOLCHAIN_EXTERNAL_CODESOURCERY_MIPS
+	bool "Sourcery CodeBench MIPS external toolchain is deprecated"
+	select BR2_LEGACY
+	help
+	  Sourcery CodeBench MIPS 2016.05 is no longer maintained
+	  and has been removed from Buildroot.
+
+config BR2_LINUX_KERNEL_EXT_EV3DEV_LINUX_DRIVERS
+	bool "ev3dev Linux drivers have been removed"
+	select BR2_LEGACY
+	help
+	  Linux drivers for LEGO MINDSTORMS EV3 from the ev3dev project
+	  are targeting an outdated kernel which is no longer supported.
+
 comment "Legacy options removed in 2025.08"
 
 config BR2_PACKAGE_NETSTAT_NAT
