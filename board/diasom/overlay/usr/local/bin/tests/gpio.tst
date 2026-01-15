@@ -13,7 +13,7 @@ declare -A GPIO_DT_MAP=(
 
 check_dependencies_gpio() {
 	local deps=("${DEV_DEPS[@]}" "${I2C_DEPS[@]}")
-	deps+=(@dev_unbind_driver @i2c_device_test)
+	deps+=(@dev_unbind_driver @i2c_device_test @ver_get_ds_rk3568_som_evb_version)
 	check_dependencies "GPIO" "${deps[@]}"
 }
 
@@ -121,6 +121,7 @@ test_gpio() {
 test_gpio_pair() {
 	local label1="$1"
 	local label2="$3"
+	local oneway="$5"
 
 	local base1 base2
 	base1=$(test_gpio_get_base "$label1") || { echo "$label1 not found"; return 1; }
@@ -137,10 +138,12 @@ test_gpio_pair() {
 		return 1
 	}
 
-	test_gpio "$nr2" "$nr1" || {
-		echo "$label2:$idx2 -> $label1:$idx1 error"
-		return 1
-	}
+	if [ -z "$oneway" ] || [ "$oneway" = "0" ]; then
+		test_gpio "$nr2" "$nr1" || {
+			echo "$label2:$idx2 -> $label1:$idx1 error"
+			return 1
+		}
+	fi
 
 	echo "OK"
 
@@ -158,10 +161,14 @@ register_gpio_pair_tests() {
 
 	local test_spec
 	for test_spec in "${gpio_tests[@]}"; do
-		read -r label1 idx1 label2 idx2 test_name <<< "$test_spec"
+		read -r label1 idx1 label2 idx2 test_name oneway <<< "$test_spec"
 
 		local func_name="test_gpio_pair_${test_name//-/_}"
-		eval "$func_name() { test_gpio_pair \"$label1\" \"$idx1\" \"$label2\" \"$idx2\"; }"
+		if [ -n "$oneway" ]; then
+			eval "$func_name() { test_gpio_pair \"$label1\" \"$idx1\" \"$label2\" \"$idx2\" \"$oneway\"; }"
+		else
+			eval "$func_name() { test_gpio_pair \"$label1\" \"$idx1\" \"$label2\" \"$idx2\"; }"
+		fi
 		register_test "$func_name" "$test_name"
 	done
 }
@@ -178,12 +185,22 @@ ds_imx8m_som_evb_test_gpio() {
 }
 
 ds_rk3568_som_evb_test_gpio() {
-	local gpio_tests=(
-		"gpio1	4	gpio1	6	GPIO0-GPIO1"
-		"gpio1	7	gpio1	8	GPIO2-GPIO3"
-	)
+	ver_get_ds_rk3568_som_evb_version &>/dev/null
+	if [[ "$EVB_VERSION" -ge 0x121 ]]; then
+		local gpio_tests=(
+			"gpio1	4	gpio1	6	GPIO0-GPIO1	1"
+			"gpio1	7	gpio1	8	GPIO2-GPIO3	1"
+		)
 
-	register_gpio_pair_tests "${gpio_tests[@]}"
+		register_gpio_pair_tests "${gpio_tests[@]}"
+	else
+		local gpio_tests=(
+			"gpio1	4	gpio1	6	GPIO0-GPIO1"
+			"gpio1	7	gpio1	8	GPIO2-GPIO3"
+		)
+
+		register_gpio_pair_tests "${gpio_tests[@]}"
+	fi
 }
 
 ds_rk3568_som_smarc_evb_test_gpio() {
