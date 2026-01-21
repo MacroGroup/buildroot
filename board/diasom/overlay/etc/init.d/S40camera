@@ -8,11 +8,11 @@ init_camera_imx8mm()
 	printf "Camera status: "
 
 	if [ -d /sys/bus/i2c/drivers/ov5640/2-003c ]; then
-		CAMERA=OV5640
+		CAMERA="OV5640"
 		FMT="UYVY8_1X16/1920x1080"
 		CAMDEV="'ov5640 2-003c':0"
 	elif [ -d /sys/bus/i2c/drivers/ap1302/2-003d ]; then
-		CAMERA=AR0234
+		CAMERA="AR0234"
 		FMT="UYVY8_1X16/1920x1080"
 		CAMDEV="'ap1302.2-003d':2"
 	fi
@@ -38,17 +38,19 @@ init_camera_rk3568()
 	printf "Camera status: "
 
 	if [ -d /sys/bus/i2c/drivers/xc7160/4-001b ]; then
-		CAMERA=XC7160
+		CAMERA="XC7160"
+	elif [ -d /sys/bus/i2c/drivers/imx290/4-001a ]; then
+		CAMERA="IMX327"
 	elif [ -d /sys/bus/i2c/drivers/imx335/4-001a ]; then
-		CAMERA=IMX335
+		CAMERA="IMX335"
 	elif [ -d /sys/bus/i2c/drivers/imx415/4-001a ]; then
-		CAMERA=IMX415
+		CAMERA="IMX415"
 	elif [ -d /sys/bus/i2c/drivers/imx335/7-001a ]; then
-		CAMERA=IMX335
+		CAMERA="IMX335"
 	elif [ -d /sys/bus/i2c/drivers/imx415/7-001a ]; then
-		CAMERA=IMX415
+		CAMERA="IMX415"
 	elif [ -d /sys/bus/i2c/drivers/ar0233/10-0010 ]; then
-		CAMERA=AR0233
+		CAMERA="AR0233"
 	fi
 
 	[ -n "$CAMERA" ] || { echo "Not found"; return; }
