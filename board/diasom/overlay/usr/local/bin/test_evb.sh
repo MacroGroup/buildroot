@@ -20,6 +20,7 @@ else
 fi
 
 TEST_FILTER=""
+QUIET_MODE=0
 SOURCE=$(readlink -f -- "$0")
 DIR=$(dirname -- "$SOURCE")
 SCRIPT_DIR=$(cd -- "$DIR" && pwd)
@@ -32,6 +33,16 @@ declare -a TEST_QUEUE
 declare -a TEST_NAMES
 declare -a TEST_LEVELS
 MAX_NAME_LEN=38
+
+show_help() {
+	echo "Usage: $0 [OPTIONS] [test_filter]"
+	echo
+	echo "Options:"
+	echo "  -h, --help    Show this help message"
+	echo "  -q, --quiet   Quiet mode (suppress some information messages)"
+	echo
+	echo "test_filter: Optional filter to run specific tests (case-insensitive)"
+}
 
 check_dependencies() {
 	local module=$1
@@ -199,39 +210,64 @@ register_self_tests() {
 
 check_dependencies "CORE" || exit 1
 
-if [ $# -gt 0 ]; then
-	TEST_FILTER="$1"
-	TEST_FILTER=$(echo "$TEST_FILTER" | tr '[:upper:]' '[:lower:]')
-fi
-
-if [ $# -gt 1 ]; then
-	echo "Usage: $0 [test_filter]" >&2
-	exit 1
-fi
+while [ $# -gt 0 ]; do
+	case "$1" in
+		-h|--help)
+			show_help
+			exit 0
+			;;
+		-q|--quiet)
+			QUIET_MODE=1
+			shift
+			;;
+		-*)
+			echo "Unknown option: $1" >&2
+			show_help
+			exit 1
+			;;
+		*)
+			if [ -n "$TEST_FILTER" ]; then
+				echo "Error: Multiple test filters specified" >&2
+				exit 1
+			fi
+			TEST_FILTER="$1"
+			TEST_FILTER=$(echo "$TEST_FILTER" | tr '[:upper:]' '[:lower:]')
+			shift
+			;;
+	esac
+done
 
 shopt -s nullglob
 
 if [ ! -d "${TEST_DIR:-}" ]; then
 	echo -e "${COLOR_FAIL}Error: Test directory $TEST_DIR not found${COLOR_RESET}" >&2
 else
-	echo -e "${COLOR_HEADER}Loading functions from $TEST_DIR...${COLOR_RESET}"
+	if [ "$QUIET_MODE" -eq 0 ]; then
+		echo -e "${COLOR_HEADER}Loading functions from $TEST_DIR...${COLOR_RESET}"
+	fi
 
 	func_files=("$TEST_DIR"/*.inc)
 	if [ ${#func_files[@]} -eq 0 ] || [ ! -f "${func_files[0]}" ]; then
-		echo -e "${COLOR_DEBUG}  No functions defined${COLOR_RESET}"
+		if [ "$QUIET_MODE" -eq 0 ]; then
+			echo -e "${COLOR_DEBUG}  No functions defined${COLOR_RESET}"
+		fi
 	else
 		for func_file in "$TEST_DIR"/*.inc; do
 			[ -f "$func_file" ] || continue
 
 			if . "$func_file"; then
-				echo -e "${COLOR_DEBUG}  ✓ Loaded: $(basename "$func_file")${COLOR_RESET}"
+				if [ "$QUIET_MODE" -eq 0 ]; then
+					echo -e "${COLOR_DEBUG}  ✓ Loaded: $(basename "$func_file")${COLOR_RESET}"
+				fi
 			else
 				echo -e "${COLOR_FAIL}  ✗ Error loading: $(basename "$func_file")${COLOR_RESET}" >&2
 			fi
 		done
 	fi
 
-	echo -e "${COLOR_HEADER}Loading test modules from $TEST_DIR...${COLOR_RESET}"
+	if [ "$QUIET_MODE" -eq 0 ]; then
+		echo -e "${COLOR_HEADER}Loading test modules from $TEST_DIR...${COLOR_RESET}"
+	fi
 
 	for test_file in "$TEST_DIR"/*.tst; do
 		[ -f "$test_file" ] || continue
@@ -240,12 +276,16 @@ else
 		file_basename_lc=$(echo "$file_basename" | tr '[:upper:]' '[:lower:]')
 
 		if [ -n "$TEST_FILTER" ] && [[ ! "$file_basename_lc" =~ $TEST_FILTER ]]; then
-			echo -e "${COLOR_DEBUG}  ↺ Skipped: $(basename "$test_file") (filter: $TEST_FILTER)${COLOR_RESET}" >&2
+			if [ "$QUIET_MODE" -eq 0 ]; then
+				echo -e "${COLOR_DEBUG}  ↺ Skipped: $(basename "$test_file") (filter: $TEST_FILTER)${COLOR_RESET}" >&2
+			fi
 			continue
 		fi
 
 		if . "$test_file"; then
-			echo -e "${COLOR_DEBUG}  ✓ Loaded: $(basename "$test_file")${COLOR_RESET}"
+			if [ "$QUIET_MODE" -eq 0 ]; then
+				echo -e "${COLOR_DEBUG}  ✓ Loaded: $(basename "$test_file")${COLOR_RESET}"
+			fi
 		else
 			echo -e "${COLOR_FAIL}  ✗ Error loading: $(basename "$test_file")${COLOR_RESET}" >&2
 		fi
@@ -254,6 +294,7 @@ fi
 
 if [ ${#TEST_QUEUE[@]} -eq 0 ] && [ ${#SYS_QUEUE[@]} -eq 0 ]; then
 	echo -e "${COLOR_DEBUG}No tests registered, running self-tests${COLOR_RESET}"
+
 	register_self_tests
 fi
 
