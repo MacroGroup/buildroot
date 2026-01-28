@@ -7,7 +7,7 @@ declare -A ETH_DT_MAP=(
 	["diasom,ds-rk3568-som"]=""
 	["diasom,ds-rk3568-som-evb"]="ds_rk3568_som_evb_test_eth"
 	["diasom,ds-rk3568-som-smarc-evb"]="ds_rk3568_som_smarc_evb_test_eth"
-	["diasom,ds-rk3568-som-sodimm"]="ds_rk3568_som_sodimm_test_eth"
+	["diasom,ds-rk3568-som-sodimm-evb"]="ds_rk3568_som_sodimm_evb_test_eth"
 	["diasom,ds-rk3588-btb"]=""
 	["diasom,ds-rk3588-btb-evb"]="ds_rk3588_btb_evb_test_eth"
 )
@@ -263,7 +263,7 @@ ds_rk3568_som_smarc_evb_test_eth()
 	register_test "test_eth_end1_with_loop" "Ethernet 1 (GBE1)"
 }
 
-ds_rk3568_som_sodimm_test_eth()
+ds_rk3568_som_sodimm_evb_test_eth()
 {
 	register_test "test_eth_end0" "Ethernet 0 (GMAC0)"
 	register_test "test_eth_end1_with_loop" "Ethernet 1 (GMAC1)"
