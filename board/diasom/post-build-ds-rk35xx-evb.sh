@@ -26,7 +26,7 @@ install_scripts() {
 	fi
 }
 
-install_scripts "usb-upload-boot-ds-rk35*-evb.sh"
-install_scripts "usb-upload-emmc-ds-rk35*-evb.sh"
+install_scripts "usb-upload-boot-ds-rk35*-aptc.sh"
+install_scripts "usb-upload-emmc-ds-rk35*-aptc.sh"
 
 exit 0
