@@ -7,6 +7,7 @@ declare -A PCI_DT_MAP=(
 	["diasom,ds-rk3568-som"]=""
 	["diasom,ds-rk3568-som-evb"]="ds_rk3568_som_evb_test_pci"
 	["diasom,ds-rk3568-som-smarc-evb"]="ds_rk3568_som_smarc_evb_test_pci"
+	["diasom,ds-rk3568-som-sodimm-aptc"]="ds_rk3568_som_sodimm_aptc_test_pci"
 	["diasom,ds-rk3588-btb"]=""
 	["diasom,ds-rk3588-btb-evb"]="ds_rk3588_btb_evb_test_pci"
 )
@@ -384,6 +385,20 @@ ds_rk3568_som_evb_test_pci() {
 	)
 	local names=(
 		"2x1"
+		"3x2"
+	)
+
+	local i
+	for ((i=0; i<${#addrs[@]}; i++)); do
+		test_pci_register_tests "${names[i]}" "${addrs[i]}"
+	done
+}
+
+ds_rk3568_som_sodimm_aptc_test_pci() {
+	local addrs=(
+		"fe280000"
+	)
+	local names=(
 		"3x2"
 	)
 
