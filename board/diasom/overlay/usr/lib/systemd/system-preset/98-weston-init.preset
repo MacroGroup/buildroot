@@ -1,2 +1,0 @@
-enable weston.service
-enable weston.socket
