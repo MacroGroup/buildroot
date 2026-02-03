@@ -8,6 +8,7 @@ declare -A USB_DT_MAP=(
 	["diasom,ds-rk3568-som-evb"]="ds_rk3568_som_evb_test_usb"
 	["diasom,ds-rk3568-som-smarc"]="ds_rk3568_som_smarc_test_usb"
 	["diasom,ds-rk3568-som-sodimm"]="ds_rk3568_som_sodimm_test_usb"
+	["diasom,ds-rk3568-som-sodimm-aptc"]="ds_rk3568_som_sodimm_aptc_test_usb"
 	["diasom,ds-rk3588-btb"]=""
 	["diasom,ds-rk3588-btb-evb"]="ds_rk3588_btb_evb_test_usb"
 )
@@ -749,6 +750,14 @@ ds_rk3568_som_sodimm_test_usb() {
 	local expected_devices=(
 		"05e3:0610:(USB 2.0 Hub)"
 		"05e3:0620:(USB 3.0 Hub)"
+	)
+
+	test_usb_register_expected_devices_tests expected_devices
+}
+
+ds_rk3568_som_sodimm_aptc_test_usb() {
+	local expected_devices=(
+		"0424:2514:(USB2514 Hub)"
 	)
 
 	test_usb_register_expected_devices_tests expected_devices
