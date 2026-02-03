@@ -494,17 +494,16 @@ test_usb_check_expected_device() {
 test_usb_register_expected_devices_tests() {
 	local -n devices_array="$1"
 
-	local index=0
 	for device_spec in "${devices_array[@]}"; do
 		IFS=':' read -r vid pid description <<< "$device_spec"
 
-		local test_func="test_expected_device_$index"
+		local safe_vid="${vid//[^[:alnum:]]/_}"
+		local safe_pid="${pid//[^[:alnum:]]/_}"
+		local test_func="test_expected_device_${safe_vid}_${safe_pid}"
 		eval "$test_func() {
 			test_usb_check_expected_device \"$vid\" \"$pid\" \"$description\"
 		}"
 		register_test "$test_func" "Checking USB Device $description"
-
-		((index++))
 	done
 }
 
