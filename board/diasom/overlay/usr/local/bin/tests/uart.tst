@@ -12,7 +12,7 @@ declare -A UART_DT_MAP=(
 )
 
 check_dependencies_uart() {
-	local deps=(lsof socat stty)
+	local deps=(lsof socat)
 	check_dependencies "UART" "${deps[@]}"
 }
 
