@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2181,SC2309
 # SPDX-License-Identifier: GPL-2.0+
 # SPDX-FileCopyrightText: Alexander Shiyan <shc_work@mail.ru>
 
@@ -12,108 +13,38 @@ declare -A GPIO_DT_MAP=(
 )
 
 check_dependencies_gpio() {
-	local deps=("${DEV_DEPS[@]}" "${I2C_DEPS[@]}")
-	deps+=(@dev_unbind_driver @i2c_device_test @ver_get_ds_rk3568_som_evb_version)
+	local deps=("${DEV_DEPS[@]}" "${GPIO_DEPS[@]}" "${I2C_DEPS[@]}")
+	deps+=(@dev_unbind_driver)
+	deps+=(@gpio_get_base @gpio_setup_direction @gpio_setup @gpio_getval @gpio_setval)
+	deps+=(@i2c_device_test @ver_get_ds_rk3568_som_evb_version)
 	check_dependencies "GPIO" "${deps[@]}"
-}
-
-test_gpio_get_base() {
-	local expected="$1"
-
-	local chip
-	for chip in /sys/class/gpio/gpiochip*; do
-		[ -e "$chip" ] || continue
-
-		local label
-		label=$(cat "$chip/label")
-		if [ "$label" != "$expected" ]; then
-			continue
-		fi
-
-		local base
-		base=$(cat "$chip/base")
-
-		echo -n "$base"
-
-		return 0
-	done
-
-	return 1
-}
-
-test_gpio_setup_direction() {
-	local gpio="$1"
-	local dir="$2"
-
-	local gpio_path="/sys/class/gpio/gpio$gpio"
-	if [ -d "$gpio_path" ]; then
-		echo -n "$dir" > "$gpio_path/direction"
-		echo -n "0" > "$gpio_path/active_low"
- 	fi
-}
-
-test_gpio_setup() {
-	local gpio="$1"
-
-	echo -n "$gpio" > /sys/class/gpio/export 2>/dev/null
-	test_gpio_setup_direction "$gpio" "in"
-}
-
-test_gpio_getval()
-{
-	local gpio="$1"
-	local value="$2"
-
-	local val
-	val=$(cat /sys/class/gpio/gpio"$gpio"/value)
-	if [ "$val" -ne "$value" ]; then
-		return 1
-	fi
-
-	return 0
-}
-
-test_gpio_setval()
-{
-	local gpio="$1"
-	local value="$2"
-
-	echo -n "$value" > /sys/class/gpio/gpio"$gpio"/value
-
-	local val
-	val=$(cat /sys/class/gpio/gpio"$gpio"/value)
-	if [ "$val" -ne "$value" ]; then
-		return 1
-	fi
-
-	return 0
 }
 
 test_gpio() {
 	local gpio_src="$1"
 	local gpio_dst="$2"
 
-	test_gpio_setup "$gpio_src"
+	gpio_setup "$gpio_src"
 	[ -d /sys/class/gpio/gpio"$gpio_src" ] || return 1
 
-	test_gpio_setup "$gpio_dst"
+	gpio_setup "$gpio_dst"
 	[ -d /sys/class/gpio/gpio"$gpio_dst" ] || return 1
 
-	test_gpio_setup_direction "$gpio_src" "out"
+	gpio_setup_direction "$gpio_src" "out"
 
 	local value
 	for value in 0 1 ; do
-		test_gpio_setval "$gpio_src" "$value" || {
-			test_gpio_setup_direction "$gpio_src" "in"
+		gpio_setval "$gpio_src" "$value" || {
+			gpio_setup_direction "$gpio_src" "in"
 			return 1
 		}
-		test_gpio_getval "$gpio_dst" "$value" || {
-			test_gpio_setup_direction "$gpio_src" "in"
+		gpio_getval "$gpio_dst" "$value" || {
+			gpio_setup_direction "$gpio_src" "in"
 			return 1
 		}
 	done
 
-	test_gpio_setup_direction "$gpio_src" "in"
+	gpio_setup_direction "$gpio_src" "in"
 
 	return 0
 }
@@ -124,8 +55,8 @@ test_gpio_pair() {
 	local oneway="$5"
 
 	local base1 base2
-	base1=$(test_gpio_get_base "$label1") || { echo "$label1 not found"; return 1; }
-	base2=$(test_gpio_get_base "$label2") || { echo "$label2 not found"; return 1; }
+	base1=$(gpio_get_base "$label1") || { echo "$label1 not found"; return 1; }
+	base2=$(gpio_get_base "$label2") || { echo "$label2 not found"; return 1; }
 
 	local idx1="$2"
 	local idx2="$4"
