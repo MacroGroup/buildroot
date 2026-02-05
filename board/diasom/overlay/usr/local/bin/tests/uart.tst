@@ -183,7 +183,7 @@ generate_uart_cross_test() {
 	local test_name="$6"
 
 	local safe_test_name="${test_name//[ ><-]/_}"
-	local func_name="test_uart_cross_${safe_test_name}"
+	local func_name="test_uart_cross_${port1}_${port2}_${safe_test_name}"
 	eval "${func_name}() { test_uart_cross_oneway \"/dev/${port1}\" \"/dev/${port2}\" \"$gpio1\" \"$gpio2\" \"$baud_rate\"; }"
 	register_test "${func_name}" "${test_name}"
 }
