@@ -234,7 +234,12 @@ ds_rk3568_som_smarc_evb_test_uart() {
 }
 
 ds_rk3568_som_sodimm_aptc_test_uart() {
-;
+	generate_uart_cross_pair \
+		"ttyS4" "ttyS3" \
+		"gpio2" "gpio3" \
+		"26" "15" \
+		"UART0-UART1" \
+		"9600"
 }
 
 if ! declare -F check_dependencies &>/dev/null; then
