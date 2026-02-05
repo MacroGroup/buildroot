@@ -1,9 +1,7 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
-# Exit immediately on any error
 set -e
 
-# Verify required environment variables are set
 for var in BINARIES_DIR TARGET_DIR HOST_DIR; do
 	eval "value=\"\${$var}\""
 	if [ -z "$value" ]; then
@@ -12,7 +10,6 @@ for var in BINARIES_DIR TARGET_DIR HOST_DIR; do
 	fi
 done
 
-# Install compiled device tree overlays
 if [ -d "$BINARIES_DIR" ]; then
 	for overlay in "$BINARIES_DIR"/*.dtbo; do
 		[ -f "$overlay" ] || continue
@@ -23,7 +20,6 @@ else
 	echo "Warning: BINARIES_DIR '$BINARIES_DIR' does not exist" >&2
 fi
 
-# Install fastboot link
 if [ -f "${HOST_DIR}/bin/fastboot" ]; then
 	mkdir -p "$BINARIES_DIR"
 	ln -sf "${HOST_DIR}/bin/fastboot" "${BINARIES_DIR}/fastboot"
