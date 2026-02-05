@@ -16,7 +16,7 @@ check_dependencies_uart() {
 	check_dependencies "UART" "${deps[@]}"
 }
 
-test_uart() {
+test_uart_self() {
 	local device="$1"
 	local baud_rate="$2"
 
@@ -82,27 +82,27 @@ test_uart() {
 	return 1
 }
 
-generate_uart_test() {
+generate_uart_test_self() {
 	local port_suff=$1
 	local port_name=$2
 	local baud_rate="${3:-115200}"
 
-	local func_name="test_uart${port_suff}"
-	eval "${func_name}() { test_uart \"/dev/tty${port_suff}\" \"${baud_rate}\"; }"
+	local func_name="test_uart_self${port_suff}"
+	eval "${func_name}() { test_uart_self \"/dev/tty${port_suff}\" \"${baud_rate}\"; }"
 	register_test "${func_name}" "${port_name}"
 }
 
 ds_rk3568_som_evb_test_uart() {
-	generate_uart_test "S3" "UART3"
-	generate_uart_test "S7" "UART7"
-	generate_uart_test "S8" "UART8"
-	generate_uart_test "S9" "UART9"
+	generate_uart_test_self "S3" "UART3"
+	generate_uart_test_self "S7" "UART7"
+	generate_uart_test_self "S8" "UART8"
+	generate_uart_test_self "S9" "UART9"
 }
 
 ds_rk3568_som_smarc_evb_test_uart() {
-	generate_uart_test "S4" "UART4 (SER0)"
-	generate_uart_test "S8" "UART8 (SER2)"
-	generate_uart_test "S5" "UART5 (SER3)"
+	generate_uart_test_self "S4" "UART4 (SER0)"
+	generate_uart_test_self "S8" "UART8 (SER2)"
+	generate_uart_test_self "S5" "UART5 (SER3)"
 }
 
 if ! declare -F check_dependencies &>/dev/null; then
