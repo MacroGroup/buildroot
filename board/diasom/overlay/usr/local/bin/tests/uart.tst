@@ -100,7 +100,6 @@ test_uart_cross_oneway() {
 	local tx_gpio="$3"
 	local rx_gpio="$4"
 	local baud_rate="${5:-115200}"
-	local test_desc="$6"
 
 	if [ ! -c "$tx_port" ] || [ ! -c "$rx_port" ]; then
 		echo "Missing"
@@ -186,7 +185,7 @@ generate_uart_cross_test() {
 
 	local safe_test_name="${test_name//[ ><-]/_}"
 	local func_name="test_uart_cross_${safe_test_name}"
-	eval "${func_name}() { test_uart_cross_oneway \"/dev/${port1}\" \"/dev/${port2}\" \"$gpio1\" \"$gpio2\" \"$baud_rate\" \"$test_name\"; }"
+	eval "${func_name}() { test_uart_cross_oneway \"/dev/${port1}\" \"/dev/${port2}\" \"$gpio1\" \"$gpio2\" \"$baud_rate\"; }"
 	register_test "${func_name}" "${test_name}"
 }
 
