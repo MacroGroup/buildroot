@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC1091
+# SPDX-License-Identifier: GPL-2.0+
+# SPDX-FileCopyrightText: Alexander Shiyan <shc_work@mail.ru>
 
 set -e
 
@@ -8,13 +11,10 @@ if [ ! -d "${BOARD_DIR}" ]; then
 	exit 1
 fi
 
-for var in BASE_DIR; do
-	eval "value=\"\${$var}\""
-	if [ -z "$value" ]; then
-		echo "Error: $var is not set" >&2
-		exit 1
-	fi
-done
+if [ -z "${BASE_DIR}" ]; then
+	echo "Error: BASE_DIR is not set" >&2
+	exit 1
+fi
 
 BOARD_NAME=""
 
