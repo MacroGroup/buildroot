@@ -4,29 +4,29 @@ set -e
 
 BOARD_DIR="$(dirname "$0")"
 if [ ! -d "${BOARD_DIR}" ]; then
-	echo "Error: BOARD_DIR '${BOARD_DIR}' does not exist" >&2
+	echo "Error: BOARD_DIR ${BOARD_DIR} does not exist" >&2
 	exit 1
 fi
+BOARD_NAME="${2:-ds-imx8m}"
 
 "${BOARD_DIR}/post-build-common.sh"
 
-install_renamed_script() {
-	local src="$1"
-	local dest_name="$2"
+install_scripts() {
+	local pattern="$1"
+	local count=0
 
-	if [ ! -f "${src}" ]; then
-		echo "Error: Source script ${src} not found" >&2
-		exit 1
-	fi
+	for script in "${BOARD_DIR}"/${pattern}; do
+		if [ -f "${script}" ]; then
+			install -v -m 0755 "${script}" "${BINARIES_DIR}/$(basename "${script}")"
+			((count++))
+		fi
+	done
 
-	install -v -m 0755 "${src}" "${BINARIES_DIR}/${dest_name}"
+	return ${count}
 }
 
-install_renamed_script \
-	"${BOARD_DIR}/usb-upload-boot-ds-imx8m-evb.sh" \
-	"usb-upload-boot.sh"
-install_renamed_script \
-	"${BOARD_DIR}/usb-upload-emmc-ds-imx8m-evb.sh" \
-	"usb-upload-emmc.sh"
+if ! install_scripts "usb-upload-*-${BOARD_NAME}*.sh"; then
+	echo "Warning: No scripts found for exact pattern 'usb-upload-*-${BOARD_NAME}*.sh'" >&2
+fi
 
 exit 0
