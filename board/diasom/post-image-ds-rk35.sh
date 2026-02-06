@@ -7,16 +7,16 @@ if [ ! -d "${BOARD_DIR}" ]; then
 	echo "Error: BOARD_DIR ${BOARD_DIR} does not exist" >&2
 	exit 1
 fi
+BOARD_NAME="${2:-ds-rk35}"
 
 genimage_type() {
-	local board_name="ds-rk35xx-evb"
 	local cfg_name=""
 
 	if [ $# -gt 0 ] && [ -n "$1" ]; then
-		board_name="$1"
+		BOARD_NAME="$1"
 	fi
 
-	cfg_name="genimage-${board_name}.cfg"
+	cfg_name="genimage-${BOARD_NAME}.cfg"
 
 	if [ -f "${BOARD_DIR}/${cfg_name}" ]; then
 		echo "${BOARD_DIR}/${cfg_name}"
