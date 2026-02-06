@@ -35,24 +35,6 @@ run_post_image() {
 		return 1
 	fi
 
-	local genimage_cfg
-	genimage_cfg="$(genimage_type "${BOARD_NAME}")"
-
-	echo "Using genimage config: ${genimage_cfg}"
-	support/scripts/genimage.sh -c "${genimage_cfg}"
-}
-
-run_post_image() {
-	if [ -z "${BOARD_DIR}" ]; then
-		echo "Error: BOARD_DIR is not set" >&2
-		return 1
-	fi
-
-	if [ -z "${BOARD_NAME}" ]; then
-		echo "Error: BOARD_NAME is not set" >&2
-		return 1
-	fi
-
 	local cfg_pattern="genimage-${BOARD_NAME}.cfg"
 	local configs=()
 
