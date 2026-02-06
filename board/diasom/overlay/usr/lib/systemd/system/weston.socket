@@ -1,6 +1,7 @@
 [Unit]
 Description=Weston socket
 RequiresMountsFor=/run
+ConditionPathExistsGlob=/dev/dri/card*
 
 [Socket]
 ListenStream=/run/weston/wayland-1
