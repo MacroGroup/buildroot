@@ -8,21 +8,33 @@ if [ ! -d "${BOARD_DIR}" ]; then
 	exit 1
 fi
 
-if [ -z "${2}" ]; then
-	echo "Error: BOARD_NAME parameter is required (passed via BR2_ROOTFS_POST_BUILD_SCRIPT_ARGS)" >&2
-	exit 1
-fi
-
-BOARD_NAME="${2}"
-echo "Using BOARD_NAME: ${BOARD_NAME}"
-
-for var in BINARIES_DIR TARGET_DIR HOST_DIR; do
+for var in BASE_DIR BINARIES_DIR HOST_DIR TARGET_DIR; do
 	eval "value=\"\${$var}\""
 	if [ -z "$value" ]; then
 		echo "Error: $var is not set" >&2
 		exit 1
 	fi
 done
+
+BOARD_NAME=""
+
+if [ -f "${BASE_DIR}/board.cfg" ]; then
+	if source "${BASE_DIR}/board.cfg" 2>/dev/null; then
+		if [ -n "${BOARD_NAME}" ]; then
+			echo "Using BOARD_NAME from board.cfg: ${BOARD_NAME}"
+		fi
+	fi
+fi
+
+if [ -z "${BOARD_NAME}" ]; then
+	if [ -n "${2}" ]; then
+		BOARD_NAME="${2}"
+		echo "Using BOARD_NAME from BR2_ROOTFS_POST_SCRIPT_ARGS: ${BOARD_NAME}"
+	else
+		echo "Error: BOARD_NAME is not set (neither in board.cfg nor in BR2_ROOTFS_POST_SCRIPT_ARGS)" >&2
+		exit 1
+	fi
+fi
 
 for overlay in "$BINARIES_DIR"/*.dtbo; do
 	[ -f "$overlay" ] || continue
