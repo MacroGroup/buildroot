@@ -41,3 +41,37 @@ run_post_image() {
 	echo "Using genimage config: ${genimage_cfg}"
 	support/scripts/genimage.sh -c "${genimage_cfg}"
 }
+
+run_post_image() {
+	if [ -z "${BOARD_DIR}" ]; then
+		echo "Error: BOARD_DIR is not set" >&2
+		return 1
+	fi
+
+	if [ -z "${BOARD_NAME}" ]; then
+		echo "Error: BOARD_NAME is not set" >&2
+		return 1
+	fi
+
+	local cfg_pattern="genimage-${BOARD_NAME}.cfg"
+	local configs=()
+
+	shopt -s nullglob
+	for cfg in "${BOARD_DIR}"/${cfg_pattern}; do
+		if [ -f "$cfg" ]; then
+			configs+=("$cfg")
+		fi
+	done
+	shopt -u nullglob
+
+	if [ ${#configs[@]} -eq 0 ]; then
+		echo "Error: No genimage config files found for pattern '${cfg_pattern}'" >&2
+		return 1
+	fi
+
+	for cfg in "${configs[@]}"; do
+		echo ""
+		echo "Using genimage config: $(basename "$cfg")"
+		support/scripts/genimage.sh -c "${cfg}"
+	done
+}
