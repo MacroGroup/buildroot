@@ -27,6 +27,8 @@ Before=graphical.target
 # for now.
 #ConditionPathExists=/dev/tty0
 
+ConditionPathExistsGlob=/dev/dri/card*
+
 [Service]
 # Requires systemd-notify.so Weston plugin.
 Type=notify
