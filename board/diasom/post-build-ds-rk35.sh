@@ -9,21 +9,9 @@ if [ ! -d "${BOARD_DIR}" ]; then
 fi
 BOARD_NAME="${2:-ds-rk35}"
 
-"${BOARD_DIR}/post-build-common.sh"
+source "${BOARD_DIR}/post-build-common.sh"
 
-install_scripts() {
-	local pattern="$1"
-	local count=0
-
-	for script in "${BOARD_DIR}"/${pattern}; do
-		if [ -f "${script}" ]; then
-			install -v -m 0755 "${script}" "${BINARIES_DIR}/$(basename "${script}")"
-			((count++))
-		fi
-	done
-
-	return ${count}
-}
+run_common_tasks
 
 if ! install_scripts "usb-upload-*-${BOARD_NAME}*.sh"; then
 	echo "Warning: No scripts found for exact pattern 'usb-upload-*-${BOARD_NAME}*.sh'" >&2
