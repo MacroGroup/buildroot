@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC1091
+# SPDX-License-Identifier: GPL-2.0+
+# SPDX-FileCopyrightText: Alexander Shiyan <shc_work@mail.ru>
 
 set -e
 
