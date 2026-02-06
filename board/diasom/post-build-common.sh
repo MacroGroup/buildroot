@@ -21,12 +21,12 @@ install_scripts() {
 	local pattern="$1"
 	local found=0
 
+	shopt -s nullglob
 	for script in "${BOARD_DIR}"/${pattern}; do
-		if [ -f "${script}" ]; then
-			install -v -m 0755 "${script}" "${BINARIES_DIR}/$(basename "${script}")"
-			found=1
-		fi
+		install -v -m 0755 "${script}" "${BINARIES_DIR}/$(basename "${script}")"
+		found=1
 	done
+	shopt -u nullglob
 
 	return $((found == 0))
 }
