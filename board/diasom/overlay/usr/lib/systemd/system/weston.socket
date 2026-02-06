@@ -1,0 +1,13 @@
+[Unit]
+Description=Weston socket
+RequiresMountsFor=/run
+
+[Socket]
+ListenStream=/run/weston/wayland-1
+SocketMode=0775
+SocketUser=root
+SocketGroup=root
+RemoveOnStop=yes
+
+[Install]
+WantedBy=sockets.target
