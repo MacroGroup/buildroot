@@ -20,7 +20,7 @@ dotest() {
 	blobsize=$((megabytes*1024*1024))
 
 	if which time >/dev/null 2>/dev/null; then
-		totaltime=$(dotime "$wget" "$bloburl" -O /dev/null)
+		totaltime=$(dotime $wget "$bloburl" -O /dev/null)
 	else
 		start=$(date +%s)
 		$wget "$bloburl" -O /dev/null
@@ -65,7 +65,7 @@ dotime() {
 	# We expect real="real	0m 0.22s", but double check
 	if [ "$real" ]; then
 		# Yup, we got what we expected.
-		set - "$real"
+		set - $real
 		min=$2			# 0m
 		min=${min%m}		# 0
 		sec=$3			# 0.22s
