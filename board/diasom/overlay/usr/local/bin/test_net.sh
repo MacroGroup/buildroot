@@ -19,7 +19,7 @@ dotest() {
 	bloburl=http://cachefly.cachefly.net/${filename}mb.test
 	blobsize=$((megabytes*1024*1024))
 
-	if which time >/dev/null 2>/dev/null; then
+	if command -v "time >/dev/null 2>/dev/null"; then
 		totaltime=$(dotime $wget "$bloburl" -O /dev/null)
 	else
 		start=$(date +%s)
@@ -44,7 +44,7 @@ dotime() {
 	# This is a wrapper since we want to return just
 	# the number of milliseconds. Also, we handle different
 	# formats for output from `time`.
-	output=$("time" "$@" 2>&1 | tee /dev/tty)
+	output=$(time "$@" 2>&1 | tee /dev/tty)
 
 	if [ -z "$output" ]; then
 		echo "Error: Is the time ($(which time)) program broken?" >&2
@@ -60,7 +60,7 @@ dotime() {
 	# user    0m 0.00s
 	# sys     0m 0.08s
 
-	real=$(echo "$output" | grep ^real)
+	real=$(echo "$output" | grep "^real")
 
 	# We expect real="real	0m 0.22s", but double check
 	if [ "$real" ]; then
@@ -144,7 +144,7 @@ whichwget() {
 		echo Error: This ought never happen. >&2
 		;;
 	esac
-	echo wget "$options"
+	echo "wget $options"
 }
 
 echo "======================================================================"
