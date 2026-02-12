@@ -4,6 +4,7 @@
 
 declare -A I2C_DT_MAP=(
 	["diasom,ds-imx8m-som"]="ds_imx8m_som_test_i2c"
+	["diasom,ds-imx8m-som-evb"]="ds_imx8m_som_evb_test_i2c"
 	["diasom,ds-rk3568-som"]="ds_rk3568_som_test_i2c"
 	["diasom,ds-rk3568-som-evb"]="ds_rk3568_som_evb_test_i2c"
 	["diasom,ds-rk3568-som-smarc"]="ds_rk3568_som_smarc_test_i2c"
@@ -65,9 +66,13 @@ generate_i2c_bus_test() {
 }
 
 ds_imx8m_som_test_i2c() {
+	generate_i2c_bus_test 0 "I2C0 Bus (SOM)" 0 "0x4b:PMIC"
+}
+
+ds_imx8m_som_evb_test_i2c() {
+	generate_i2c_bus_test 3 "I2C3 Bus" 0
 	generate_i2c_bus_test 2 "I2C2 Bus" 0
 	generate_i2c_bus_test 1 "I2C1 Bus" 0
-	generate_i2c_bus_test 0 "I2C0 Bus (SOM)" 0 "0x4b:PMIC"
 }
 
 ds_rk3568_som_evb_test_i2c4_0x70() {
