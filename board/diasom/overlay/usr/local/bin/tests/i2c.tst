@@ -65,7 +65,7 @@ generate_i2c_bus_test() {
 }
 
 ds_imx8m_som_test_i2c() {
-	generate_i2c_bus_test 1 "I2C1 Bus (SOM)" 0 "0x4b:PMIC"
+	generate_i2c_bus_test 0 "I2C0 Bus (SOM)" 0 "0x4b:PMIC"
 }
 
 ds_rk3568_som_evb_test_i2c4_0x70() {
