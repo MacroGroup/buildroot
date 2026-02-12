@@ -4,6 +4,8 @@
 # SPDX-FileCopyrightText: Alexander Shiyan <shc_work@mail.ru>
 
 declare -A ETH_DT_MAP=(
+	["diasom,ds-imx8m-som"]=""
+	["diasom,ds-imx8m-som-evb"]="ds_imx8m_som_evb_test_eth"
 	["diasom,ds-rk3568-som"]=""
 	["diasom,ds-rk3568-som-evb"]="ds_rk3568_som_evb_test_eth"
 	["diasom,ds-rk3568-som-smarc-evb"]="ds_rk3568_som_smarc_evb_test_eth"
@@ -249,6 +251,11 @@ test_eth_end3_with_loop() {
 	fi
 
 	return $ret
+}
+
+ds_imx8m_som_evb_test_eth()
+{
+	register_test "test_eth_end0" "Ethernet 0 (FEC1)"
 }
 
 ds_rk3568_som_evb_test_eth()
