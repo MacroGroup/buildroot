@@ -20,12 +20,18 @@ check_dependencies_hdmi() {
 test_hdmi_card() {
 	local interface="$1"
 
-	if [ -d "/sys/class/drm/card0-$interface" ]; then
-		if modetest -c | grep -q "$interface"; then
-			echo "OK"
-			return 0
+	shopt -s nullglob
+	local paths=(/sys/class/drm/card?-"$interface")
+	shopt -u nullglob
+
+	for path in "${paths[@]}"; do
+		if [ -d "$path" ]; then
+			if modetest -c | grep -q "$interface"; then
+				echo "OK"
+				return 0
+			fi
 		fi
-	fi
+	done
 
 	echo "Missing"
 
