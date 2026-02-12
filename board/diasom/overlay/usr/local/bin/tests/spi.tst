@@ -94,8 +94,8 @@ generate_spi_presense_test() {
 }
 
 ds_imx8m_som_evb_test_spi() {
+	generate_spi_mtd_test 0 "SPI0" 1
 	generate_spi_mtd_test 1 "SPI1" 1
-	generate_spi_mtd_test 2 "SPI2" 1
 }
 
 ds_rk3568_som_evb_test_spi() {
