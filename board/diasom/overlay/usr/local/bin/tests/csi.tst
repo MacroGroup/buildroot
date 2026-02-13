@@ -4,6 +4,8 @@
 # SPDX-FileCopyrightText: Alexander Shiyan <shc_work@mail.ru>
 
 declare -A CSI_DT_MAP=(
+	["diasom,ds-imx8m-som"]=""
+	["diasom,ds-imx8m-som-evb"]="ds_imx8m_som_evb_test_csi"
 	["diasom,ds-rk3568-som"]=""
 	["diasom,ds-rk3568-som-evb"]="ds_rk3568_som_evb_test_csi"
 	["diasom,ds-rk3568-som-smarc-evb"]="ds_rk3568_som_smarc_evb_test_csi"
@@ -96,8 +98,16 @@ test_csi() {
 	return 0
 }
 
+test_freescale_csi() {
+	test_csi csis-32e30000.mipi-csi
+}
+
 test_rockchip_csi0() {
 	test_csi rockchip-csi2-dphy0
+}
+
+ds_imx8m_som_evb_test_csi() {
+	register_test "test_freescale_csi" "CSI"
 }
 
 ds_rk3568_som_evb_test_csi() {
