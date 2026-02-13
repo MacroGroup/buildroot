@@ -69,7 +69,7 @@ test_gpio_pair() {
 		return 1
 	}
 
-	if [ -z "$oneway" ] || [ "$oneway" = "0" ]; then
+	if [ "$oneway" = "0" ]; then
 		test_gpio "$nr2" "$nr1" || {
 			echo "$label2:$idx2 -> $label1:$idx1 error"
 			return 1
@@ -95,18 +95,14 @@ register_gpio_pair_tests() {
 		read -r label1 idx1 label2 idx2 test_name oneway <<< "$test_spec"
 
 		local func_name="test_gpio_pair_${test_name//-/_}"
-		if [ -n "$oneway" ]; then
-			eval "$func_name() { test_gpio_pair \"$label1\" \"$idx1\" \"$label2\" \"$idx2\" \"$oneway\"; }"
-		else
-			eval "$func_name() { test_gpio_pair \"$label1\" \"$idx1\" \"$label2\" \"$idx2\"; }"
-		fi
+		eval "$func_name() { test_gpio_pair \"$label1\" \"$idx1\" \"$label2\" \"$idx2\" \"$oneway\"; }"
 		register_test "$func_name" "$test_name"
 	done
 }
 
 ds_imx8m_som_evb_test_gpio() {
 	local gpio_tests=(
-		"gpio5	29	gpio5	28	UART4_TXD-UART4_RXD"
+		"gpio5	29	gpio5	28	UART4_TXD-UART4_RXD	0"
 		# TODO
 	)
 
@@ -126,8 +122,8 @@ ds_rk3568_som_evb_test_gpio() {
 		register_gpio_pair_tests "${gpio_tests[@]}"
 	else
 		local gpio_tests=(
-			"gpio1	4	gpio1	6	GPIO0-GPIO1"
-			"gpio1	7	gpio1	8	GPIO2-GPIO3"
+			"gpio1	4	gpio1	6	GPIO0-GPIO1	0"
+			"gpio1	7	gpio1	8	GPIO2-GPIO3	0"
 		)
 
 		register_gpio_pair_tests "${gpio_tests[@]}"
@@ -136,24 +132,24 @@ ds_rk3568_som_evb_test_gpio() {
 
 ds_rk3568_som_smarc_evb_test_gpio() {
 	local gpio_tests=(
-		"gpio1	2	gpio3	14	GPIO0-GPIO2"
-		"gpio2	30	gpio3	16	GPIO4-GPIO5"
-		"gpio3	15	gpio4	17	GPIO6-GPIO7"
+		"gpio1	2	gpio3	14	GPIO0-GPIO2	0"
+		"gpio2	30	gpio3	16	GPIO4-GPIO5	0"
+		"gpio3	15	gpio4	17	GPIO6-GPIO7	0"
 	)
 
 	i2c_device_test 2 0x23 &>/dev/null
 	if [ $? -eq 0 ]; then
 		gpio_tests+=(
-			"2-0023	0	2-0023	1	GPIO8-GPIO9"
-			"2-0023	2	2-0023	3	GPIO10-GPIO11"
-			"2-0023	4	2-0023	5	GPIO12-GPIO13"
+			"2-0023	0	2-0023	1	GPIO8-GPIO9	0"
+			"2-0023	2	2-0023	3	GPIO10-GPIO11	0"
+			"2-0023	4	2-0023	5	GPIO12-GPIO13	0"
 		)
 	fi
 
 	if dev_unbind_driver "fe410000.i2s"; then
 		gpio_tests+=(
-			"gpio3	23	gpio3	25	I2S1_CK-I2S1_SDOUT"
-			"gpio3	24	gpio3	26	I2S1_LRCK-I2S1_SDIN"
+			"gpio3	23	gpio3	25	I2S1_CK-I2S1_SDOUT	0"
+			"gpio3	24	gpio3	26	I2S1_LRCK-I2S1_SDIN	0"
 		)
 	else
 		register_test "test_gpio_busy" "I2S0"
