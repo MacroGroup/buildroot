@@ -108,7 +108,7 @@ register_gpio_pair_tests() {
 
 ds_imx8m_som_evb_test_gpio() {
 	local gpio_tests=(
-		"gpio5	29	gpio5	28	UART4_TXD-UART4_RXD	0"
+		"30240000.gpio:GPIO5	28	30240000.gpio:GPIO5	29	UART4_RXD-UART4_TXD	0"
 		# TODO
 	)
 
