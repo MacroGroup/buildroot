@@ -5,6 +5,7 @@
 
 declare -A UART_DT_MAP=(
 	["diasom,ds-imx8m-som"]=""
+	["diasom,ds-imx8m-som-evb"]="ds_imx8m_som_evb_test_uart"
 	["diasom,ds-rk3568-som"]=""
 	["diasom,ds-rk3568-som-evb"]="ds_rk3568_som_evb_test_uart"
 	["diasom,ds-rk3568-som-smarc-evb"]="ds_rk3568_som_smarc_evb_test_uart"
@@ -216,6 +217,11 @@ generate_uart_cross_pair() {
 		"$nr2" "$nr1" \
 		"$baud_rate" \
 		"${test_base_name} RX<-TX"
+}
+
+ds_imx8m_som_evb_test_uart() {
+	generate_uart_test_self "mxc0" "UART1"
+	generate_uart_test_self "mxc2" "UART3"
 }
 
 ds_rk3568_som_evb_test_uart() {
