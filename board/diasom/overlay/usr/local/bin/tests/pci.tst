@@ -4,6 +4,8 @@
 # SPDX-FileCopyrightText: Alexander Shiyan <shc_work@mail.ru>
 
 declare -A PCI_DT_MAP=(
+	["diasom,ds-imx8m-som"]=""
+	["diasom,ds-imx8m-som-evb"]="ds_imx8m_som_evb_test_pci"
 	["diasom,ds-rk3568-som"]=""
 	["diasom,ds-rk3568-som-evb"]="ds_rk3568_som_evb_test_pci"
 	["diasom,ds-rk3568-som-smarc-evb"]="ds_rk3568_som_smarc_evb_test_pci"
@@ -375,6 +377,10 @@ test_pci_register_tests() {
 			register_test "$test_skipped_func" "PCI Device $name" 1
 		fi
 	fi
+}
+
+ds_imx8m_som_evb_test_pci() {
+	test_pci_register_tests "2x1" "33800000"
 }
 
 ds_rk3568_som_evb_test_pci() {
