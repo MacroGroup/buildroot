@@ -50,28 +50,34 @@ test_gpio() {
 }
 
 test_gpio_pair() {
-	local label1="$1"
-	local label2="$3"
+	local label1_arg="$1"
+	local idx1="$2"
+	local label2_arg="$3"
+	local idx2="$4"
 	local oneway="$5"
 
-	local base1 base2
-	base1=$(gpio_get_base "$label1") || { echo "$label1 not found"; return 1; }
-	base2=$(gpio_get_base "$label2") || { echo "$label2 not found"; return 1; }
+	local label1="${label1_arg%%:*}"
+	local alias1="${label1_arg#*:}"
+	[[ "$alias1" == "$label1_arg" ]] && alias1="$label1"
+	local label2="${label2_arg%%:*}"
+	local alias2="${label2_arg#*:}"
+	[[ "$alias2" == "$label2_arg" ]] && alias2="$label2"
 
-	local idx1="$2"
-	local idx2="$4"
+	local base1 base2
+	base1=$(gpio_get_base "$label1") || { echo "$alias1 not found"; return 1; }
+	base2=$(gpio_get_base "$label2") || { echo "$alias2 not found"; return 1; }
 
 	local nr1=$((base1 + idx1))
 	local nr2=$((base2 + idx2))
 
 	test_gpio "$nr1" "$nr2" || {
-		echo "$label1:$idx1 -> $label2:$idx2 error"
+		echo "$alias1:$idx1 -> $alias2:$idx2 error"
 		return 1
 	}
 
 	if [ "$oneway" = "0" ]; then
 		test_gpio "$nr2" "$nr1" || {
-			echo "$label2:$idx2 -> $label1:$idx1 error"
+			echo "$alias2:$idx2 -> $alias1:$idx1 error"
 			return 1
 		}
 	fi
