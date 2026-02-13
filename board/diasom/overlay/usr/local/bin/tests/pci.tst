@@ -248,7 +248,7 @@ test_pci_find_device() {
 		file_size=$(stat -c %s "$node_dir/reg" 2>/dev/null)
 		[[ -z "$file_size" ]] && continue
 
-		region_size=8
+		region_size=4
 		num_regions=$((file_size / region_size))
 
 		local i
@@ -256,7 +256,7 @@ test_pci_find_device() {
 			local offset=$((i * region_size))
 
 			local addr_bytes
-			addr_bytes=$(dd if="$node_dir/reg" bs=1 skip=$((offset + 4)) count=4 2>/dev/null | hexdump -v -e '/1 "%02x"')
+			addr_bytes=$(dd if="$node_dir/reg" bs=1 skip="$offset" count=4 2>/dev/null | hexdump -v -e '/1 "%02x"')
 
 			while [[ ${#addr_bytes} -lt 8 ]]; do
 				addr_bytes="0$addr_bytes"
