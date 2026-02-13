@@ -4,6 +4,8 @@
 # SPDX-FileCopyrightText: Alexander Shiyan <shc_work@mail.ru>
 
 declare -A USB_DT_MAP=(
+	["diasom,ds-imx8m-som"]="ds_imx8m_som_test_usb"
+	["diasom,ds-imx8m-som-evb"]="ds_imx8m_som_evb_test_usb"
 	["diasom,ds-rk3568-som"]=""
 	["diasom,ds-rk3568-som-evb"]="ds_rk3568_som_evb_test_usb"
 	["diasom,ds-rk3568-som-smarc"]="ds_rk3568_som_smarc_test_usb"
@@ -672,6 +674,14 @@ test_usb_register_tests() {
 
 		((port_index++))
 	done
+}
+
+ds_imx8m_som_test_usb() {
+	test_usb_register_tests "USB1-OTG" "32e40000"
+}
+
+ds_imx8m_som_evb_test_usb() {
+	test_usb_register_tests "USB2-HOST" "32e50000"
 }
 
 ds_rk3568_som_evb_test_usb() {
