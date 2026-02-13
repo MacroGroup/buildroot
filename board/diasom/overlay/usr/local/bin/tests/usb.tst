@@ -431,12 +431,7 @@ test_usb_find_devices() {
 
 	local platform_dev=""
 	if [ -n "$value" ]; then
-		for dev in /sys/devices/platform/*; do
-			if [[ -d "$dev" && "$(basename "$dev")" == *"$value"* ]]; then
-				platform_dev="$dev"
-				break
-			fi
-		done
+		platform_dev=$(find /sys/devices/platform -type d -name "*${value}*" -print -quit 2>/dev/null)
 
 		[[ -z "$platform_dev" ]] && { echo -n ""; return; }
 	fi
