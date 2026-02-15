@@ -119,21 +119,18 @@ ds_imx8m_som_evb_test_gpio() {
 
 ds_rk3568_som_evb_test_gpio() {
 	ver_get_ds_rk3568_som_evb_version &>/dev/null
+
+	local oneway=0
 	if [[ "$EVB_VERSION" -ge 0x121 ]]; then
-		local gpio_tests=(
-			"gpio1	4	gpio1	6	GPIO0-GPIO1	1"
-			"gpio1	7	gpio1	8	GPIO2-GPIO3	1"
-		)
-
-		register_gpio_pair_tests "${gpio_tests[@]}"
-	else
-		local gpio_tests=(
-			"gpio1	4	gpio1	6	GPIO0-GPIO1	0"
-			"gpio1	7	gpio1	8	GPIO2-GPIO3	0"
-		)
-
-		register_gpio_pair_tests "${gpio_tests[@]}"
+		oneway=1
 	fi
+
+	local gpio_tests=(
+		"gpio1 4 gpio1 6 GPIO0-GPIO1 ${oneway}"
+		"gpio1 7 gpio1 8 GPIO2-GPIO3 ${oneway}"
+	)
+
+	register_gpio_pair_tests "${gpio_tests[@]}"
 }
 
 ds_rk3568_som_smarc_evb_test_gpio() {
