@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: GPL-2.0+
 # SPDX-FileCopyrightText: Alexander Shiyan <shc_work@mail.ru>
 
-declare -g GPIO_DEPS=()
+declare -g GPIO_DEPS=(devmem)
 
 gpio_get_base() {
 	local expected="$1"

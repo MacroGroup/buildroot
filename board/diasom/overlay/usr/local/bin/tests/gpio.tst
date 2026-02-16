@@ -114,6 +114,19 @@ ds_imx8m_som_evb_test_gpio() {
 		# TODO
 	)
 
+	if dev_unbind_driver "30a40000.i2c" && dev_unbind_driver "30a50000.i2c"; then
+		gpio_tests+=(
+			"${gpio5}	18	${gpio5}	20	I2C3_SCL-I2C4_SCL	0"
+			"${gpio5}	19	${gpio5}	21	I2C3_SDA-I2C4_SDA	0"
+		)
+		devmem 0x30330224 w 5
+		devmem 0x30330228 w 5
+		devmem 0x3033022c w 5
+		devmem 0x30330230 w 5
+	else
+		register_test "test_gpio_busy" "I2C3/I2C4"
+	fi
+
 	register_gpio_pair_tests "${gpio_tests[@]}"
 
 	return 0
