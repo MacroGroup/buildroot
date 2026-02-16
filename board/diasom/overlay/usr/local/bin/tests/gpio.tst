@@ -107,8 +107,13 @@ register_gpio_pair_tests() {
 }
 
 ds_imx8m_som_evb_test_gpio() {
+	local gpio1="30200000.gpio:GPIO1"
+	local gpio4="30230000.gpio:GPIO4"
 	local gpio5="30240000.gpio:GPIO5"
-	local gpio_tests=()
+
+	local gpio_tests=(
+		"${gpio1}	0	${gpio1}	4	GPIO1_IO00-GPIO1_IO04	0"
+	)
 
 	if dev_unbind_driver "30a60000.serial"; then
 		gpio_tests+=(
@@ -131,6 +136,25 @@ ds_imx8m_som_evb_test_gpio() {
 		devmem 0x30330230 w 5
 	else
 		register_test "test_gpio_busy" "I2C3/I2C4"
+	fi
+
+	if dev_unbind_driver "30020000.sai"; then
+		gpio_tests+=(
+			"${gpio4}	22	${gpio4}	24	SAI2_RXC-SAI2_TXFS	0"
+			"${gpio4}	23	${gpio4}	25	SAI2_RXD0-SAI2_TXC	0"
+			"${gpio4}	21	${gpio4}	26	SAI2_RXFS-SAI2_TXD0	1"
+			"${gpio4}	26	${gpio4}	27	SAI2_TXD0-SAI2_MCLK	1"
+			"${gpio4}	27	${gpio4}	21	SAI2_MCLK-SAI2_RXFS	1"
+		)
+		devmem 0x303301b0 w 5
+		devmem 0x303301b4 w 5
+		devmem 0x303301b8 w 5
+		devmem 0x303301bc w 5
+		devmem 0x303301c0 w 5
+		devmem 0x303301c4 w 5
+		devmem 0x303301c8 w 5
+	else
+		register_test "test_gpio_busy" "SAI2"
 	fi
 
 	register_gpio_pair_tests "${gpio_tests[@]}"
