@@ -113,6 +113,9 @@ ds_imx8m_som_evb_test_gpio() {
 
 	local gpio_tests=(
 		"${gpio1}	0	${gpio1}	4	GPIO1_IO00-GPIO1_IO04	0"
+		"${gpio1}	5	${gpio1}	11	GPIO1_IO05-GPIO1_IO11	1"
+		"${gpio1}	11	${gpio1}	13	GPIO1_IO11-GPIO1_IO13	1"
+		"${gpio1}	13	${gpio1}	5	GPIO1_IO13-GPIO1_IO05	1"
 	)
 
 	if dev_unbind_driver "30a60000.serial"; then
