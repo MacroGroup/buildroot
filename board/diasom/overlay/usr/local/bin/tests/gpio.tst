@@ -108,11 +108,17 @@ register_gpio_pair_tests() {
 
 ds_imx8m_som_evb_test_gpio() {
 	local gpio5="30240000.gpio:GPIO5"
+	local gpio_tests=()
 
-	local gpio_tests=(
-		"${gpio5}	28	${gpio5}	29	UART4_RXD-UART4_TXD	0"
-		# TODO
-	)
+	if dev_unbind_driver "30a60000.serial"; then
+		gpio_tests+=(
+			"${gpio5}	28	${gpio5}	29	UART4_RXD-UART4_TXD	0"
+		)
+		devmem 0x3033024c w 5
+		devmem 0x30330250 w 5
+	else
+		register_test "test_gpio_busy" "UART4"
+	fi
 
 	if dev_unbind_driver "30a40000.i2c" && dev_unbind_driver "30a50000.i2c"; then
 		gpio_tests+=(
