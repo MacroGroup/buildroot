@@ -5,7 +5,6 @@
 
 declare -A SPI_DT_MAP=(
 	["diasom,ds-imx8m-som"]=""
-	["diasom,ds-imx8m-som-evb"]="ds_imx8m_som_evb_test_spi"
 	["diasom,ds-rk3568-som"]=""
 	["diasom,ds-rk3568-som-evb"]="ds_rk3568_som_evb_test_spi"
 	["diasom,ds-rk3568-som-smarc-evb"]="ds_rk3568_som_smarc_evb_test_spi"
@@ -91,11 +90,6 @@ generate_spi_presense_test() {
 	eval "${func_name}() { test_spi_presense \"${port_num}\" \"${chipselect}\"; }"
 
 	register_test "${func_name}" "${test_name}"
-}
-
-ds_imx8m_som_evb_test_spi() {
-	generate_spi_mtd_test 0 "SPI0" 1
-	generate_spi_mtd_test 1 "SPI1" 1
 }
 
 ds_rk3568_som_evb_test_spi() {

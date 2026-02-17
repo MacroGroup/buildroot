@@ -173,6 +173,32 @@ ds_imx8m_som_evb_test_gpio() {
 		register_test "test_gpio_busy" "SPDIF1"
 	fi
 
+	if dev_unbind_driver "30820000.spi"; then
+		gpio_tests+=(
+			"${gpio5}	6	${gpio5}	7	ECSPI1_SCLK-ECSPI1_MOSI	0"
+			"${gpio5}	8	${gpio5}	9	ECSPI1_MISO-ECSPI1_SS0	0"
+		)
+		devmem 0x303301f4 w 5
+		devmem 0x303301f8 w 5
+		devmem 0x303301fc w 5
+		devmem 0x30330200 w 5
+	else
+		register_test "test_gpio_busy" "ECSPI1"
+	fi
+
+	if dev_unbind_driver "30830000.spi"; then
+		gpio_tests+=(
+			"${gpio5}	10	${gpio5}	11	ECSPI2_SCLK-ECSPI2_MOSI	0"
+			"${gpio5}	12	${gpio5}	13	ECSPI2_MISO-ECSPI2_SS0	0"
+		)
+		devmem 0x30330204 w 5
+		devmem 0x30330208 w 5
+		devmem 0x3033020c w 5
+		devmem 0x30330210 w 5
+	else
+		register_test "test_gpio_busy" "ECSPI2"
+	fi
+
 	register_gpio_pair_tests "${gpio_tests[@]}"
 
 	return 0
