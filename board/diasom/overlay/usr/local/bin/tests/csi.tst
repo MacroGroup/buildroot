@@ -107,6 +107,10 @@ test_freescale_csi() {
 	return 2
 }
 
+test_rockchip_csi0() {
+        test_csi rockchip-csi2-dphy0
+}
+
 ds_imx8m_som_evb_test_csi() {
 	register_test "test_freescale_csi" "CSI"
 }
