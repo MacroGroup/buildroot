@@ -44,8 +44,8 @@ plugincheck waylandsink
 
 gst-launch-1.0 \
 v4l2src device=/dev/video0 ! \
-"$FMT" ! \
-"$PIPE" ! \
+$FMT ! \
+$PIPE ! \
 video/x-raw,format=RGB16 ! waylandsink
 
 exit 0
