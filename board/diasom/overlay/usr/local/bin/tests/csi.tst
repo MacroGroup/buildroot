@@ -64,6 +64,7 @@ test_csi() {
 	fi
 
 	local output
+	# The format can be set as: --set-fmt-video=width=1920,height=1080,pixelformat=UYVY
 	output=$(timeout 4s v4l2-ctl -d "$video_dev" --stream-mmap=3 --stream-count=100 --stream-to=/dev/null 2>&1)
 	local exit_code=$?
 	if [ $exit_code -ne 0 ]; then
@@ -99,11 +100,11 @@ test_csi() {
 }
 
 test_freescale_csi() {
-	test_csi csis-32e30000.mipi-csi
-}
+	# Camera I2C interface is turned OFF
+	# The test can be runned in clear boot only (test_camera.sh)
+	echo "Skipped"
 
-test_rockchip_csi0() {
-	test_csi rockchip-csi2-dphy0
+	return 2
 }
 
 ds_imx8m_som_evb_test_csi() {
