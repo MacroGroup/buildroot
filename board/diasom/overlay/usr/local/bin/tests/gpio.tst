@@ -160,6 +160,19 @@ ds_imx8m_som_evb_test_gpio() {
 		register_test "test_gpio_busy" "SAI2"
 	fi
 
+	if dev_unbind_driver "30090000.spdif"; then
+		gpio_tests+=(
+			"${gpio5}	3	${gpio5}	4	SPDIF_TX-SPDIF_RX	1"
+			"${gpio5}	4	${gpio5}	5	SPDIF_RX-SPDIF_EXT_CLK	1"
+			"${gpio5}	5	${gpio5}	3	SPDIF_EXT_CLK-SPDIF_TX	1"
+		)
+		devmem 0x303301e8 w 5
+		devmem 0x303301ec w 5
+		devmem 0x303301f0 w 5
+	else
+		register_test "test_gpio_busy" "SPDIF1"
+	fi
+
 	register_gpio_pair_tests "${gpio_tests[@]}"
 
 	return 0
