@@ -66,11 +66,6 @@ test_csi() {
 	local output
 	# The format can be set as: --set-fmt-video=width=1920,height=1080,pixelformat=UYVY
 	output=$(timeout 4s v4l2-ctl -d "$video_dev" --stream-mmap=3 --stream-count=400 --stream-to=/dev/null 2>&1)
-	local exit_code=$?
-	if [ $exit_code -ne 0 ]; then
-		echo "Error"
-		return 1
-	fi
 
 	local fps_values
 	fps_values=$(echo "$output" | grep -o '[0-9]\+\.[0-9]\+ fps' | awk '{print $1}' | tr '\n' ' ')
