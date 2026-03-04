@@ -37,7 +37,9 @@ init_camera_rk3568()
 	CAMERA=
 	printf "Camera status: "
 
-	if [ -d /sys/bus/i2c/drivers/xc7160/4-001b ]; then
+	if [ -d /sys/bus/i2c/drivers/ar0234/4-0018 ]; then
+		CAMERA="AR0234"
+	elif [ -d /sys/bus/i2c/drivers/xc7160/4-001b ]; then
 		CAMERA="XC7160"
 	elif [ -d /sys/bus/i2c/drivers/imx290/4-001a ]; then
 		CAMERA="IMX327"
