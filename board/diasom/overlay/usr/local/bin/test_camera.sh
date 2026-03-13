@@ -24,9 +24,10 @@ plugincheck()
 }
 
 plugincheck v4l2src
+plugincheck videoconvert
+
 gst-inspect-1.0 --exists v4l2convert
 if [ $? -eq 0 ]; then
-	FMT="video/x-raw,width=1920,height=1080"
 	# if rotate is needed, replace next line with:
 	# PIPE="v4l2convert extra-controls=cid,rotate=90"
 	PIPE="v4l2convert"
@@ -35,7 +36,6 @@ else
 	plugincheck glupload
 	plugincheck glcolorconvert
 	plugincheck gldownload
-	FMT="video/x-raw,format=UYVY,width=1920,height=1080"
 	PIPE="queue ! glupload ! glcolorconvert ! gldownload"
 	echo "Using OpenGL format conversion"
 fi
@@ -44,7 +44,7 @@ plugincheck waylandsink
 
 gst-launch-1.0 \
 v4l2src device=/dev/video0 ! \
-$FMT ! \
+videoconvert ! \
 $PIPE ! \
 video/x-raw,format=RGB16 ! waylandsink
 
