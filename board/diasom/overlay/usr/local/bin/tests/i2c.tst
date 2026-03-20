@@ -15,7 +15,9 @@ declare -A I2C_DT_MAP=(
 
 check_dependencies_i2c() {
 	local deps=("${I2C_DEPS[@]}" "${VER_DEPS[@]}")
-	deps+=(@i2c_device_test @ver_get_ds_rk3568_som_version @ver_get_ds_rk3568_som_evb_version)
+	deps+=(@i2c_device_test)
+	deps+=(@ver_get_ds_rk3568_som_version @ver_get_ds_rk3568_som_evb_version)
+	deps+=(@ver_get_ds_rk3568_som_smarc_version)
 	check_dependencies "I2C" "${deps[@]}"
 }
 
@@ -113,6 +115,11 @@ ds_rk3568_som_smarc_test_i2c2_0x70() {
 	local ret=$?
 
 	if [ $ret -eq 0 ]; then
+		ver_get_ds_rk3568_som_smarc_version &>/dev/null
+		if [[ "$MOD_VERSION" -ge 0x300 ]]; then
+			generate_i2c_bus_test 9 "I2C9 Bus (SMARC Internal)" 2 "0x68:RTC,0x51:EEPROM,0x50:EEPROM"
+		fi
+
 		generate_i2c_bus_test 8 "I2C8 Bus (I2C_LCD)" 2
 		generate_i2c_bus_test 7 "I2C7 Bus (I2C_CAM1)" 2
 		generate_i2c_bus_test 6 "I2C6 Bus (I2C_CAM0)" 2
@@ -196,8 +203,15 @@ ds_rk3568_som_evb_test_i2c() {
 }
 
 ds_rk3568_som_smarc_test_i2c() {
+	local devs=""
+
+	ver_get_ds_rk3568_som_smarc_version &>/dev/null
+	if [[ "$MOD_VERSION" -eq 0x111 ]]; then
+		devs+="0x68:RTC,0x51:EEPROM,0x50:EEPROM"
+	fi
+
 	generate_i2c_bus_test 4 "I2C4 Bus (I2C_PM)" 0
-	generate_i2c_bus_test 3 "I2C3 Bus (I2C_GP)" 0 "0x68:RTC,0x51:EEPROM,0x50:EEPROM"
+	generate_i2c_bus_test 3 "I2C3 Bus (I2C_GP)" 0 "$devs"
 	register_test "@ds_rk3568_som_smarc_test_i2c2" "I2C2 Bus (SMARC Internal)"
 }
 

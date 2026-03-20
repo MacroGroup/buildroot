@@ -42,23 +42,16 @@ ver_get_ds_rk3568_som_evb_version() {
 }
 
 ver_get_ds_rk3568_som_smarc_version() {
-	local voltage
-	voltage=$(iio_get_value "fe720000.saradc" 1)
-
-	if [ $? -ne 0 ]; then
-		echo "$voltage"
-		return 1
-	fi
-
-	if [ "$voltage" -lt 100 ]; then
+	i2c_device_test 3 0x68 &>/dev/null
+	if [ $? -eq 0 ]; then
 		MOD_VERSION=0x111
 		echo "Ver. 1.1.1"
-		return 0
+	else
+		MOD_VERSION=0x300
+		echo "Ver. 3"
 	fi
 
-	echo "Unhandled value ($voltage mV)"
-
-	return 2
+	return 0
 }
 
 ver_get_ds_rk3568_som_sodimm_version() {
