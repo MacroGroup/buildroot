@@ -16,7 +16,8 @@ check_dependencies_gpio() {
 	local deps=("${DEV_DEPS[@]}" "${GPIO_DEPS[@]}" "${I2C_DEPS[@]}")
 	deps+=(@dev_unbind_driver)
 	deps+=(@gpio_get_base @gpio_setup_direction @gpio_setup @gpio_getval @gpio_setval)
-	deps+=(@i2c_device_test @ver_get_ds_rk3568_som_evb_version)
+	deps+=(@i2c_device_test)
+	deps+=(@ver_get_ds_rk3568_som_evb_version @ver_get_ds_rk3568_som_smarc_version)
 	check_dependencies "GPIO" "${deps[@]}"
 }
 
@@ -221,15 +222,23 @@ ds_rk3568_som_evb_test_gpio() {
 }
 
 ds_rk3568_som_smarc_evb_test_gpio() {
-	local gpio_tests=(
-		"gpio1	2	gpio3	14	GPIO0-GPIO2	0"
-		"gpio2	30	gpio3	16	GPIO4-GPIO5	0"
-		"gpio3	15	gpio4	17	GPIO6-GPIO7	0"
-	)
+	local gpio_tests=()
 
-	i2c_device_test 2 0x23 &>/dev/null
-	if [ $? -eq 0 ]; then
+	ver_get_ds_rk3568_som_smarc_version &>/dev/null
+	if [[ "$MOD_VERSION" -eq 0x111 ]]; then
 		gpio_tests+=(
+			"gpio1	2	gpio3	14	GPIO0-GPIO2	0"
+			"gpio2	30	gpio3	16	GPIO4-GPIO5	0"
+			"gpio3	15	gpio4	17	GPIO6-GPIO7	0"
+			"2-0023	0	2-0023	1	GPIO8-GPIO9	0"
+			"2-0023	2	2-0023	3	GPIO10-GPIO11	0"
+			"2-0023	4	2-0023	5	GPIO12-GPIO13	0"
+		)
+	else
+		gpio_tests+=(
+			"gpio1	2	gpio3	14	GPIO0-GPIO2	0"
+			"2-0023	6	gpio3	16	GPIO4-GPIO5	0"
+			"gpio3	15	2-0023	11	GPIO6-GPIO7	0"
 			"2-0023	0	2-0023	1	GPIO8-GPIO9	0"
 			"2-0023	2	2-0023	3	GPIO10-GPIO11	0"
 			"2-0023	4	2-0023	5	GPIO12-GPIO13	0"
