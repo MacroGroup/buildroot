@@ -45,7 +45,15 @@ test_spi_mtd() {
 		return 1
 	fi
 
-	echo "OK"
+	sleep 0.1
+
+	local partname_file="${device_path}/spi-nor/partname"
+	if [ ! -f "$partname_file" ] || [ ! -s "$partname_file" ]; then
+		echo "MTD: Fail"
+		return 1
+	fi
+
+	cat "$partname_file"
 
 	return 0
 }
