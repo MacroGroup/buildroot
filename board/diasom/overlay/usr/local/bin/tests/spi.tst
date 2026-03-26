@@ -53,7 +53,19 @@ test_spi_mtd() {
 		return 1
 	fi
 
-	cat "$partname_file"
+	local partname=$(cat "$partname_file")
+
+	local jedec_id_file="${device_path}/spi-nor/jedec_id"
+	local jedec_id=""
+	if [ -f "$jedec_id_file" ] && [ -s "$jedec_id_file" ]; then
+		jedec_id=$(cat "$jedec_id_file")
+	fi
+
+	if [ -n "$jedec_id" ]; then
+		echo "${partname} (${jedec_id})"
+	else
+		echo "$partname"
+	fi
 
 	return 0
 }
