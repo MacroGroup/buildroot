@@ -9,6 +9,7 @@ declare -A CSI_DT_MAP=(
 	["diasom,ds-rk3568-som"]=""
 	["diasom,ds-rk3568-som-evb"]="ds_rk3568_som_evb_test_csi"
 	["diasom,ds-rk3568-som-smarc-evb"]="ds_rk3568_som_smarc_evb_test_csi"
+	["diasom,ds-rk3568-som-sodimm-evb"]="ds_rk3568_som_sodimm_evb_test_csi"
 	["diasom,ds-rk3588-btb"]=""
 )
 
@@ -116,6 +117,10 @@ ds_rk3568_som_evb_test_csi() {
 
 ds_rk3568_som_smarc_evb_test_csi() {
 	register_test "test_rockchip_csi0" "CSI (CSI1)"
+}
+
+ds_rk3568_som_sodimm_evb_test_csi() {
+	register_test "test_rockchip_csi0" "CSI (CSI0)"
 }
 
 if ! declare -F check_dependencies &>/dev/null; then
