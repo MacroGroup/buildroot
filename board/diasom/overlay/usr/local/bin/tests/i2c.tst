@@ -217,6 +217,7 @@ ds_rk3568_som_smarc_test_i2c() {
 
 ds_rk3568_som_sodimm_test_i2c() {
 	register_test "ds_rk3568_som_sodimm_test_i2c4" "I2C4 Bus (SODIMM Internal)"
+	generate_i2c_bus_test 1 "I2C1 Bus (I2C_CAM)" 0
 }
 
 ds_rk3588_btb_test_i2c() {
