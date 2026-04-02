@@ -245,6 +245,17 @@ ds_rk3568_som_smarc_evb_test_gpio() {
 		)
 	fi
 
+	if dev_unbind_driver "fe630000.spi"; then
+		gpio_tests+=(
+			"gpio2	20	gpio2	18	SPI2_CS0-SPI2_MISO	0"
+			"gpio2	17	gpio2	19	SPI2_CLK-SPI2_MOSI	1"
+			"gpio2	19	gpio2	21	SPI2_MOSI-SPI2_CS1	1"
+			"gpio2	21	gpio2	17	SPI2_CS1-SPI2_CLK	1"
+		)
+	else
+		register_test "test_gpio_busy" "SPI0"
+	fi
+
 	if dev_unbind_driver "fe410000.i2s"; then
 		gpio_tests+=(
 			"gpio3	23	gpio3	25	I2S1_CK-I2S1_SDOUT	0"

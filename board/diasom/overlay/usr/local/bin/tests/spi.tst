@@ -118,7 +118,6 @@ ds_rk3568_som_evb_test_spi() {
 }
 
 ds_rk3568_som_smarc_evb_test_spi() {
-	generate_spi_mtd_test 2 "SPI0" 2
 	generate_spi_mtd_test 3 "SPI1" 2
 }
 
