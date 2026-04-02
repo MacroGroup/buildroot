@@ -11,4 +11,6 @@ PATCHELF_SOURCE = patchelf-$(PATCHELF_VERSION).tar.bz2
 PATCHELF_LICENSE = GPL-3.0+
 PATCHELF_LICENSE_FILES = COPYING
 
+HOST_PATCHELF_CONF_ENV = CXXFLAGS="$(HOST_CXXFLAGS) -static-libgcc -static-libstdc++"
+
 $(eval $(host-autotools-package))
