@@ -6,7 +6,7 @@
 
 # When updating the version, check whether the list of supported targets
 # needs to be updated.
-QEMU_VERSION = 10.1.0
+QEMU_VERSION = 10.2.0
 QEMU_SOURCE = qemu-$(QEMU_VERSION).tar.xz
 QEMU_SITE = https://download.qemu.org
 QEMU_SELINUX_MODULES = qemu virt
@@ -48,11 +48,23 @@ QEMU_VARS = LIBTOOL=$(HOST_DIR)/bin/libtool
 ifeq ($(BR2_PACKAGE_QEMU_SYSTEM),y)
 QEMU_DEPENDENCIES += pixman
 QEMU_OPTS += --enable-system
+
+ifeq ($(BR2_PACKAGE_QEMU_SYSTEM_KVM), y)
+QEMU_OPTS += --enable-kvm
+else
+QEMU_OPTS += --disable-kvm
+endif
+
+ifeq ($(BR2_PACKAGE_QEMU_SYSTEM_TCG), y)
+QEMU_OPTS += --enable-tcg
+else
+QEMU_OPTS += --disable-tcg
+endif
+
 QEMU_TARGET_LIST_$(BR2_PACKAGE_QEMU_TARGET_AARCH64) += aarch64-softmmu
 QEMU_TARGET_LIST_$(BR2_PACKAGE_QEMU_TARGET_ALPHA) += alpha-softmmu
 QEMU_TARGET_LIST_$(BR2_PACKAGE_QEMU_TARGET_ARM) += arm-softmmu
 QEMU_TARGET_LIST_$(BR2_PACKAGE_QEMU_TARGET_AVR) += avr-softmmu
-QEMU_TARGET_LIST_$(BR2_PACKAGE_QEMU_TARGET_CRIS) += cris-softmmu
 QEMU_TARGET_LIST_$(BR2_PACKAGE_QEMU_TARGET_HPPA) += hppa-softmmu
 QEMU_TARGET_LIST_$(BR2_PACKAGE_QEMU_TARGET_I386) += i386-softmmu
 QEMU_TARGET_LIST_$(BR2_PACKAGE_QEMU_TARGET_LOONGARCH64) += loongarch64-softmmu
@@ -89,7 +101,6 @@ QEMU_TARGET_LIST_$(BR2_PACKAGE_QEMU_TARGET_AARCH64_BE) += aarch64_be-linux-user
 QEMU_TARGET_LIST_$(BR2_PACKAGE_QEMU_TARGET_ALPHA) += alpha-linux-user
 QEMU_TARGET_LIST_$(BR2_PACKAGE_QEMU_TARGET_ARM) += arm-linux-user
 QEMU_TARGET_LIST_$(BR2_PACKAGE_QEMU_TARGET_ARMEB) += armeb-linux-user
-QEMU_TARGET_LIST_$(BR2_PACKAGE_QEMU_TARGET_CRIS) += cris-linux-user
 QEMU_TARGET_LIST_$(BR2_PACKAGE_QEMU_TARGET_HEXAGON) += hexagon-linux-user
 QEMU_TARGET_LIST_$(BR2_PACKAGE_QEMU_TARGET_HPPA) += hppa-linux-user
 QEMU_TARGET_LIST_$(BR2_PACKAGE_QEMU_TARGET_I386) += i386-linux-user
@@ -333,7 +344,6 @@ define QEMU_CONFIGURE_CMDS
 			--disable-whpx \
 			--disable-xen \
 			--enable-attr \
-			--enable-kvm \
 			--enable-vhost-net \
 			--disable-download \
 			--disable-hexagon-idef-parser \
@@ -369,6 +379,7 @@ HOST_QEMU_DEPENDENCIES = \
 #       -------         ----
 #       arm             arm
 #       armeb           armeb
+#       hppa            hppa
 #       i486            i386
 #       i586            i386
 #       i686            i386
