@@ -422,6 +422,13 @@ config BR2_LINUX_KERNEL_INTREE_DTS_NAME
 	  Name of in-tree device tree source file, without
 	  the trailing .dts. You can provide a list of
 	  dts files to build, separated by spaces.
+	  
+config BR2_LINUX_KERNEL_INTREE_DTSO_NAMES
+	string "In-tree Device Tree Overlay file names"
+	help
+	  Names of in-tree Device Tree Overlay source files, without the
+	  trailing .dtso or .dts, that should be built and installed as
+	  .dtbo files into the images directory, separated by spaces.
 
 config BR2_LINUX_KERNEL_CUSTOM_DTS_PATH
 	string "Out-of-tree Device Tree Source file paths"
