@@ -1,0 +1,13 @@
+[Unit]
+Description=Enable wakeup on serial console
+DefaultDependencies=no
+After=local-fs.target
+Before=sysinit.target
+
+[Service]
+Type=oneshot
+ExecStart=/bin/sh -c 'for tty in $(cat /sys/class/tty/console/active 2>/dev/null | tr " " "\n" | grep "^tty"); do echo enabled > /sys/class/tty/$tty/power/wakeup 2>/dev/null || true; done'
+RemainAfterExit=yes
+
+[Install]
+WantedBy=sysinit.target
