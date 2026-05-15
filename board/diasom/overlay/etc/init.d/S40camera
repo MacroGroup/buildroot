@@ -29,10 +29,23 @@ init_camera_imx8mm()
 	echo "$CAMERA found"
 }
 
-init_camera_rk3568()
+init_camera_rk3568_cif()
 {
-	[[ -d /sys/bus/platform/devices/fe870000.csi2-dphy-hw || \
-	   -d /sys/bus/platform/devices/fe870000.phy ]] || return
+	[[ -d /sys/bus/platform/devices/fe870000.phy ]] || return
+
+	CAMERA=
+	printf "Camera status: "
+
+	[ -n "$CAMERA" ] || { echo "Not found"; return; }
+
+	# TODO
+
+	echo "$CAMERA found"
+}
+
+init_camera_rk3568_isp()
+{
+	[[ -d /sys/bus/platform/devices/fe870000.csi2-dphy-hw ]] || return
 
 	CAMERA=
 	printf "Camera status: "
@@ -81,7 +94,8 @@ init_camera_rk3568()
 case "$1" in
 start)
 	init_camera_imx8mm
-	init_camera_rk3568
+	init_camera_rk3568_cif
+	init_camera_rk3568_isp
 
 	;;
 stop)
