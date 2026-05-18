@@ -16,6 +16,9 @@ declare -A USB_DT_MAP=(
 
 declare -A USB_DISABLE_TESTS
 
+declare -g USB_PASSED_TESTS=0
+declare -g _usb_check_counter=0
+
 check_dependencies_usb() {
 	local deps=("${DEV_DEPS[@]}" "${WLAN_DEPS[@]}")
 	deps+=(@dev_modprobe @wlan_speed_test bt-adapter fio jq mkfifo xargs)
@@ -53,6 +56,8 @@ test_usb_device() {
 	local device="$1"
 	local info="${2:-""}"
 	local device_path="/sys/bus/usb/devices/$device"
+
+	((USB_PASSED_TESTS++))
 
 	if [ -d "$device_path" ]; then
 		if test_usb_get_device_id "$device_path" >/dev/null 2>&1; then
@@ -676,6 +681,29 @@ test_usb_register_tests() {
 	done
 }
 
+test_usb_register_expected_count_test() {
+	local expected="$1"
+
+	((_usb_check_counter++))
+
+	local func_name="_usb_check_expected_${expected}_${$}_${_usb_check_counter}"
+
+	eval "
+		$func_name() {
+			local passed=\$USB_PASSED_TESTS
+			USB_PASSED_TESTS=0
+			echo \"\$passed/$expected\"
+			if [ \"\$passed\" -eq $expected ]; then
+				return 0
+			else
+				return 1
+			fi
+		}
+	"
+
+	register_test "$func_name" "USB Expected Count"
+}
+
 ds_imx8m_som_test_usb() {
 	test_usb_register_tests "USB1-OTG" "32e40000"
 }
@@ -729,6 +757,8 @@ ds_rk3568_som_smarc_test_usb() {
 	)
 
 	test_usb_register_expected_devices_tests expected_devices
+
+	test_usb_register_expected_count_test 11
 }
 
 ds_rk3568_som_sodimm_test_usb() {
