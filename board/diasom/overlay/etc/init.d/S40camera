@@ -36,9 +36,19 @@ init_camera_rk3568_cif()
 	CAMERA=
 	printf "Camera status: "
 
+	if [ -d /sys/bus/i2c/drivers/ar0234/4-0018 ]; then
+		CAMERA="AR0234"
+		DEV="ar0234 4-0018"
+		FMT="SGRBG8_1X8/1920x1200"
+		SETFMT="width=1920,height=1200,pixelformat=GRBG"
+	fi
+
 	[ -n "$CAMERA" ] || { echo "Not found"; return; }
 
-	# TODO
+	media-ctl -d /dev/media0 --set-v4l2 "'$DEV':0 [fmt:$FMT field:none]"
+	media-ctl -d /dev/media0 --set-v4l2 "'rkcif-mipi0':0 [fmt:$FMT field:none]"
+	media-ctl -d /dev/media0 --set-v4l2 "'rkcif-mipi0':1 [fmt:$FMT field:none]"
+	v4l2-ctl -d /dev/video1 --set-fmt-video=$SETFMT
 
 	echo "$CAMERA found"
 }
