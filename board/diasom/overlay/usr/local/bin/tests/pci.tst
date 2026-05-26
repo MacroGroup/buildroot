@@ -330,6 +330,13 @@ test_pci_register_tests() {
 		local class_info
 		class_info=$(lspci -n -s "$device" | awk '{print $2}' | cut -d: -f1)
 
+		# Known overrides
+		local full_pci_id
+		full_pci_id=$(lspci -n -s "$device" 2>/dev/null | awk '{print $3}')
+		if [[ "$full_pci_id" == "168c:001c" ]]; then
+			class_info="0280"
+		fi
+
 		local class=${class_info:0:2}
 		local subclass=${class_info:2:2}
 
