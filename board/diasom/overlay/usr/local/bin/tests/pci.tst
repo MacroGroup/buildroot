@@ -14,6 +14,10 @@ declare -A PCI_DT_MAP=(
 	["diasom,ds-rk3588-btb-evb"]="ds_rk3588_btb_evb_test_pci"
 )
 
+declare -A PCI_CLASS_OVERRIDE=(
+	["168c:001c"]="0280"	# Qualcomm Atheros AR242x
+)
+
 readonly PCIE_MIN_SPEED=100
 
 check_dependencies_pci() {
@@ -330,11 +334,10 @@ test_pci_register_tests() {
 		local class_info
 		class_info=$(lspci -n -s "$device" | awk '{print $2}' | cut -d: -f1)
 
-		# Known overrides
 		local full_pci_id
 		full_pci_id=$(lspci -n -s "$device" 2>/dev/null | awk '{print $3}')
-		if [[ "$full_pci_id" == "168c:001c" ]]; then
-			class_info="0280"
+		if [[ -n "${PCI_CLASS_OVERRIDE[$full_pci_id]}" ]]; then
+			class_info="${PCI_CLASS_OVERRIDE[$full_pci_id]}"
 		fi
 
 		local class=${class_info:0:2}
