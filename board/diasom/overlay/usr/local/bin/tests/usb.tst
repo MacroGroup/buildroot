@@ -16,7 +16,8 @@ declare -A USB_DT_MAP=(
 
 declare -A USB_DISABLE_TESTS
 
-declare -g USB_PASSED_TESTS=0
+declare -g USB_PASSED_TESTS_20=0
+declare -g USB_PASSED_TESTS_30=0
 declare -g _usb_check_counter=0
 
 check_dependencies_usb() {
@@ -57,12 +58,23 @@ test_usb_device() {
 	local info="${2:-""}"
 	local device_path="/sys/bus/usb/devices/$device"
 
-	((USB_PASSED_TESTS++))
-
 	if [ -d "$device_path" ]; then
 		if test_usb_get_device_id "$device_path" >/dev/null 2>&1; then
 			local ids
 			ids=$(test_usb_get_device_id "$device_path")
+
+			local speed_file="${device_path}/speed"
+			local speed=""
+			if [ -f "$speed_file" ]; then
+				speed=$(cat "$speed_file" 2>/dev/null)
+			fi
+
+			if [ -n "$speed" ] && [ "$speed" -ge 5000 ] 2>/dev/null; then
+				((USB_PASSED_TESTS_30++))
+			else
+				((USB_PASSED_TESTS_20++))
+			fi
+
 			if [ -z "$info" ]; then
 				echo "$ids"
 			else
@@ -681,17 +693,17 @@ test_usb_register_tests() {
 	done
 }
 
-test_usb_register_expected_count_test() {
+test_usb_register_expected_20_count_test() {
 	local expected="$1"
 
 	((_usb_check_counter++))
 
-	local func_name="_usb_check_expected_${expected}_${$}_${_usb_check_counter}"
+	local func_name="test_usb_check_expected_${_usb_check_counter}"
 
 	eval "
 		$func_name() {
-			local passed=\$USB_PASSED_TESTS
-			USB_PASSED_TESTS=0
+			local passed=\$USB_PASSED_TESTS_20
+			USB_PASSED_TESTS_20=0
 			echo \"\$passed/$expected\"
 			if [ \"\$passed\" -eq $expected ]; then
 				return 0
@@ -701,7 +713,30 @@ test_usb_register_expected_count_test() {
 		}
 	"
 
-	register_test "$func_name" "USB Expected Count"
+	register_test "$func_name" "USB 2.0 Expected Count"
+}
+
+test_usb_register_expected_30_count_test() {
+	local expected="$1"
+
+	((_usb_check_counter++))
+
+	local func_name="test_usb_check_expected_${_usb_check_counter}"
+
+	eval "
+		$func_name() {
+			local passed=\$USB_PASSED_TESTS_30
+			USB_PASSED_TESTS_30=0
+			echo \"\$passed/$expected\"
+			if [ \"\$passed\" -eq $expected ]; then
+				return 0
+			else
+				return 1
+			fi
+		}
+	"
+
+	register_test "$func_name" "USB 3.0 Expected Count"
 }
 
 ds_imx8m_som_test_usb() {
@@ -758,7 +793,8 @@ ds_rk3568_som_smarc_test_usb() {
 
 	test_usb_register_expected_devices_tests expected_devices
 
-	test_usb_register_expected_count_test 11
+	test_usb_register_expected_20_count_test 10
+	test_usb_register_expected_30_count_test 7
 }
 
 ds_rk3568_som_sodimm_test_usb() {
