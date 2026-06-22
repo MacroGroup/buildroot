@@ -64,8 +64,6 @@ init_camera_rk3568_isp()
 		CAMERA="IMX335"
 	elif [ -d /sys/bus/i2c/drivers/ar0234/4-0018 ]; then
 		CAMERA="AR0234"
-	elif [ -d /sys/bus/i2c/drivers/xc7160/4-001b ]; then
-		CAMERA="XC7160"
 	elif [ -d /sys/bus/i2c/drivers/imx290/4-001a ]; then
 		CAMERA="IMX327"
 	elif [ -d /sys/bus/i2c/drivers/imx335/4-001a ]; then
@@ -78,23 +76,9 @@ init_camera_rk3568_isp()
 		CAMERA="IMX335"
 	elif [ -d /sys/bus/i2c/drivers/imx415/7-001a ]; then
 		CAMERA="IMX415"
-	elif [ -d /sys/bus/i2c/drivers/ar0233/10-0010 ]; then
-		CAMERA="AR0233"
 	fi
 
 	[ -n "$CAMERA" ] || { echo "Not found"; return; }
-
-	FMT="SGRBG12_1X12/1920x1080"
-
-	# Setup media format for DS90UB953 FPD-Link serializer
-	if [ -d /sys/bus/i2c/drivers/ds90ub953/7-0018 ]; then
-		media-ctl -V "'ds90ub953 7-0018':0 [fmt:$FMT field:none]"
-	fi
-
-	# Setup media format for DS90UB954 FPD-Link deserializer
-	if [ -d /sys/bus/i2c/drivers/ds90ub960/7-0030 ]; then
-		media-ctl -V "'ds90ub960 7-0030':0 [fmt:$FMT field:none]"
-	fi
 
 	# Not need any special
 
