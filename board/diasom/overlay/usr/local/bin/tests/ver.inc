@@ -3,7 +3,13 @@
 # SPDX-License-Identifier: GPL-2.0+
 # SPDX-FileCopyrightText: Alexander Shiyan <shc_work@mail.ru>
 
-declare -g VER_DEPS=("${I2C_DEPS[@]}" "${IIO_DEPS[@]}" @i2c_device_test @iio_get_value)
+declare -g VER_DEPS=(
+	"${I2C_DEPS[@]}"
+	"${IIO_DEPS[@]}"
+	@gpio_get_base @gpio_setup
+	@i2c_device_test
+	@iio_get_value
+)
 
 declare -gx SOM_VERSION=0
 declare -gx EVB_VERSION=0
@@ -83,9 +89,9 @@ ver_get_ds_rk3588_btb_version() {
 		return 1
 	fi
 
-	if [[ "$voltage" -gt 150 && "$voltage" -lt 350 ]]; then
-		SOM_VERSION=0x001
-		echo "Ver. 0"
+	if [[ "$voltage" -gt 250 && "$voltage" -lt 350 ]]; then
+		SOM_VERSION=0x003
+		echo "Ver. 3"
 		return 0
 	fi
 
@@ -95,10 +101,38 @@ ver_get_ds_rk3588_btb_version() {
 }
 
 ver_get_ds_rk3588_btb_evb_version() {
-	EVB_VERSION=0x100
-	echo "Ver. 1.0.0+"
+	i2c_device_test 7 0x22 &>/dev/null
+	if [ $? -ne 0 ]; then
+		echo "Unknown variant"
+		return 2
+	fi
 
-	return 0
+	local base
+	base=$(gpio_get_base "7-0022") || { echo "GPIO expander not found"; return 1; }
+
+	local nr val
+	nr=$((base + 0))
+	gpio_setup "$nr"
+	val=$(cat /sys/class/gpio/gpio"$nr"/value)
+	nr=$((base + 1))
+	gpio_setup "$nr"
+	(( val += $(cat /sys/class/gpio/gpio"$nr"/value) * 2 ))
+	nr=$((base + 2))
+	gpio_setup "$nr"
+	(( val += $(cat /sys/class/gpio/gpio"$nr"/value) * 4 ))
+	nr=$((base + 3))
+	gpio_setup "$nr"
+	(( val += $(cat /sys/class/gpio/gpio"$nr"/value) * 8 ))
+
+	if [[ $val -eq 0 ]]; then
+		EVB_VERSION=0x002
+		echo "Ver. 2"
+		return 0
+	fi
+
+	echo "Unhandled value ($val)"
+
+	return 2
 }
 
 return 0

@@ -221,9 +221,9 @@ ds_rk3568_som_sodimm_test_i2c() {
 }
 
 ds_rk3588_btb_test_i2c() {
-	generate_i2c_bus_test 6 "I2C6 Bus (BTB)" 0 "0x51:RK628D,0x68:M41T62"
+	generate_i2c_bus_test 6 "I2C6 Bus (BTB)" 0 "0x68:M41T62,0x51:RK628D,0x50:EEPROM"
 	generate_i2c_bus_test 2 "I2C2 Bus (BTB)" 0 "0x42:RK8602"
-	generate_i2c_bus_test 0 "I2C0 Bus (BTB)" 0 "0x42:RK8602,0x43:RK8603"
+	generate_i2c_bus_test 0 "I2C0 Bus (BTB)" 0 "0x43:RK8603,0x42:RK8602"
 }
 
 ds_rk3588_btb_evb_test_i2c3() {
@@ -241,7 +241,7 @@ ds_rk3588_btb_evb_test_i2c3() {
 }
 
 ds_rk3588_btb_evb_test_i2c() {
-	generate_i2c_bus_test 7 "I2C7 Bus" 0 "0x52:EEPROM,0x51:EEPROM,0x50:EEPROM"
+	generate_i2c_bus_test 7 "I2C7 Bus" 0 "0x52:EEPROM,0x51:EEPROM,0x50:EEPROM,0x22:PCAL6524"
 	register_test "@ds_rk3588_btb_evb_test_i2c3" "I2C3 Bus"
 }
 
