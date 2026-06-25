@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-ROCKCHIP_RKBIN_VERSION = b4558da0860ca48bf1a571dd33ccba580b9abe23
+ROCKCHIP_RKBIN_VERSION = ecb4fcbe954edf38b3ae037d5de6d9f5bccf81f4
 ROCKCHIP_RKBIN_SITE = https://github.com/rockchip-linux/rkbin.git
 ROCKCHIP_RKBIN_SITE_METHOD = git
 ROCKCHIP_RKBIN_LICENSE = PROPRIETARY
