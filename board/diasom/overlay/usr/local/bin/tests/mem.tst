@@ -3,7 +3,7 @@
 # SPDX-FileCopyrightText: Alexander Shiyan <shc_work@mail.ru>
 
 check_dependencies_ram() {
-	local deps=()
+	local deps=(fio jq)
 	check_dependencies "RAM" "${deps[@]}"
 }
 
@@ -24,7 +24,83 @@ test_ram() {
 		echo "${memtotal_mb} MB"
 	fi
 
-	return 0
+	if (( $(echo "$memtotal_mb > 500" | bc -l) )); then
+		return 0
+	else
+		return 2
+	fi
+}
+
+test_ram_read_speed() {
+	local test_file="/dev/shm/ramtest.$$"
+	local output
+
+	output=$(fio --name=read_test --filename="$test_file" --rw=read \
+		--bs=1M --size=1G --runtime=2 --time_based --ioengine=sync \
+		--output-format=json 2>/dev/null)
+
+	local ret=$?
+
+	rm -f "$test_file"
+
+	if [ $ret -ne 0 ]; then
+		echo "Error"
+		return 1
+	fi
+
+	local bw
+	bw=$(echo "$output" | jq -r '.jobs[0].read.bw' 2>/dev/null)
+	if [[ ! "$bw" =~ ^[0-9.]+$ ]]; then
+		echo "Error"
+		return 1
+	fi
+
+	local bw_mb
+	bw_mb=$(echo "scale=2; $bw / 1024" | bc)
+
+	echo "${bw_mb} MB/s"
+
+	if (( $(echo "$bw_mb > 500" | bc -l) )); then
+		return 0
+	else
+		return 2
+	fi
+}
+
+test_ram_write_speed() {
+	local test_file="/dev/shm/ramtest.$$"
+	local output
+
+	output=$(fio --name=write_test --filename="$test_file" --rw=write \
+		--bs=1M --size=1G --runtime=2 --time_based --ioengine=sync \
+		--output-format=json 2>/dev/null)
+
+	local ret=$?
+
+	rm -f "$test_file"
+
+	if [ $ret -ne 0 ]; then
+		echo "Error"
+		return 1
+	fi
+
+	local bw
+	bw=$(echo "$output" | jq -r '.jobs[0].write.bw' 2>/dev/null)
+	if [[ ! "$bw" =~ ^[0-9.]+$ ]]; then
+		echo "Error"
+		return 1
+	fi
+
+	local bw_mb
+	bw_mb=$(echo "scale=2; $bw / 1024" | bc)
+
+	echo "${bw_mb} MB/s"
+
+	if (( $(echo "$bw_mb > 500" | bc -l) )); then
+		return 0
+	else
+		return 2
+	fi
 }
 
 if ! declare -F check_dependencies &>/dev/null; then
@@ -33,6 +109,8 @@ if ! declare -F check_dependencies &>/dev/null; then
 	return 1
 fi
 
-register_test "@test_ram" "RAM Capacity"
+register_test "test_ram" "RAM Capacity"
+register_test "test_ram_read_speed" "RAM Read"
+register_test "test_ram_write_speed" "RAM Write"
 
 return 0
