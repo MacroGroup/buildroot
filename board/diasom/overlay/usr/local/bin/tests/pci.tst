@@ -87,6 +87,21 @@ test_pci_get_nvme_device() {
 	return 0
 }
 
+test_pci_width() {
+	local device="$1"
+
+	local output
+	output=$(lspci -vv -s "$device" 2>/dev/null | grep -i "downgraded")
+	if [ -n "$output" ]; then
+		echo "Downgraded"
+		return 1
+	fi
+
+	echo "OK"
+
+	return 0
+}
+
 test_pci_get_speed() {
 	local device="$1"
 	local writetest="$2"
@@ -331,6 +346,10 @@ test_pci_register_tests() {
 	register_test "$test_dev_func" "PCI Device $name" 1
 
 	if [[ -n "$device" ]]; then
+		local test_width_func="test_pci_width_$safe_addr"
+		eval "$test_width_func() { test_pci_width \"$device\"; }"
+		register_test "$test_width_func" "PCI Device $name Width" 1
+
 		local class_info
 		class_info=$(lspci -n -s "$device" | awk '{print $2}' | cut -d: -f1)
 
@@ -503,6 +522,22 @@ test_pci_default() {
 	done < <(find /sys/bus/pci/devices -maxdepth 1 -name "????:??:??.?")
 }
 
+test_pci_clean_warn() {
+	cleanup() {
+		if [ -n "$PCI_CONSOLE_LEVEL" ] && [ -w /proc/sys/kernel/printk ]; then
+			echo "$PCI_CONSOLE_LEVEL" > /proc/sys/kernel/printk 2>/dev/null
+		fi
+	}
+	trap cleanup EXIT RETURN INT TERM HUP
+
+	if [ -r /proc/sys/kernel/printk ]; then
+		PCI_CONSOLE_LEVEL=$(awk '{print $1}' /proc/sys/kernel/printk 2>/dev/null)
+		echo 1 > /proc/sys/kernel/printk 2>/dev/null
+	fi
+
+	lspci -vv >/dev/null 2>/dev/null
+}
+
 if ! declare -F check_dependencies &>/dev/null; then
 	echo "Script cannot be executed alone"
 
@@ -511,6 +546,8 @@ fi
 
 if [ -f /proc/device-tree/compatible ]; then
 	check_dependencies_pci || return 1
+
+	test_pci_clean_warn
 
 	found_compatible=0
 	while IFS= read -r -d '' compatible; do
