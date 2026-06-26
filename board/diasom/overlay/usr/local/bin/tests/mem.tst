@@ -60,10 +60,12 @@ test_ram_read_speed() {
 
 	echo "${bw_mb} MB/s"
 
-	if (( $(echo "$bw_mb > 500" | bc -l) )); then
-		return 0
-	else
+	if (( $(echo "$bw_mb < 100" | bc -l) )); then
+		return 1
+	elif (( $(echo "$bw_mb <= 2500" | bc -l) )); then
 		return 2
+	else
+		return 0
 	fi
 }
 
@@ -96,10 +98,12 @@ test_ram_write_speed() {
 
 	echo "${bw_mb} MB/s"
 
-	if (( $(echo "$bw_mb > 500" | bc -l) )); then
-		return 0
-	else
+	if (( $(echo "$bw_mb < 100" | bc -l) )); then
+		return 1
+	elif (( $(echo "$bw_mb <= 2500" | bc -l) )); then
 		return 2
+	else
+		return 0
 	fi
 }
 
