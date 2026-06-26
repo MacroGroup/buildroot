@@ -89,20 +89,62 @@ test_mmc_read_speed() {
 	return 1
 }
 
-test_mmc_mmc() {
+test_mmc_capacity() {
+	local devtype="$1"
+	local block_dev
+	block_dev=$(test_mmc_get_block_device "$devtype")
+	local ret=$?
+
+	if [ $ret -ne 0 ]; then
+		echo "$block_dev"
+		return $ret
+	fi
+
+	local block_name="${block_dev#/dev/}"
+	local size_sectors
+	size_sectors=$(cat "/sys/block/$block_name/size" 2>/dev/null)
+	if [ -z "$size_sectors" ] || [ "$size_sectors" -eq 0 ]; then
+		echo "Error"
+		return 1
+	fi
+
+	local size_bytes=$((size_sectors * 512))
+	local size_mb=$((size_bytes / 1024 / 1024))
+	if [ $size_mb -ge 1024 ]; then
+		local size_gb
+		size_gb=$(echo "scale=2; $size_mb / 1024" | bc)
+		echo "${size_gb} GB"
+	else
+		echo "${size_mb} MB"
+	fi
+
+	return 0
+}
+
+test_mmc_read_mmc() {
 	test_mmc_read_speed "MMC"
 }
 
-test_mmc_sd() {
+test_mmc_read_sd() {
 	test_mmc_read_speed "SD"
 }
 
+test_mmc_capacity_mmc() {
+	test_mmc_capacity "MMC"
+}
+
+test_mmc_capacity_sd() {
+	test_mmc_capacity "SD"
+}
+
 test_mmc() {
-	register_test "test_mmc_mmc" "eMMC"
+	register_test "test_mmc_capacity_mmc" "eMMC Capacity"
+	register_test "test_mmc_read_mmc" "eMMC Read"
 }
 
 test_sd() {
-	register_test "test_mmc_sd" "SD"
+	register_test "test_mmc_capacity_sd" "SD Capacity"
+	register_test "test_mmc_read_sd" "SD Read"
 }
 
 if ! declare -F check_dependencies &>/dev/null; then
