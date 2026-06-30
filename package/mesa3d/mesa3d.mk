@@ -338,5 +338,10 @@ define HOST_MESA3D_INSTALL_CMDS
 	$(HOST_MESA3D_INSTALL_PCO_CLC)
 endef
 
+ifeq ($(BR2_PACKAGE_ROCKCHIP),y)
+	MESA3D_GALLIUM_DRIVERS-$(BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_PANFROST) += rocket
+	MESA3D_CONF_OPTS += -Dteflon=true
+endif
+
 $(eval $(meson-package))
 $(eval $(host-meson-package))
