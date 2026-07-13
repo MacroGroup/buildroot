@@ -11,6 +11,7 @@ declare -A CSI_DT_MAP=(
 	["diasom,ds-rk3568-som-smarc-evb"]="ds_rk3568_som_smarc_evb_test_csi"
 	["diasom,ds-rk3568-som-sodimm-evb"]="ds_rk3568_som_sodimm_evb_test_csi"
 	["diasom,ds-rk3588-btb"]=""
+	["diasom,ds-rk3588-btb-evb"]="ds_rk3588_btb_evb_test_csi"
 )
 
 check_dependencies_csi() {
@@ -25,17 +26,18 @@ find_csi_video_device() {
 	for media_dev in /dev/media*; do
 		[ -c "$media_dev" ] || continue
 
-		if media-ctl -d "$media_dev" -p | grep -q "$csi_name"; then
-			local videos
-			videos=$(media-ctl -d "$media_dev" -p | grep -oP '/dev/video\d+' | sort -u | sort -V)
-
+		local output
+		output=$(media-ctl -d "$media_dev" -p 2>/dev/null)
+		if echo "$output" | grep -q "entity .*: $csi_name"; then
 			local video
-			for video in $videos; do
-				if [ -c "$video" ] && v4l2-ctl -d "$video" --info 2>/dev/null | grep -q "Video Capture"; then
-					echo "$video"
-					return 0
-				fi
-			done
+			video=$(echo "$output" | awk -v csi="$csi_name" '
+				$0 ~ "entity .*: " csi " \\(" { found=1 }
+				found && /device node name/ { print $NF; exit }
+			')
+			if [ -n "$video" ] && [ -c "$video" ]; then
+				echo "$video"
+				return 0
+			fi
 		fi
 	done
 
@@ -103,8 +105,16 @@ test_freescale_csi() {
 	return 2
 }
 
-test_rockchip_csi0() {
-        test_csi rockchip-csi2-dphy0
+test_isp_csi0() {
+	test_csi "rockchip-csi2-dphy0"
+}
+
+test_cif_csi2() {
+	test_csi "rkcif-mipi2-id0"
+}
+
+test_cif_csi4() {
+	test_csi "rkcif-mipi4-id0"
 }
 
 ds_imx8m_som_evb_test_csi() {
@@ -112,15 +122,20 @@ ds_imx8m_som_evb_test_csi() {
 }
 
 ds_rk3568_som_evb_test_csi() {
-	register_test "test_rockchip_csi0" "CSI0 (CAM1)"
+	register_test "test_isp_csi0" "CSI0 (CAM1)"
 }
 
 ds_rk3568_som_smarc_evb_test_csi() {
-	register_test "test_rockchip_csi0" "CSI (CSI1)"
+	register_test "test_isp_csi0" "CSI (CSI1)"
 }
 
 ds_rk3568_som_sodimm_evb_test_csi() {
-	register_test "test_rockchip_csi0" "CSI (CSI0)"
+	register_test "test_isp_csi0" "CSI (CSI0)"
+}
+
+ds_rk3588_btb_evb_test_csi() {
+	register_test "test_cif_csi2" "CSI2 (CSI0)"
+	register_test "test_cif_csi4" "CSI4 (CSI1)"
 }
 
 if ! declare -F check_dependencies &>/dev/null; then

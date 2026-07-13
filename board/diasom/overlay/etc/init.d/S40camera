@@ -29,28 +29,64 @@ init_camera_imx8mm()
 	echo "$CAMERA found"
 }
 
-init_camera_rk3568_cif()
-{
-	[[ -d /sys/bus/platform/devices/fe870000.phy ]] || return
+find_media_for_entity() {
+	local entity="$1"
+	local media_dev
+	local dev
 
-	CAMERA=
-	printf "Camera status: "
+	for media_dev in /dev/media*; do
+		[ -e "$media_dev" ] || continue
 
-	if [ -d /sys/bus/i2c/drivers/ar0234/4-0018 ]; then
-		CAMERA="AR0234"
-		DEV="ar0234 4-0018"
-		FMT="SGRBG8_1X8/1920x1200"
-		SETFMT="width=1920,height=1200,pixelformat=GRBG"
+		dev=$(media-ctl -d "$media_dev" -e "$entity" 2>/dev/null)
+		if [ -n "$dev" ] && [ -e "$dev" ]; then
+			echo "$media_dev"
+			return 0
+		fi
+	done
+
+	return 1
+}
+
+setup_cif_camera() {
+	local sensor="$1"
+	local csi="$2"
+	local fmt="$3"
+	local rkcif="$4"
+	local pixelformat="$5"
+
+	local media_dev
+	local video_dev
+
+	local rkcif_id0="${rkcif}-id0"
+	media_dev=$(find_media_for_entity "$rkcif_id0") || return 1
+
+	video_dev=$(media-ctl -d "$media_dev" -e "$rkcif_id0" 2>/dev/null)
+	if [ -z "$video_dev" ] || [ ! -e "$video_dev" ]; then
+		return 1
 	fi
 
-	[ -n "$CAMERA" ] || { echo "Not found"; return; }
+	local fmtparms="field:none colorspace:raw xfer:none"
 
-	media-ctl -d /dev/media0 --set-v4l2 "'$DEV':0 [fmt:$FMT field:none]"
-	media-ctl -d /dev/media0 --set-v4l2 "'rkcif-mipi0':0 [fmt:$FMT field:none]"
-	media-ctl -d /dev/media0 --set-v4l2 "'rkcif-mipi0':1 [fmt:$FMT field:none]"
-	v4l2-ctl -d /dev/video1 --set-fmt-video=$SETFMT
+#	media-ctl -d "$media_dev" -l "'$sensor':0 -> '$csi':0[1]" >/dev/null || return 1
+#	media-ctl -d "$media_dev" -l "'$csi':1 -> '$rkcif':0[1]" >/dev/null || return 1
+#	media-ctl -d "$media_dev" -l "'$rkcif':1 -> '$rkcif_id0':0[1]" >/dev/null || return 1
+	media-ctl -d "$media_dev" --set-v4l2 "'$sensor':0 [fmt:$fmt $fmtparms]" >/dev/null || return 1
+	media-ctl -d "$media_dev" --set-v4l2 "'$csi':0 [fmt:$fmt $fmtparms]" >/dev/null || return 1
+#	media-ctl -d "$media_dev" --set-v4l2 "'$csi':1 [fmt:$fmt $fmtparms]" >/dev/null || return 1
+	media-ctl -d "$media_dev" --set-v4l2 "'$rkcif':0 [fmt:$fmt $fmtparms]" >/dev/null || return 1
+#	media-ctl -d "$media_dev" --set-v4l2 "'$rkcif':1 [fmt:$fmt $fmtparms]" >/dev/null || return 1
 
-	echo "$CAMERA found"
+	local resilution width height
+	resolution=$(echo "$fmt" | awk -F'/' '{print $2}')
+	width=$(echo "$resolution" | cut -d'x' -f1)
+	height=$(echo "$resolution" | cut -d'x' -f2)
+	if [ -z "$width" ] || [ -z "$height" ]; then
+		return 1
+	fi
+
+	v4l2-ctl -d "$video_dev" --set-fmt-video="width=$width,height=$height,pixelformat=$pixelformat" || return 1
+
+	return 0
 }
 
 init_camera_rk3568_isp()
@@ -85,11 +121,50 @@ init_camera_rk3568_isp()
 	echo "$CAMERA found"
 }
 
+init_camera_rk3588_csix()
+{
+	local LABEL="$1"
+	local CSI="$2"
+	local CIF="$3"
+	local I2C="$4"
+
+	CAMERA=
+	printf "$LABEL Camera status: "
+
+	if [ -d /sys/bus/i2c/drivers/ar0234/$I2C-0018 ]; then
+		CAMERA="AR0234"
+		SENSOR="ar0234 $I2C-0018"
+		FMT="SGRBG8_1X8/1920x1200"
+		PIXELFMT="GRBG"
+	elif [ -d /sys/bus/i2c/drivers/imx335/$I2C-001a ]; then
+		CAMERA="IMX335"
+		SENSOR="imx335 $I2C-001a"
+		FMT="SRGGB10_1X10/1312x972"
+		PIXELFMT="GB10"
+	fi
+
+	[ -n "$CAMERA" ] || { echo "Not found"; return; }
+
+	if setup_cif_camera "$SENSOR" "$CSI" "$FMT" "$CIF" "$PIXELFMT"; then
+		echo "$CAMERA found"
+	else
+		echo "Setup failed for $CAMERA"
+	fi
+}
+
+init_camera_rk3588()
+{
+	[[ -d /sys/bus/platform/devices/fedc0000.phy ]] || return
+
+	init_camera_rk3588_csix "CSI2" "dw-mipi-csi2rx fdd30000.csi" "rkcif-mipi2" 9
+	init_camera_rk3588_csix "CSI4" "dw-mipi-csi2rx fdd50000.csi" "rkcif-mipi4" 10
+}
+
 case "$1" in
 start)
 	init_camera_imx8mm
-	init_camera_rk3568_cif
 	init_camera_rk3568_isp
+	init_camera_rk3588
 
 	;;
 stop)
