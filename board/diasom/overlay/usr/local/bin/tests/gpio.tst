@@ -10,6 +10,7 @@ declare -A GPIO_DT_MAP=(
 	["diasom,ds-rk3568-som-evb"]="ds_rk3568_som_evb_test_gpio"
 	["diasom,ds-rk3568-som-smarc-evb"]="ds_rk3568_som_smarc_evb_test_gpio"
 	["diasom,ds-rk3588-btb"]=""
+	["diasom,ds-rk3588-btb-evb"]="ds_rk3588_btb_evb_test_gpio"
 )
 
 check_dependencies_gpio() {
@@ -264,6 +265,30 @@ ds_rk3568_som_smarc_evb_test_gpio() {
 	else
 		register_test "test_gpio_busy" "I2S0"
 	fi
+
+	register_gpio_pair_tests "${gpio_tests[@]}"
+}
+
+ds_rk3588_btb_evb_test_gpio() {
+	local gpio_tests=()
+
+	gpio_tests+=(
+		"gpio4	9	gpio4	2	GPIO4_B1-GPIO4_A2	0"
+		"gpio4	1	gpio4	0	GPIO4_A1-GPIO4_A0	0"
+		"gpio4	13	gpio4	10	GPIO4_B5-GPIO4_B2	0"
+		"gpio4	12	gpio4	11	GPIO4_B4-GPIO4_B3	0"
+		"gpio2	12	gpio2	13	GPIO2_B4-GPIO2_B5	0"
+		"gpio2	20	gpio4	19	GPIO2_C4-GPIO4_C3	0"
+		"gpio1	30	gpio1	31	GPIO1_D6-GPIO1_D7	0"
+		"gpio1	12	gpio1	13	GPIO1_B4-GPIO1_B5	0"
+		"gpio1	27	gpio1	26	GPIO1_D3-GPIO1_D2	0"
+		"gpio3	16	gpio3	17	GPIO3_C0-GPIO3_C1	0"
+		"gpio0	28	gpio0	29	GPIO0_D4-GPIO0_D5	0"
+		"gpio1	19	gpio1	22	GPIO1_C3-GPIO1_C6	0"
+		"gpio1	23	gpio1	2	GPIO1_C7-GPIO1_A2	0"
+		"gpio3	10	gpio1	1	GPIO3_B2-GPIO1_A1	0"
+		"gpio1	0	gpio1	7	GPIO1_A0-GPIO1_A7	0"
+	)
 
 	register_gpio_pair_tests "${gpio_tests[@]}"
 }
