@@ -106,7 +106,7 @@ test_freescale_csi() {
 }
 
 test_isp_csi0() {
-	test_csi "rockchip-csi2-dphy0"
+	test_csi "rkisp_mainpath"
 }
 
 test_cif_csi2() {
