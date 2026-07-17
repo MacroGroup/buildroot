@@ -89,15 +89,38 @@ test_pci_get_nvme_device() {
 
 test_pci_width() {
 	local device="$1"
+	local root_port="$2"
 
-	local output
-	output=$(lspci -vv -s "$device" 2>/dev/null | grep -i "downgraded")
-	if [ -n "$output" ]; then
-		echo "Downgraded"
+	local current_width_str
+	current_width_str=$(lspci -vv -s "$device" 2>/dev/null | grep -oP 'LnkSta:.*Width \Kx[0-9]+' | head -1)
+	if [[ -z "$current_width_str" ]]; then
+		echo "Unknown"
+		return 2
+	fi
+
+	local current_width=${current_width_str//x/}
+
+	local dev_max_width_str
+	dev_max_width_str=$(lspci -vv -s "$device" 2>/dev/null | grep -oP 'LnkCap:.*Width \Kx[0-9]+' | head -1)
+	local dev_max_width=${dev_max_width_str//x/}
+
+	local root_max_width_str
+	root_max_width_str=$(lspci -vv -s "$root_port" 2>/dev/null | grep -oP 'LnkCap:.*Width \Kx[0-9]+' | head -1)
+	local root_max_width=${root_max_width_str//x/}
+
+	if [[ -z "$dev_max_width" || -z "$root_max_width" ]]; then
+		echo "OK (missing data)"
+		return 0
+	fi
+
+	local expected_max_width=$(( dev_max_width < root_max_width ? dev_max_width : root_max_width ))
+
+	if (( current_width < expected_max_width )); then
+		echo "Downgraded (current ${current_width}x < expected ${expected_max_width}x)"
 		return 1
 	fi
 
-	echo "OK"
+	echo "OK (${current_width}x)"
 
 	return 0
 }
@@ -347,7 +370,7 @@ test_pci_register_tests() {
 
 	if [[ -n "$device" ]]; then
 		local test_width_func="test_pci_width_$safe_addr"
-		eval "$test_width_func() { test_pci_width \"$device\"; }"
+		eval "$test_width_func() { test_pci_width \"$device\" \"$root_port\"; }"
 		register_test "$test_width_func" "PCI Device $name Width" 1
 
 		local class_info
