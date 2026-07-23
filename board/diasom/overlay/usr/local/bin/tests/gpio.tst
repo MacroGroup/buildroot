@@ -303,6 +303,12 @@ ds_rk3588_btb_evb_hat_test_gpio() {
 		"gpio2	20	gpio3	16	GPIO2_C4-GPIO3_C0	1"
 	)
 
+	if dev_unbind_driver "feac0000.i2c"; then
+		gpio_tests+=(
+			"gpio1	22	gpio1	23	GPIO1_C6-GPIO1_C7	0"
+		)
+	fi
+
 	if dev_unbind_driver "feb90000.serial"; then
 		gpio_tests+=(
 			"gpio1	1	gpio1	0	GPIO1_A1-GPIO1_A0	1"
