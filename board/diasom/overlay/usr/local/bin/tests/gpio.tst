@@ -11,6 +11,7 @@ declare -A GPIO_DT_MAP=(
 	["diasom,ds-rk3568-som-smarc-evb"]="ds_rk3568_som_smarc_evb_test_gpio"
 	["diasom,ds-rk3588-btb"]=""
 	["diasom,ds-rk3588-btb-evb"]="ds_rk3588_btb_evb_test_gpio"
+	["diasom,ds-rk3588-btb-evb-hat"]="ds_rk3588_btb_evb_hat_test_gpio"
 )
 
 check_dependencies_gpio() {
@@ -293,6 +294,18 @@ ds_rk3588_btb_evb_test_gpio() {
 		"gpio3	10	gpio1	1	GPIO3_B2-GPIO1_A1	0"
 		"gpio1	0	gpio1	7	GPIO1_A0-GPIO1_A7	0"
 	)
+
+	register_gpio_pair_tests "${gpio_tests[@]}"
+}
+
+ds_rk3588_btb_evb_hat_test_gpio() {
+	local gpio_tests=()
+
+	if dev_unbind_driver "feb90000.serial"; then
+		gpio_tests+=(
+			"gpio1	1	gpio1	0	GPIO1_A1-GPIO1_A0	1"
+		)
+	fi
 
 	register_gpio_pair_tests "${gpio_tests[@]}"
 }
