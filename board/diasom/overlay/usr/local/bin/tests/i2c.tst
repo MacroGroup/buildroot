@@ -11,6 +11,7 @@ declare -A I2C_DT_MAP=(
 	["diasom,ds-rk3568-som-sodimm"]="ds_rk3568_som_sodimm_test_i2c"
 	["diasom,ds-rk3588-btb"]="ds_rk3588_btb_test_i2c"
 	["diasom,ds-rk3588-btb-evb"]="ds_rk3588_btb_evb_test_i2c"
+	["diasom,ds-rk3588-btb-evb-hat"]="ds_rk3588_btb_evb_hat_test_i2c"
 )
 
 check_dependencies_i2c() {
@@ -243,6 +244,10 @@ ds_rk3588_btb_evb_test_i2c3() {
 ds_rk3588_btb_evb_test_i2c() {
 	generate_i2c_bus_test 7 "I2C7 Bus" 0 "0x52:EEPROM,0x51:EEPROM,0x50:EEPROM,0x22:PCAL6524"
 	register_test "@ds_rk3588_btb_evb_test_i2c3" "I2C3 Bus"
+}
+
+ds_rk3588_btb_evb_hat_test_i2c() {
+	generate_i2c_bus_test 1 "I2C1 Bus (HAT)" 0 "0x08:ES8156"
 }
 
 test_i2c_default() {
