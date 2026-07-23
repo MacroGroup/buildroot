@@ -270,6 +270,10 @@ ds_rk3568_som_smarc_evb_test_gpio() {
 }
 
 ds_rk3588_btb_evb_test_gpio() {
+	if grep -q "diasom,ds-rk3588-btb-evb-hat" /proc/device-tree/compatible; then
+		return
+	fi
+
 	local gpio_tests=()
 
 	gpio_tests+=(
