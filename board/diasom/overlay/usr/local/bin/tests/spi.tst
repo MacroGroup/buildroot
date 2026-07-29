@@ -9,6 +9,7 @@ declare -A SPI_DT_MAP=(
 	["diasom,ds-rk3568-som-evb"]="ds_rk3568_som_evb_test_spi"
 	["diasom,ds-rk3568-som-smarc-evb"]="ds_rk3568_som_smarc_evb_test_spi"
 	["diasom,ds-rk3588-btb"]="ds_rk3588_btb_test_spi"
+	["diasom,ds-rk3588-btb-evb-hat"]="ds_rk3588_btb_evb_hat_test_spi"
 )
 
 check_dependencies_spi() {
@@ -123,6 +124,10 @@ ds_rk3568_som_smarc_evb_test_spi() {
 
 ds_rk3588_btb_test_spi() {
 	generate_spi_presense_test 2 0 "SPI2.0 (RK806)"
+}
+
+ds_rk3588_btb_evb_hat_test_spi() {
+	generate_spi_mtd_test 0 "SPI0 (HAT)" 1
 }
 
 if ! declare -F check_dependencies &>/dev/null; then
