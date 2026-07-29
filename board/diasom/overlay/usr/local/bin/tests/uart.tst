@@ -10,6 +10,7 @@ declare -A UART_DT_MAP=(
 	["diasom,ds-rk3568-som-evb"]="ds_rk3568_som_evb_test_uart"
 	["diasom,ds-rk3568-som-smarc-evb"]="ds_rk3568_som_smarc_evb_test_uart"
 	["diasom,ds-rk3588-btb"]=""
+	["diasom,ds-rk3588-btb-evb-hat"]="ds_rk3588_btb_evb_hat_test_uart"
 )
 
 check_dependencies_uart() {
@@ -235,6 +236,10 @@ ds_rk3568_som_smarc_evb_test_uart() {
 	generate_uart_test_self "S4" "UART4 (SER0)"
 	generate_uart_test_self "S8" "UART8 (SER2)"
 	generate_uart_test_self "S5" "UART5 (SER3)"
+}
+
+ds_rk3588_btb_evb_hat_test_uart() {
+	generate_uart_test_self "S6" "UART6"
 }
 
 if ! declare -F check_dependencies &>/dev/null; then
