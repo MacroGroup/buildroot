@@ -301,6 +301,8 @@ ds_rk3588_btb_evb_test_gpio() {
 ds_rk3588_btb_evb_hat_test_gpio() {
 	local gpio_tests=(
 		"gpio2	20	gpio3	16	GPIO2_C4-GPIO3_C0	1"
+		"gpio1	2	gpio1	30	GPIO1_A2-GPIO1_D6	1"
+		"gpio1	19	gpio3	10	GPIO1_C3-GPIO3_B2	1"
 	)
 
 	if dev_unbind_driver "feac0000.i2c"; then
