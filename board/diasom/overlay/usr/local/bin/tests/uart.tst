@@ -240,6 +240,12 @@ ds_rk3568_som_smarc_evb_test_uart() {
 
 ds_rk3588_btb_evb_hat_test_uart() {
 	generate_uart_test_self "S6" "UART6"
+	generate_uart_cross_pair \
+		"ttyS9" "ttyS7" \
+		"gpio2" "gpio2" \
+		"12" "13" \
+		"RS-485_1-RS-485_2" \
+		"9600"
 }
 
 if ! declare -F check_dependencies &>/dev/null; then
