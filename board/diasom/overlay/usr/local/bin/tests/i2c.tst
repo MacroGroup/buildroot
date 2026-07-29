@@ -247,6 +247,7 @@ ds_rk3588_btb_evb_test_i2c() {
 }
 
 ds_rk3588_btb_evb_hat_test_i2c() {
+	generate_i2c_bus_test 4 "I2C4 Bus (HAT)" 0 "0x20:PCF8574"
 	generate_i2c_bus_test 1 "I2C1 Bus (HAT)" 0 "0x20:PCF8574,0x08:ES8156"
 }
 
