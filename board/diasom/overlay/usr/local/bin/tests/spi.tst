@@ -14,7 +14,7 @@ declare -A SPI_DT_MAP=(
 
 check_dependencies_spi() {
 	local deps=("${DEV_DEPS[@]}")
-	local deps=(@dev_modprobe @dev_bind_driver @dev_unbind_driver)
+	deps+=(@dev_modprobe @dev_bind_driver @dev_unbind_driver)
 	check_dependencies "SPI" "${deps[@]}"
 }
 
