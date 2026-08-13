@@ -44,8 +44,37 @@ find_csi_video_device() {
 	return 1
 }
 
-test_csi() {
-	local csi_name="$1"
+find_video_by_driver_pattern() {
+	local pattern="$1"
+	local devices_output
+
+	devices_output=$(v4l2-ctl --list-devices 2>/dev/null)
+	[ -z "$devices_output" ] && return 1
+
+	local found=0
+	local video_dev=""
+	while IFS= read -r line; do
+		if [[ "$line" =~ ^.*: && "$line" == *"$pattern"* ]]; then
+			found=1
+			continue
+		fi
+
+		 if [ $found -eq 1 ] && [[ "$line" =~ ^[[:space:]]+ ]]; then
+			if [[ "$line" =~ /dev/video[0-9]+ ]]; then
+				video_dev=$(echo "$line" | grep -o '/dev/video[0-9]*' | head -1)
+				echo "$video_dev"
+				return 0
+			fi
+		else
+			[ $found -eq 1 ] && found=0
+		fi
+	done <<< "$devices_output"
+
+	return 1
+}
+
+test_video() {
+	local video_name="$1"
 
 	cleanup() {
 		if [ -n "$CSI_CONSOLE_LEVEL" ] && [ -w /proc/sys/kernel/printk ]; then
@@ -60,7 +89,10 @@ test_csi() {
 	fi
 
 	local video_dev
-	video_dev=$(find_csi_video_device "$csi_name")
+	video_dev=$(find_csi_video_device "$video_name")
+	if [ -z "$video_dev" ] || [ ! -c "$video_dev" ]; then
+		video_dev=$(find_video_by_driver_pattern "$video_name")
+	fi
 	if [ -z "$video_dev" ] || [ ! -c "$video_dev" ]; then
 		echo "Camera not found (Unsupported?)"
 		return 1
@@ -106,15 +138,19 @@ test_freescale_csi() {
 }
 
 test_isp_csi0() {
-	test_csi "rkisp_mainpath"
+	test_video "rkisp_mainpath"
 }
 
 test_cif_csi2() {
-	test_csi "rkcif-mipi2-id0"
+	test_video "rkcif-mipi2-id0"
 }
 
 test_cif_csi4() {
-	test_csi "rkcif-mipi4-id0"
+	test_video "rkcif-mipi4-id0"
+}
+
+test_hdmirx() {
+	test_video "snps_hdmirx"
 }
 
 ds_imx8m_som_evb_test_csi() {
@@ -136,6 +172,7 @@ ds_rk3568_som_sodimm_evb_test_csi() {
 ds_rk3588_btb_evb_test_csi() {
 	register_test "test_cif_csi2" "CSI2 (CSI0)"
 	register_test "test_cif_csi4" "CSI4 (CSI1)"
+	register_test "test_hdmirx" "HDMIRX"
 }
 
 if ! declare -F check_dependencies &>/dev/null; then
