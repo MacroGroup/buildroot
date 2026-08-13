@@ -7,14 +7,18 @@ PIDFILE=/var/run/$NAME.pid
 CHIP_ADDR=0x38
 
 find_i2c_device() {
-	i2c_buses=$(ls /dev/i2c-* 2>/dev/null | sed 's|/dev/i2c-||')
-	[ -z "$i2c_buses" ] && return 1
+	for i2c_path in /sys/class/i2c-dev/i2c-*; do
+		[ -d "$i2c_path" ] || continue
 
-	for bus in $i2c_buses; do
-		i2cdetect -y "$bus" | grep -q "${CHIP_ADDR#0x}" && {
-			echo "$bus"
-			return 0
-		}
+		bus=$(basename "$i2c_path" | sed 's/i2c-//')
+		name_file="$i2c_path/name"
+
+		if [ -f "$name_file" ] && grep -q "rk3x-i2c" "$name_file"; then
+			if i2cdetect -y "$bus" "${CHIP_ADDR}" "${CHIP_ADDR}" | grep -q "${CHIP_ADDR#0x}"; then
+				echo "$bus"
+				return 0
+			fi
+		fi
 	done
 
 	return 1
