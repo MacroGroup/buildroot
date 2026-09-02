@@ -20,22 +20,32 @@ check_dependencies_hdmi() {
 test_hdmi_card() {
 	local interface="$1"
 
+	if ! modetest -c | grep -q "$interface"; then
+		echo "Missing"
+		return 1
+	fi
+
 	shopt -s nullglob
 	local paths=(/sys/class/drm/card?-"$interface")
 	shopt -u nullglob
 
 	for path in "${paths[@]}"; do
 		if [ -d "$path" ]; then
-			if modetest -c | grep -q "$interface"; then
-				echo "OK"
-				return 0
+			local status_file="$path/status"
+			if [ -f "$status_file" ]; then
+				local status
+				status=$(cat "$status_file")
+				if [ "$status" = "connected" ]; then
+					echo "OK"
+					return 0
+				fi
 			fi
 		fi
 	done
 
-	echo "Missing"
+	echo "Disconnected"
 
-	return 1
+	return 2
 }
 
 test_hdmi_dsi1() {
