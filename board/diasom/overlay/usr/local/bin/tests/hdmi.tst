@@ -9,7 +9,8 @@ declare -A HDMI_DT_MAP=(
 	["diasom,ds-rk3568-som-evb"]="test_hdmi0_dsi1"
 	["diasom,ds-rk3568-som-smarc-evb"]="test_hdmi0"
 	["diasom,ds-rk3568-som-sodimm-evb"]="test_hdmi0"
-	["diasom,ds-rk3588-btb"]="test_hdmi0_hdmi1"
+	["diasom,ds-rk3588-btb"]=""
+	["diasom,ds-rk3588-btb-evb"]="test_hdmi0_hdmi1"
 )
 
 check_dependencies_hdmi() {
