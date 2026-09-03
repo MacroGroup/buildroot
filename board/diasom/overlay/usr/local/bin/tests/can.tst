@@ -9,6 +9,7 @@ declare -A CAN_DT_MAP=(
 	["diasom,ds-rk3568-som-evb"]="ds_rk3568_som_evb_test_can"
 	["diasom,ds-rk3568-som-smarc-evb"]="ds_rk3568_som_smarc_evb_test_can"
 	["diasom,ds-rk3588-btb"]=""
+	["diasom,ds-rk3588-btb-evb-hat"]="ds_rk3588_btb_evb_hat_test_can"
 )
 
 declare -a CAN_INTERFACES
@@ -159,13 +160,18 @@ test_can_can1_with_loop() {
 }
 
 ds_rk3568_som_evb_test_can() {
-	register_test "test_can_can0" "CAN1"
-	register_test "test_can_can1_with_loop" "CAN2"
+	register_test "test_can_can0" "CAN0 (CAN1)"
+	register_test "test_can_can1_with_loop" "CAN1 (CAN2)"
 }
 
 ds_rk3568_som_smarc_evb_test_can() {
 	register_test "test_can_can0" "CAN0 (CAN0)"
 	register_test "test_can_can1_with_loop" "CAN2 (CAN1)"
+}
+
+ds_rk3588_btb_evb_hat_test_can() {
+	register_test "test_can_can0" "CAN0 (CAN1)"
+	register_test "test_can_can1_with_loop" "CAN1 (CAN2)"
 }
 
 if ! declare -F check_dependencies &>/dev/null; then
