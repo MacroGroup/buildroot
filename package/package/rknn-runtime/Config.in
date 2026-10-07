@@ -1,0 +1,16 @@
+config BR2_PACKAGE_RKNN_RUNTIME
+	bool "rknn-runtime"
+	depends on BR2_aarch64
+	depends on BR2_TOOLCHAIN_USES_GLIBC
+	depends on BR2_INSTALL_LIBSTDCPP
+	depends on !BR2_STATIC_LIBS
+	help
+	  Prebuilt Rockchip RKNN Runtime for AArch64 Linux (RK356x/RK3588).
+	  Installs librknnrt.so into staging and target, and the SDK headers
+	  into staging. Requires a compatible RKNPU kernel driver.
+
+	  https://github.com/airockchip/rknn-toolkit2
+
+comment "rknn-runtime needs a glibc toolchain w/ C++, dynamic library"
+	depends on BR2_aarch64
+	depends on !BR2_TOOLCHAIN_USES_GLIBC || !BR2_INSTALL_LIBSTDCPP || BR2_STATIC_LIBS
