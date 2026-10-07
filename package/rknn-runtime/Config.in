@@ -1,0 +1,47 @@
+config BR2_PACKAGE_RKNN_RUNTIME
+	bool "rknn-runtime"
+	depends on BR2_aarch64
+	depends on BR2_TOOLCHAIN_USES_GLIBC
+	depends on BR2_INSTALL_LIBSTDCPP
+	depends on !BR2_STATIC_LIBS
+	help
+	  Prebuilt Rockchip RKNN Runtime for AArch64 Linux (RK356x/RK3588).
+	  Installs librknnrt.so into staging and target, and the SDK headers
+	  into staging. Requires a compatible RKNPU kernel driver.
+
+	  https://github.com/airockchip/rknn-toolkit2
+
+if BR2_PACKAGE_RKNN_RUNTIME
+
+config BR2_PACKAGE_RKNN_RUNTIME_NPU_TEST_MODEL
+	bool "install NPU self-test model"
+	help
+	  Install a small deterministic Conv 3x3 + ReLU model with a fixed
+	  float32 input and golden output for the NPU hardware self-test:
+
+	    /usr/share/rknn/models/npu_test.rknn
+	    /usr/share/rknn/test/npu_test_input.bin
+	    /usr/share/rknn/test/npu_test_expected.bin
+
+	  The files are prebuilt with RKNN Toolkit2 1.6.0 and stored in
+	  package/rknn-runtime/npu-test; see the README there to regenerate.
+
+if BR2_PACKAGE_RKNN_RUNTIME_NPU_TEST_MODEL
+
+choice
+	prompt "NPU self-test model target SoC"
+	default BR2_PACKAGE_RKNN_RUNTIME_TEST_RK3588
+
+config BR2_PACKAGE_RKNN_RUNTIME_TEST_RK3588
+	bool "RK3588"
+
+config BR2_PACKAGE_RKNN_RUNTIME_TEST_RK356X
+	bool "RK3566 / RK3568"
+
+endchoice
+endif
+endif
+
+comment "rknn-runtime needs a glibc toolchain w/ C++, dynamic library"
+	depends on BR2_aarch64
+	depends on !BR2_TOOLCHAIN_USES_GLIBC || !BR2_INSTALL_LIBSTDCPP || BR2_STATIC_LIBS

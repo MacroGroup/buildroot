@@ -1,0 +1,21 @@
+Deterministic NPU self-test model (Conv 3x3 + ReLU, input [1,1,8,8], output [1,4,8,8], float32 NCHW),
+installed by BR2_PACKAGE_RKNN_RUNTIME_NPU_TEST_MODEL.
+
+  RK3588/npu_test.rknn        RKNN model for RK3588
+  RK3566_RK3568/npu_test.rknn RKNN model for RK3566/RK3568
+  npu_test_input.bin          fixed input, 256 bytes
+  npu_test_expected.bin       golden output, 1024 bytes
+
+Built with RKNN Toolkit2 1.6.0+81f21f4d (Python 3.10, numpy 1.26.4, onnx 1.14.1,
+onnxruntime 1.16.0), do_quantization=False. The Toolkit2 version must match RKNN_RUNTIME_VERSION.
+
+Generator and converter: test_peripheral repository, tools/npu_test/. To regenerate:
+
+  cd tools/npu_test
+  python generate_npu_test_model.py
+  python convert_to_rknn.py --target rk3588 --target rk3568
+  cp out/rk3588/npu_test.rknn <this dir>/RK3588/
+  cp out/rk3568/npu_test.rknn <this dir>/RK3566_RK3568/
+  cp out/npu_test_input.bin out/npu_test_expected.bin <this dir>/
+
+See tools/npu_test/README.md for the Toolkit2 environment setup.
