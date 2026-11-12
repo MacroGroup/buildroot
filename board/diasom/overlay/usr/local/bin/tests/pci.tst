@@ -559,6 +559,7 @@ test_pci_clean_warn() {
 	fi
 
 	lspci -vv >/dev/null 2>/dev/null
+	sleep 0.5
 }
 
 if ! declare -F check_dependencies &>/dev/null; then
