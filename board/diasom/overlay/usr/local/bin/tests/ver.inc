@@ -135,4 +135,31 @@ ver_get_ds_rk3588_btb_evb_version() {
 	return 2
 }
 
+ver_get_ds_rk3588_smarc_version() {
+	local voltage
+	voltage=$(iio_get_value "fec10000.adc" 7)
+
+	if [ $? -ne 0 ]; then
+		echo "$voltage"
+		return 1
+	fi
+
+	if [[ "$voltage" -gt 150 && "$voltage" -lt 250 ]]; then
+		SOM_VERSION=0x002
+		echo "Ver. 2"
+		return 0
+	fi
+
+	echo "Unhandled value ($voltage mV)"
+
+	return 2
+}
+
+ver_get_ds_rk3588_smarc_evb_version() {
+	EVB_VERSION=0x001
+	echo "Ver. 1"
+
+	return 0
+}
+
 return 0

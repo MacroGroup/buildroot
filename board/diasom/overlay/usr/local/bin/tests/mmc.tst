@@ -11,6 +11,8 @@ declare -A MMC_DT_MAP=(
 	["diasom,ds-rk3568-som-sodimm"]="test_sd"
 	["diasom,ds-rk3588-btb"]="test_mmc"
 	["diasom,ds-rk3588-btb-evb"]="test_sd"
+	["diasom,ds-rk3588-smarc"]="test_mmc"
+	["diasom,ds-rk3588-smarc-evb"]="test_sd"
 )
 
 check_dependencies_mmc() {

@@ -10,6 +10,8 @@ declare -A VER_DT_MAP=(
 	["diasom,ds-rk3568-som-sodimm"]="ds_rk3568_som_sodimm_test_version"
 	["diasom,ds-rk3588-btb"]="ds_rk3588_btb_test_version"
 	["diasom,ds-rk3588-btb-evb"]="ds_rk3588_btb_evb_test_version"
+	["diasom,ds-rk3588-smarc"]="ds_rk3588_smarc_test_version"
+	["diasom,ds-rk3588-smarc-evb"]="ds_rk3588_smarc_evb_test_version"
 )
 
 check_dependencies_ver() {
@@ -18,6 +20,7 @@ check_dependencies_ver() {
 	deps+=(@ver_get_ds_rk3568_som_smarc_version)
 	deps+=(@ver_get_ds_rk3568_som_sodimm_version)
 	deps+=(@ver_get_ds_rk3588_btb_version @ver_get_ds_rk3588_btb_evb_version)
+	deps+=(@ver_get_ds_rk3588_smarc_version @ver_get_ds_rk3588_smarc_evb_version)
 	check_dependencies "VER" "${deps[@]}"
 }
 
@@ -43,6 +46,14 @@ ds_rk3588_btb_test_version() {
 
 ds_rk3588_btb_evb_test_version() {
 	register_test "@@ver_get_ds_rk3588_btb_evb_version" "EVB Version"
+}
+
+ds_rk3588_smarc_test_version() {
+	register_test "@@ver_get_ds_rk3588_smarc_version" "SMARC Version"
+}
+
+ds_rk3588_smarc_evb_test_version() {
+	register_test "@@ver_get_ds_rk3588_smarc_evb_version" "EVB Version"
 }
 
 if ! declare -F check_dependencies &>/dev/null; then

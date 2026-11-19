@@ -3,9 +3,9 @@
 # SPDX-FileCopyrightText: Alexander Shiyan <shc_work@mail.ru>
 
 declare -A TEMP_DT_MAP=(
-	["diasom,ds-imx8m-som"]="imx8m_test_temp"
-	["diasom,ds-rk3568-som"]="rk3568_test_temp"
-	["diasom,ds-rk3588-btb"]="rk3588_test_temp"
+	["fsl,imx8mm"]="imx8m_test_temp"
+	["rockchip,rk3568"]="rk3568_test_temp"
+	["rockchip,rk3588"]="rk3588_test_temp"
 )
 
 check_dependencies_temp() {
