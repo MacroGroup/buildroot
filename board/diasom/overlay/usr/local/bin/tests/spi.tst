@@ -158,6 +158,7 @@ ds_rk3588_smarc_test_spi() {
 ds_rk3588_smarc_evb_test_spi() {
 	generate_spi_mtd_test 3 "SPI3 (SPI0)" 0
 	generate_spi_mtd_test 3 "SPI3 (SPI0)" 1
+	generate_spi_mtd_test 5 "QSPI (SPI1)" 1
 }
 
 if ! declare -F check_dependencies &>/dev/null; then
